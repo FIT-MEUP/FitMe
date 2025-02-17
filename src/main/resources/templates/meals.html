@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>식단 게시판</title>
+
+    <!-- ✅ Bootstrap & FullCalendar 스타일 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+
+    <!-- ✅ jQuery & FullCalendar -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- 상단 헤더 -->
+    <nav class="navbar navbar-light bg-light p-3">
+        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
+        <h3 class="text-center flex-grow-1">식단 게시판</h3>
+        <button class="btn btn-outline-secondary">🔔</button>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- ✅ 왼쪽: 캘린더 -->
+            <div class="col-md-4">
+                <h5>📅 날짜 선택</h5>
+                <div id="mealCalendar"></div>
+            </div>
+
+            <!-- ✅ 오른쪽: 식단 기록 -->
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>🍽️ 식단 기록</h5>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#mealModal">+ 추가</button>
+                </div>
+
+                <!-- ✅ 식단 카드 출력 -->
+                <div class="row" id="mealContainer"></div>
+
+                <!-- ✅ 댓글 창 -->
+                <div class="mt-4">
+                    <h5>💬 댓글</h5>
+                    <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+                    <button class="btn btn-primary mt-2">등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ 1번 모달: 식단 추가 -->
+    <div class="modal fade" id="mealModal" tabindex="-1" aria-labelledby="mealModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">새 식단 추가</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <button id="uploadImage" class="btn btn-secondary w-100">클릭 시 이미지 올리기</button>
+                    <div id="selectedFoods" class="mt-2"></div>
+                    <button id="openFoodModal" class="btn btn-primary w-100 mt-2" data-bs-toggle="modal"
+                        data-bs-target="#foodModal">음식 추가</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button id="saveMeal" class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ 2번 모달: 음식 추가 -->
+    <div class="modal fade" id="foodModal" tabindex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">음식 검색</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="foodSearch" class="form-control" placeholder="음식 이름 검색">
+                    <div id="foodResults" class="mt-2"></div>
+                    <input type="number" id="foodGram" class="form-control mt-2" placeholder="그람수 입력">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button id="confirmFood" class="btn btn-primary">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // ✅ FullCalendar 초기화
+            var calendarEl = document.getElementById('mealCalendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                locale: 'ko',
+                firstDay: 0,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: ''
+                },
+                dateClick: function (info) {
+                    let selectedDate = info.dateStr;
+                    loadMealData(selectedDate);
+                }
+            });
+
+            calendar.render();
+
+            let today = new Date().toISOString().split('T')[0];
+            loadMealData(today);
+
+            function loadMealData(selectedDate) {
+                $.ajax({
+                    url: `/api/meals/${selectedDate}`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        updateMealUI(data);
+                    },
+                    error: function () {
+                        alert('식단 데이터를 불러오는 데 실패했습니다.');
+                    }
+                });
+            }
+
+            function updateMealUI(meals) {
+                let mealContainer = $('#mealContainer');
+                mealContainer.empty();
+
+                if (meals.length === 0) {
+                    mealContainer.append('<p class="text-muted">등록된 식단이 없습니다.</p>');
+                    return;
+                }
+
+                meals.forEach(meal => {
+                    let mealCard = `
+                        <div class="col-md-6">
+                            <div class="card">
+                                <img src="${meal.imageUrl}" class="card-img-top" alt="식단 이미지">
+                                <div class="card-body">
+                                    <h5 class="card-title">${meal.title}</h5>
+                                    <p class="card-text">칼로리: ${meal.calories} kcal</p>
+                                    <p class="card-text">탄단지: ${meal.macros}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                    mealContainer.append(mealCard);
+                });
+            }
+
+            // ✅ 음식 검색 및 추가 기능
+            let foodDB = [
+                { name: '밥', carbs: 30, protein: 3, fat: 1 },
+                { name: '닭가슴살', carbs: 1, protein: 23, fat: 2 },
+                { name: '고구마', carbs: 27, protein: 2, fat: 0 }
+            ];
+
+            $('#foodSearch').on('input', function () {
+                let query = $(this).val().toLowerCase();
+                let results = foodDB.filter(f => f.name.includes(query));
+                $('#foodResults').html(results.map(f => `<div class='food-item p-2 border' data-name='${f.name}' data-carbs='${f.carbs}' data-protein='${f.protein}' data-fat='${f.fat}'>${f.name}</div>`).join(''));
+            });
+
+            $('#confirmFood').click(function () {
+                let selectedFood = $('.food-item.bg-primary');
+                if (selectedFood.length === 0) return;
+                let foodName = selectedFood.data('name');
+                $('#selectedFoods').append(`<p>${foodName}</p>`);
+                $('#foodModal').modal('hide');
+            });
+        });
+    </script>
+
+</body>
+
+</html>
