@@ -26,3 +26,86 @@ bin/
 
 ### VS Code ###
 .vscode/
+
+# 운영체제 관련 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE/에디터 관련 파일
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.metadata/  # Eclipse 관련 메타데이터
+
+# 환경 변수 및 설정 파일
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+
+# 자바 컴파일 산출물
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle 관련 파일 및 디렉토리
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/cache/
+.gradle/daemon/
+.gradle/wrapper/
+.gradle/loom/
+
+# Maven 관련 디렉토리 (Maven 사용 시)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# Spring Boot 로그 및 임시 파일
+logs/
+*.log
+*.tmp
+*.pid
+hs_err_pid*
+
+# MySQL 덤프 파일 (백업 파일 등, 필요 시)
+*.sql
+*.dump
+
+# AWS 관련 민감 파일 (키, 인증서 등)
+.aws/
+credentials
+*.pem
+
+# Node.js 및 프론트엔드 관련 파일 (js, html, css, jquery, ajax 등)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+jspm_packages/
+
+# 빌드 산출물 및 임시 디렉토리
+dist/
+tmp/
+out/
+coverage/
+report/
+test-results/
+
+
+# 기타
+*.swp
+*.swo
+*.bak
+*.orig
