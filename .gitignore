@@ -39,6 +39,7 @@ desktop.ini
 *.iws
 .vscode/
 .metadata/  # Eclipse 관련 메타데이터
+.metadata
 
 # 환경 변수 및 설정 파일
 .env
