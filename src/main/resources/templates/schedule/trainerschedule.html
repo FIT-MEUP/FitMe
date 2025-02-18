@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/trainercalendar.css" th:href="@{/css/trainerschedule.css}">
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script src="../../static/js/trainerschedule.js" th:src="@{/js/trainerschedule.js}"></script>
+	   
+</head>
+
+<body>
+    <div id="page-container">
+        <!-- 왼쪽 사이드바: 회원관리, 일정관리, 초기화 버튼, 그리고 month view용 네모박스 -->
+        <div id="left-sidebar">
+            <button id="member-management">회원관리</button>
+            <button id="schedule-management" style="display:none;">일정관리</button>
+            <button id="reset-button" style="display:none;">초기화</button>
+            <!-- 나중에 글 적을 네모박스 -->
+            <div id="left-placeholder">여기에 나중에 글을 작성할 예정입니다.</div>
+        </div>
+        <!-- 중앙 캘린더 -->
+        <div id="calendar"></div>
+        <!-- 오른쪽 미니 캘린더 영역 -->
+        <div id="mini-calendar-container">
+            <div id="mini-calendar-wrapper">
+                <div id="mini-calendar"></div>
+            </div>
+            <div id="month-placeholder"></div>
+            <button id="pt-button">PT시작</button>
+        </div>
+    </div>
+</body>
+
+</html>
