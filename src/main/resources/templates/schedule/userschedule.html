@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <!-- FullCalendar 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="../../static/css/usercalendar.css" th:href="@{/css/userschedule.css}">
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script src="../../static/js/userschedule.js" th:src="@{/js/userschedule.js}"></script>
+  
+</head>
+
+<body>
+    <div id="page-container">
+        <!-- 왼쪽 사이드바: 항상 보이는 "식단 세시판", "운동 게시판" 버튼과 네모박스 -->
+        <div id="left-sidebar">
+            <button id="diet-board">식단 세시판</button>
+            <button id="exercise-board">운동 게시판</button>
+            <div id="left-placeholder">여기에 나중에 글을 작성할 예정입니다.</div>
+        </div>
+        <!-- 중앙 캘린더 -->
+        <div id="calendar"></div>
+        <!-- 오른쪽 미니 캘린더 영역 -->
+        <div id="mini-calendar-container">
+            <div id="mini-calendar-wrapper">
+                <div id="mini-calendar"></div>
+            </div>
+            <div id="month-placeholder"></div>
+            <!-- 기존의 pt-button과 새 pt-info 요소 -->
+            <button id="pt-button">PT시작</button>
+            <div id="pt-info">잔여 PT:</div>
+        </div>
+    </div>
+</body>
+
+</html>
