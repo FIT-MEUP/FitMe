@@ -19,4 +19,9 @@ public class TrainerService {
         trainers.forEach(trainer -> logger.info(trainer.toString())); // 개별 트레이너 정보 출력
         return trainers;
     }
+    // 트레이너 ID로 상세 정보 가져오기
+	public TrainerEntity getTrainerById(Long trainerId) {
+		return trainerRepository.findById(trainerId)
+				.orElseThrow(() -> new IllegalArgumentException("트레이너를 찾을 수 없습니다." + trainerId));
+	}
 }
