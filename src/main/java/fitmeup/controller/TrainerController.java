@@ -1,4 +1,4 @@
-package fitmeup.controller;
+/*package fitmeup.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,3 +21,71 @@ public class TrainerController {
         return "trainers"; // templates/trainers.html을 렌더링
     }
 }
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

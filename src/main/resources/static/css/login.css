@@ -1,70 +1,95 @@
+/* 화면 전체 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
+    background-color: #f8f8f8;
     font-family: Arial, sans-serif;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    height: 100vh;
 }
 
-.container {
-    width: 400px;
-    margin: 50px auto;
-    border: 1px solid #000;
-    padding: 20px;
-}
-
-.title {
-    font-size: 24px;
+/* 상단 로고 텍스트 */
+.login-title {
+    margin-top: 30px;
+    font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    color: #333;
 }
 
-.quote {
-    background-color: #f4a261;
-    padding: 10px;
+/* 명언 영역 */
+.login-quote {
+    margin-top: 10px;
     margin-bottom: 20px;
+    font-style: italic;
+    color: #666;
+    font-size: 1rem;
 }
 
-.login-box {
-    border: 1px solid #000;
-    padding: 15px;
-    display: inline-block;
+/* 로그인 컨테이너 (박스) */
+.login-container {
+    width: 350px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* 폼 요소 스타일 */
+#loginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#loginForm label {
     text-align: left;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
 }
 
-.login-box label {
-    display: inline-block;
-    width: 60px;
+#loginForm input {
+    margin-top: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* 로그인 버튼 */
+.login-btn {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #3366cc;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.login-btn:hover {
+    background-color: #244a99;
+}
+
+/* 하단 링크들 */
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.login-links a {
+    color: #3366cc;
+    text-decoration: none;
     font-weight: bold;
 }
 
-.login-box input {
-    width: 150px;
-    padding: 5px;
-    margin-bottom: 10px;
-}
-
-.login-box button {
-    display: block;
-    width: 100%;
-    padding: 8px;
-    background-color: #264653;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.links {
-    margin-top: 15px;
-}
-
-.links a {
-    text-decoration: none;
-}
-
-.links button {
-    width: 120px;
-    padding: 8px;
-    margin: 5px;
-    background-color: #264653;
-    color: white;
-    border: none;
-    cursor: pointer;
+.login-links a:hover {
+    text-decoration: underline;
 }
