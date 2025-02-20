@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>트레이너 목록</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .trainer-card { border: 1px solid #ddd; padding: 10px; margin: 10px; border-radius: 8px; }
+        img { max-width: 150px; display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>트레이너 목록</h1>
+    
+    <div th:each="trainer : ${trainers}" class="trainer-card">
+        <img th:src="${trainer.photo}" th:alt="${trainer.name}">
+        <h3 th:text="${trainer.name}"></h3>
+        <p>전문 분야: <span th:text="${trainer.specialization}"></span></p>
+        <p>경력: <span th:text="${trainer.experience}"></span>년</p>
+        <p>가격: <span th:text="${trainer.fee}"></span>원</p>
+        <p th:text="${trainer.bio}"></p>
+    </div>
+
+    <a href="/"><button>홈으로</button></a>
+</body>
+</html>
