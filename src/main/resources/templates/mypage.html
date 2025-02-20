@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="../static/css/mypage.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- 상단 메뉴 -->
+        <div class="header">
+            <button class="back-button">돌아가기</button>
+            <h1>마이페이지</h1>
+            <div class="header-right">
+                <button class="notification-button">🔔</button>
+                <button class="edit-button">수정</button>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 왼쪽: 캘린더 및 PT 이력 -->
+            <div class="sidebar">
+                <div class="date-display" id="date-display">2025.02</div>
+                <div class="calendar-navigation">
+                    <button class="prev-month-button" onclick="changeMonth(-1)">◀</button>
+                    <button class="next-month-button" onclick="changeMonth(1)">▶</button>
+                </div>
+                <table class="calendar" id="calendar"></table>
+                <button class="pt-history-button">PT 이력</button>
+            </div>
+
+            <!-- 오른쪽: 사용자 정보 및 그래프 -->
+            <div class="content">
+                <h2>최용재 님</h2>
+                <table class="user-info">
+                    <tr>
+                        <th>이름</th>
+                        <th>나이</th>
+                        <th>성별</th>
+                        <th>키</th>
+                        <th>체중</th>
+                        <th>BMI</th>
+                        <th>체지방률</th>
+                        <th>골격근</th>
+                        <th>기초대사량</th>
+                    </tr>
+                    <tr>
+                        <td id="name">최용재</td>
+                        <td id="age">25</td>
+                        <td id="gender">남성</td>
+                        <td id="height">175 cm</td>
+                        <td id="weight">70 kg</td>
+                        <td id="bmi">22.9</td>
+                        <td id="bodyFat">18%</td>
+                        <td id="muscleMass">30%</td>
+                        <td id="bmr">1600 kcal</td>
+                    </tr>
+                </table>
+
+
+
+                <!-- 그래프 버튼들 -->
+                <div class="graphs">
+                    <div class="graph" id="weight-graph" onclick="showGraph('weight')">체중 그래프</div>
+                    <div class="graph" id="muscle-graph" onclick="showGraph('muscle')">골격근 그래프</div>
+                    <div class="graph" id="bodyFat-graph" onclick="showGraph('fat')">체지방 그래프</div>
+                </div>
+
+                <!-- 그래프 표시 영역 -->
+                <div id="graph-container">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 연결 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let currentYear = new Date().getFullYear(); // 현재 연도
+        let currentMonth = new Date().getMonth(); // 현재 월 (0부터 시작, 0 = 1월)
+        let selectedDate = new Date(); // 기본 날짜는 현재 날짜
+        let chartInstance = null; // 차트 인스턴스를 저장할 전역 변수
+
+
+
+        // 달력 생성 함수
+        function createCalendar() {
+            const calendarElement = document.getElementById("calendar");
+            const dateDisplay = document.getElementById("date-display");
+
+            // 해당 월의 첫 날과 마지막 날 구하기
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 첫 번째 날의 요일 (0=일, 1=월, ...)
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // 해당 월의 일수
+
+            // 날짜 표시 (형식: 2025.02.19일 월요일)
+            const monthName = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+            const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+            const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+
+            // 선택된 날짜의 형식화 
+            const selectedDateText = `${currentYear}.${monthName[currentMonth]}`;
+            dateDisplay.textContent = selectedDateText;
+
+            // 달력 헤더 (요일 표시)
+            const headerRow = document.createElement("tr");
+            const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+            weekdays.forEach(day => {
+                const th = document.createElement("th");
+                th.textContent = day;
+                headerRow.appendChild(th);
+            });
+            calendarElement.innerHTML = ''; // 기존 달력 초기화
+            calendarElement.appendChild(headerRow);
+
+            // 달력 내용 (해당 월의 날짜 표시)
+            let currentDay = 1;
+            for (let i = 0; i < 6; i++) { // 최대 6주
+                const row = document.createElement("tr");
+                for (let j = 0; j < 7; j++) {
+                    const td = document.createElement("td");
+                    if (i === 0 && j < firstDay) {
+                        td.textContent = ''; // 첫 주의 빈 공간
+                    } else if (currentDay <= daysInMonth) {
+                        td.textContent = currentDay;
+
+                        // 현재의 날짜 값을 별도의 변수에 저장해서 캡처
+                        let day = currentDay;
+                        td.onclick = function () { onDateClick(day); }; // 날짜 클릭 이벤트
+
+
+                        if (currentDay === selectedDate.getDate()) {
+                            td.style.backgroundColor = '#c0e0ff'; // 선택된 날짜 하이라이트
+                        }
+                        currentDay++;
+                    }
+                    row.appendChild(td);
+                }
+                calendarElement.appendChild(row);
+            }
+
+        }
+        // 날짜 클릭 시 동작하는 함수
+        function onDateClick(day) {
+            // 선택된 날짜가 해당 월에 맞게 업데이트
+            selectedDate = new Date(currentYear, currentMonth, day);
+            console.log(selectedDate);
+            createCalendar(); // 달력 새로 그리기
+            updateUserInfo(); // 사용자 정보 업데이트
+        }
+
+        // 사용자 정보 업데이트 함수
+        function updateUserInfo() {
+            const dateDisplay = document.getElementById("date-display");
+            const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+            const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+            dateDisplay.textContent = `${currentYear}.${monthNames[currentMonth]} ${selectedDate.getDate()}일 (${dayOfWeek[selectedDate.getDay()]})`;
+        }
+
+        // 월 변경 함수
+        function changeMonth(offset) {
+            currentMonth += offset; // 다음/이전 월로 이동
+            if (currentMonth < 0) {
+                currentMonth = 11; // 1월로 돌아감
+                currentYear--; // 연도 감소
+            } else if (currentMonth > 11) {
+                currentMonth = 0; // 12월에서 1월로 이동
+                currentYear++; // 연도 증가
+            }
+            createCalendar(); // 달력 새로 그리기
+        }
+
+        // 그래프 선택 함수
+        function showGraph(type) {
+            const graphContainer = document.getElementById("graph-container");
+            const graphCanvas = document.getElementById("graphCanvas");
+            graphContainer.style.display = 'block'; // 그래프 영역 보이기
+            const ctx = graphCanvas.getContext('2d');
+            const data = generateGraphData(type); // 그래프 데이터 생성
+
+            // 기존에 생성된 차트가 있다면 제거
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+
+            // 새 차트 생성 및 전역 변수에 할당
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    },
+                },
+            });
+        }
+
+
+        // 선택된 그래프에 맞는 데이터 생성 함수
+        function generateGraphData(type) {
+            const labels = Array.from({ length: 31 }, (_, i) => `${i + 1} 일`);
+            let data = [];
+
+            switch (type) {
+                case 'weight':
+                    data = [60, 62, 64, 63, 65, 66, 67, 68, 69, 70,];
+                    break;
+                case 'muscle':
+                    data = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70];
+                    break;
+                case 'fat':
+                    data = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
+                    break;
+            }
+
+            return {
+                labels: labels,
+                datasets: [{
+                    label: type === 'weight' ? '체중' : type === 'muscle' ? '골격근' : '체지방',
+                    data: data,
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }]
+            };
+        }
+
+        // 페이지 로딩 시 달력 생성
+        createCalendar();
+    </script>
+</body>
+
+</html>

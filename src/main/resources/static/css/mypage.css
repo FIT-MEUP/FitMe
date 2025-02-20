@@ -1,0 +1,144 @@
+/* 기본 스타일 */
+
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f9;
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f4f4;
+  padding: 10px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header-right button {
+  margin-left: 10px;
+}
+
+.main-content {
+  display: flex;
+  margin-top: 30px;
+}
+
+.sidebar {
+  flex: 1;
+  margin-right: 30px;
+  padding: 20px;
+}
+
+.date-display {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.calendar-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.calendar-navigation button {
+  padding: 5px 10px;
+  font-size: 18px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.calendar-navigation button:hover {
+  background-color: #e0e0e0;
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar th,
+.calendar td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.calendar td {
+  cursor: pointer;
+}
+
+.calendar td:hover {
+  background-color: #e0e0e0;
+}
+
+.pt-history-button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.pt-history-button:hover {
+  background-color: #e0e0e0;
+}
+
+.content {
+  flex: 2;
+  padding: 20px;
+}
+
+.user-info {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-info th,
+.user-info td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.graphs {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.graph {
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.graph:hover {
+  background-color: #e0e0e0;
+}
+
+#graph-container {
+  margin-top: 30px;
+  width: 600px;
+  height: 400px;
+  display: none;
+}
+
+#graphCanvas {
+  width: 100%;
+  height: 100%;
+}
