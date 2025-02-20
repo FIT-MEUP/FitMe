@@ -1,0 +1,103 @@
+    body {
+            margin: 40px 10px;
+            padding: 0;
+            font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+            font-size: 14px;
+        }
+
+        /* 페이지 전체 3열: 왼쪽 사이드바, 중앙 캘린더, 오른쪽 미니 캘린더 */
+        #page-container {
+            display: flex;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        /* 왼쪽 사이드바: 항상 보이는 두 개의 버튼과 네모박스 */
+        #left-sidebar {
+            width: 15%;
+            padding: 10px;
+            background: #f1f1f1;
+            box-sizing: border-box;
+            margin-top: 60px;
+        }
+
+        #left-sidebar button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* 네모박스(나중에 글 입력 영역) – 높이를 250px로 설정 */
+        #left-placeholder {
+            width: 100%;
+            height: 250px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            padding: 5px;
+            display: block;
+        }
+
+        /* 중앙 캘린더 영역 */
+        #calendar {
+            width: 65%;
+            box-sizing: border-box;
+        }
+
+        /* 오른쪽 미니 캘린더 영역 */
+        #mini-calendar-container {
+            width: 20%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f8f9fa;
+            text-align: center;
+            box-sizing: border-box;
+            margin-top: 60px;
+        }
+
+        /* 미니 캘린더 wrapper */
+        #mini-calendar-wrapper {
+            margin-bottom: 10px;
+        }
+
+        /* month 뷰 placeholder – month view에서는 사용하지 않음 */
+        #month-placeholder {
+            width: 100%;
+            height: 300px;
+            border: 1px dashed #ccc;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* 기존 PT 버튼 */
+        #pt-button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            /* 가운데 정렬 */
+        }
+
+        /* 새로운 pt-info 네모박스 (month view 전용) */
+        #pt-info {
+            width: 80px;
+            height: 40px;
+            border: 1px solid #ccc;
+            display: none;
+            margin: 0 auto;
+            text-align: center;
+            line-height: 40px;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+
+        /* FullCalendar 헤더 툴바 커스터마이징 */
+        .fc-header-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
