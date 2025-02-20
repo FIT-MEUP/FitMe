@@ -1,4 +1,4 @@
-/*package fitmeup.controller;
+package fitmeup.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import fitmeup.dto.FoodDTO;
 import fitmeup.dto.MealDTO;
 import fitmeup.service.MealService;
 
@@ -22,7 +23,7 @@ public class MealController {
     private MealService mealService;
 
 	 // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
-    @GetMapping({ "", "/", "/meals" })
+    @GetMapping({"/meals" })
     public String getMealsPage(
             @RequestParam(name = "userId", required = false) Long userId,
             @RequestParam(name = "mealDate", required = false) String mealDate,
@@ -64,16 +65,18 @@ public class MealController {
             @RequestParam(name = "totalCalories") double totalCalories,
             @RequestParam(name = "totalCarbs") double totalCarbs,
             @RequestParam(name = "totalProtein") double totalProtein,
-            @RequestParam(name = "totalFat") double totalFat) {
+            @RequestParam(name = "totalFat") double totalFat,
+            @RequestParam(name = "mealFoodName", required = false) String mealFoodName) {
     	
         // ✅ userId가 null이면 기본값 설정 (로그인 기능이 없는 동안)
         if (userId == null) {
             userId = 1L; // 예제 기본값 (로그인 기능 구현 후 변경 필요)
         }
-
-        // ✅ mealDate가 비어 있을 경우 현재 날짜 사용
-        if (mealDate == null || mealDate.isEmpty()) {
-            mealDate = LocalDate.now().toString();
+        
+        // ✅ mealDate가 null이거나 비어있다면, URL에서 전달된 값을 사용 (자동으로 오늘 날짜로 설정하지 않음)
+        if (mealDate == null || mealDate.trim().isEmpty()) {
+            System.out.println("🚨 mealDate가 전달되지 않음, 기본값을 오늘로 설정");
+            mealDate = LocalDate.now().toString(); 
         }
 
         MealDTO mealDTO = new MealDTO();
@@ -83,6 +86,17 @@ public class MealController {
         mealDTO.setTotalCarbs(totalCarbs);
         mealDTO.setTotalProtein(totalProtein);
         mealDTO.setTotalFat(totalFat);
+        
+        if (mealFoodName != null && !mealFoodName.trim().isEmpty()) {
+            FoodDTO foodDTO = new FoodDTO();
+            foodDTO.setFoodName(mealFoodName);
+            foodDTO.setCalories(totalCalories);
+            foodDTO.setCarbs(totalCarbs);
+            foodDTO.setProtein(totalProtein);
+            foodDTO.setFat(totalFat);
+
+            mealDTO.setFoodList(Collections.singletonList(foodDTO));  // ✅ 음식 추가
+        }
 
         mealService.saveMeal(mealDTO);
         return "redirect:/meals?mealDate=" + mealDate; // ✅ FullCalendar에서 선택한 날짜로 이동
@@ -151,4 +165,3 @@ public class MealController {
         return "redirect:/meals?mealDate=" + mealDate; // ✅ 수정 후 해당 날짜 페이지로 리디렉트
     }
 }
-*/
