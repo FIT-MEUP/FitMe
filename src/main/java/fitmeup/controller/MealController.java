@@ -22,7 +22,7 @@ public class MealController {
     private MealService mealService;
 
     // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
-    @GetMapping({ "", "/", "/meals" })
+    @GetMapping("/meals")
     public String getMealsPage(
             @RequestParam(name = "userId", required = false) Long userId,
             @RequestParam(name = "mealDate", required = false) String mealDate,

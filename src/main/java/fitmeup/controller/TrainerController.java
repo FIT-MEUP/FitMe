@@ -1,4 +1,4 @@
-/*package fitmeup.controller;
+package fitmeup.controller;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-public class TrainerController {
+public class TrainerController { //메인루트화면 김준우 작업 중인
 
     private final TrainerService trainerService;
 
-    @GetMapping({"/", "/trainers"})
+    @GetMapping({"/", "", "/trainers"})
     public String trainers(Model model) {
         List<TrainerEntity> trainers = trainerService.getAllTrainers();
         model.addAttribute("trainers", trainers);
@@ -32,9 +32,6 @@ public class TrainerController {
         return "trainer-detail"; // 상세 페이지 템플릿
     }
 }
-
-*/
-
 
 
 
