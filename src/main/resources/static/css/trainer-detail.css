@@ -1,0 +1,81 @@
+@charset "UTF-8";
+
+/* 트레이너 상세 프로필 페이지 스타일 */
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.profile-card {
+    width: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+/* 프로필 사진 */
+.profile-photo-container {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* 가로 스크롤 가능 */
+    padding: 10px;
+}
+
+.profile-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
+/* 트레이너 정보 */
+.trainer-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.trainer-specialization,
+.trainer-experience,
+.trainer-bio,
+.trainer-fee {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* 버튼 스타일 */
+.button-group {
+    margin-top: 20px;
+}
+
+.back-button,
+.appointment-button {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back-button {
+    background-color: #6c757d;
+    color: white;
+}
+
+.appointment-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.appointment-button:hover {
+    background-color: #0056b3;
+}
