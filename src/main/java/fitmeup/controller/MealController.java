@@ -1,4 +1,4 @@
-/*package fitmeup.controller;
+package fitmeup.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -18,10 +18,10 @@ import fitmeup.service.MealService;
 @Controller
 public class MealController {
 
-	@Autowired
+    @Autowired
     private MealService mealService;
 
-	 // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
+    // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
     @GetMapping({ "", "/", "/meals" })
     public String getMealsPage(
             @RequestParam(name = "userId", required = false) Long userId,
@@ -65,7 +65,7 @@ public class MealController {
             @RequestParam(name = "totalCarbs") double totalCarbs,
             @RequestParam(name = "totalProtein") double totalProtein,
             @RequestParam(name = "totalFat") double totalFat) {
-    	
+
         // ✅ userId가 null이면 기본값 설정 (로그인 기능이 없는 동안)
         if (userId == null) {
             userId = 1L; // 예제 기본값 (로그인 기능 구현 후 변경 필요)
@@ -87,41 +87,46 @@ public class MealController {
         mealService.saveMeal(mealDTO);
         return "redirect:/meals?mealDate=" + mealDate; // ✅ FullCalendar에서 선택한 날짜로 이동
     }
- /*   
-	@PostMapping("/meals")
-	public String saveMeal(
-	        @RequestParam(name = "userId", required = false) Long userId,
-	        @RequestParam(name = "mealDate", required = false) String mealDate,
-	        @RequestParam(name = "totalCalories") int totalCalories,
-	        @RequestParam(name = "totalCarbs") int totalCarbs,
-	        @RequestParam(name = "totalProtein") int totalProtein,
-	        @RequestParam(name = "totalFat") int totalFat) {
-
-	    MealDTO mealDTO = new MealDTO();
-	    mealDTO.setUserId(userId);
-
-	    // ✅ mealDate가 비어있다면 오늘 날짜로 설정
-	    LocalDate parsedDate;
-	    try {
-	        parsedDate = (mealDate == null || mealDate.isEmpty()) ? LocalDate.now() : LocalDate.parse(mealDate);
-	    } catch (DateTimeParseException e) {
-	        // ✅ 날짜 형식 오류 발생 시 예외 처리 (기본값: 오늘 날짜)
-	        parsedDate = LocalDate.now();
-	    }
-	    mealDTO.setMealDate(parsedDate);
-
-	    mealDTO.setTotalCalories(totalCalories);
-	    mealDTO.setTotalCarbs(totalCarbs);
-	    mealDTO.setTotalProtein(totalProtein);
-	    mealDTO.setTotalFat(totalFat);
-
-	    mealService.saveMeal(mealDTO);
-	    return "redirect:/meals?mealDate=" + parsedDate.toString(); // ✅ 날짜가 정상적으로 적용되도록 수정
-	}
-  */ 
-	
-
-
+    /*
+     * @PostMapping("/meals")
+     * public String saveMeal(
+     * 
+     * @RequestParam(name = "userId", required = false) Long userId,
+     * 
+     * @RequestParam(name = "mealDate", required = false) String mealDate,
+     * 
+     * @RequestParam(name = "totalCalories") int totalCalories,
+     * 
+     * @RequestParam(name = "totalCarbs") int totalCarbs,
+     * 
+     * @RequestParam(name = "totalProtein") int totalProtein,
+     * 
+     * @RequestParam(name = "totalFat") int totalFat) {
+     * 
+     * MealDTO mealDTO = new MealDTO();
+     * mealDTO.setUserId(userId);
+     * 
+     * // ✅ mealDate가 비어있다면 오늘 날짜로 설정
+     * LocalDate parsedDate;
+     * try {
+     * parsedDate = (mealDate == null || mealDate.isEmpty()) ? LocalDate.now() :
+     * LocalDate.parse(mealDate);
+     * } catch (DateTimeParseException e) {
+     * // ✅ 날짜 형식 오류 발생 시 예외 처리 (기본값: 오늘 날짜)
+     * parsedDate = LocalDate.now();
+     * }
+     * mealDTO.setMealDate(parsedDate);
+     * 
+     * mealDTO.setTotalCalories(totalCalories);
+     * mealDTO.setTotalCarbs(totalCarbs);
+     * mealDTO.setTotalProtein(totalProtein);
+     * mealDTO.setTotalFat(totalFat);
+     * 
+     * mealService.saveMeal(mealDTO);
+     * return "redirect:/meals?mealDate=" + parsedDate.toString(); // ✅ 날짜가 정상적으로
+     * 적용되도록 수정
+     * }
+     */
 
     // ✅ 특정 식단 삭제 (FullCalendar 적용)
     @PostMapping("/meals/delete")
@@ -136,8 +141,8 @@ public class MealController {
         }
         return "redirect:/meals"; // ✅ 기본 화면으로 이동
     }
-    
- // ✅ 특정 식단 수정 (수정 페이지 혹은 모달에서 호출)
+
+    // ✅ 특정 식단 수정 (수정 페이지 혹은 모달에서 호출)
     @PostMapping("/meals/update")
     public String updateMeal(
             @RequestParam(name = "mealId") Long mealId,
@@ -151,4 +156,3 @@ public class MealController {
         return "redirect:/meals?mealDate=" + mealDate; // ✅ 수정 후 해당 날짜 페이지로 리디렉트
     }
 }
-*/
