@@ -4,21 +4,28 @@
     <meta charset="UTF-8">
     <title>트레이너 상세 프로필</title>
 
-    <!-- Bootstrap 제외하고 내 CSS만 사용 -->
+    <!-- 내 CSS -->
     <link rel="stylesheet" th:href="@{/css/trainer-detail.css}">
 </head>
 
 <body>
     <div class="profile-container">
         <div class="profile-card">
-             <!-- 모든 사진을 반복해서 표시 -->
-    		<img th:each="photo : ${trainer.photos}" th:src="${photo}" alt="Trainer Image" class="profile-photo">
-            <h1 class="trainer-name" th:text="${trainer.name}">트레이너 이름</h1>
+            <!-- 트레이너 모든 사진을 표시 -->
+            <div class="photo-gallery">
+                <img th:each="photo : ${trainer.photos}" th:src="${photo.photoUrl}" alt="Trainer Image" class="profile-photo">
+            </div>
+
+            <!-- 트레이너 이름 (userName) -->
+            <h1 class="trainer-name" th:text="${trainer.user.userName}">트레이너 이름</h1>
+
             <p class="trainer-specialization"><strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span></p>
             <p class="trainer-experience"><strong>경력:</strong> <span th:text="${trainer.experience}"></span> 년</p>
             <p class="trainer-bio"><strong>소개:</strong> <span th:text="${trainer.bio}"></span></p>
-            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원</p>
-            
+            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> 
+                <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원
+            </p>
+
             <div class="button-group">
                 <a href="/trainers" class="back-button">목록으로 돌아가기</a>
                 <button class="appointment-button">상담 신청하기</button>
