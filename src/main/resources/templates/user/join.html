@@ -3,19 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fit:me 회원가입</title>
-    <link rel="stylesheet" href="../../static/css/join.css" th:href="@{/css/join.css}">
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/join.css}">
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script defer th:src="@{/js/join.js}"></script>
 </head>
 <body>
-
-    <div class="title">Fit:me 회원가입</div>
-
     <div class="container">
-        <div class="button-group">
-            <a th:href="@{/register/member}" class="member-btn">회원</a>
-            <a th:href="@{/register/trainer}" class="trainer-btn">트레이너</a>
-        </div>
-    </div>
+        <h1>회원가입</h1>
+        <p class="required-info">* 필수 입력 항목</p>
 
+        <form id="joinForm">
+            <label for="userId">아이디 *</label>
+            <input type="text" id="userId" name="userId" required>
+
+            <label for="password">비밀번호 *</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="name">이름 *</label>
+            <input type="text" id="name" name="name" required>
+
+            <label>성별 *</label>
+            <input type="radio" id="male" name="gender" value="Male" checked> 남
+            <input type="radio" id="female" name="gender" value="Female"> 여
+
+            <label for="birthdate">생년월일 *</label>
+            <input type="date" id="birthdate" name="birthdate" required>
+
+            <label for="email">이메일 *</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="contact">연락처 *</label>
+            <input type="text" id="contact" name="contact" required>
+
+            <button type="submit">가입</button>
+        </form>
+    </div>
 </body>
 </html>

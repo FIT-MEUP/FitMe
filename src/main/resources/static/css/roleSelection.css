@@ -1,0 +1,55 @@
+/* 기본 스타일 초기화 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 배경, 폰트 설정 */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+/* 상단 로고 영역 */
+.header {
+  background-color: #ffffff;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+.header h1 {
+  margin: 0;
+}
+
+/* 버튼 전체를 감싸는 컨테이너 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;  /* 버튼 간 간격 */
+  margin-top: 60px;
+}
+
+/* 버튼 공통 스타일 */
+.role-button {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;           /* 수직 중앙 정렬용 */
+  align-items: center;     /* 수직 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  cursor: pointer;
+}
+
+/* 회원 버튼 (파란색) */
+.role-button.user {
+  background-color: #3366cc;
+}
+
+/* 트레이너 버튼 (주황색) */
+.role-button.trainer {
+  background-color: #f4a460;
+}
