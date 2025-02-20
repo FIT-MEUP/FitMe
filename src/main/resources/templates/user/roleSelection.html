@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Fit:me 회원가입 유형 선택</title>
+  <link rel="stylesheet" th:href="@{/css/roleSelection.css}">
+</head>
+<body>
+  <div class="container">
+    <h1>Fit:me</h1>
+    <p>가입할 회원 유형을 선택하세요.</p>
+    <div class="button-container">
+      <!-- 회원 버튼: /user/join?role=ROLE_USER 로 이동 -->
+      <a th:href="@{/user/join(role='ROLE_USER')}" class="role-button user">회원</a>
+      <!-- 트레이너 버튼: /user/trainerJoin?role=ROLE_TRAINER 로 이동 -->
+      <a th:href="@{/user/trainerJoin(role='ROLE_TRAINER')}" class="role-button trainer">트레이너</a>
+    </div>
+  </div>
+</body>
+</html>

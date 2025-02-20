@@ -1,4 +1,4 @@
-package fitmeup.controller;
+/*package fitmeup.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -151,3 +151,4 @@ public class MealController {
         return "redirect:/meals?mealDate=" + mealDate; // ✅ 수정 후 해당 날짜 페이지로 리디렉트
     }
 }
+*/

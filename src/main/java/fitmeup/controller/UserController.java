@@ -7,33 +7,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
+	// 로그인 페이지 GET 요청
 	@GetMapping("/login")
-	public String login(@RequestParam(name = "error", required = false) String error,
-			@RequestParam(name = "errMessage", required = false) String errMessage, Model model) {
+	public String loginForm() {
+		// "user/login" 템플릿(HTML)만 반환
+		return "user/login";
+	}
 
-		model.addAttribute("error", error);
-		model.addAttribute("errMessage", errMessage); // 핸들러 처리에 의해 가져온 메시지
-
-		return "/user/login";
+	// roleSelection 페이지 요청
+	@GetMapping("/roleSelection")
+	public String roleSelection() {
+		// "user/roleSelection.html" 템플릿을 반환
+		return "user/roleSelection";
 	}
 
 	/**
-	 * 회원 가입 화면 요청
-	 * 
-	 * @return
-	 */
-
-	@GetMapping("/join")
-	public String join() {
-		return "user/join";
-	}
-
+     * 회원용 회원가입 화면 요청
+     * URL 예: /user/join?role=ROLE_USER
+     */
+    @GetMapping("/join")
+    public String userJoin(@RequestParam(name="role", required=false, defaultValue="ROLE_USER") String role,
+                           Model model) {
+        // 전달된 role 값을 뷰에 전달 (회원용이면 ROLE_USER)
+        model.addAttribute("role", role);
+        return "user/userJoin"; // templates/user/userJoin.html
+    }
 }
