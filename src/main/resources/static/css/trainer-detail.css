@@ -79,3 +79,25 @@
 .appointment-button:hover {
     background-color: #0056b3;
 }
+
+/* 사진 갤러리 스타일 */
+.photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.photo-wrapper {
+    flex: 1 1 45%;
+    max-width: 200px;
+    text-align: center;
+}
+
+.profile-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+

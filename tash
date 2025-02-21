@@ -1,0 +1,52 @@
+[33mcommit 00596b793e929af4f1bf08e365a57f11cf6b3b24[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/trainer-selection[m[33m, [m[1;31morigin/feature/trainer-selection[m[33m)[m
+Author: KIMJUNWOO <wnsdn897@gmail.com>
+Date:   Thu Feb 20 12:23:35 2025 +0900
+
+    [fix] conflict 해결을 위한 TraiinerController 제작
+
+[33mcommit b5b0d91a8ad8cd898d688111b863e85258ad59ad[m
+Author: KIMJUNWOO <wnsdn897@gmail.com>
+Date:   Wed Feb 19 18:22:47 2025 +0900
+
+    [feat] 트레이너 상세 프로필 구현/사진 관리 개선
+    
+    - TrainerController.java 삭제
+    - index.html 삭제
+    - MainController.java 수정: 메인페이지(트레이너 목록)
+    - TrainerService.java 수정
+    - trainers.html 수정
+    - trainers.css 추가
+    - trainer-detail.html 추가
+    - trainer-detail.css 추가
+
+[33mcommit 1491e23b7b808431b9a53d5130836cb664f5cb96[m
+Author: KIMJUNWOO <wnsdn897@gmail.com>
+Date:   Mon Feb 17 17:21:26 2025 +0900
+
+    [feat] 트레이너 목록
+    
+    - TrainerController.java 생성
+    - TrainerEntity.java 생성
+    - TrainerRepository.java 생성
+    - TrainerService.java 생성
+    - trainers.html 생성
+
+[33mcommit 72fd842ab28447a1fc23781d94712b3d27833971[m[33m ([m[1;31morigin/feature/frontend-setup[m[33m, [m[1;31morigin/feature/exercise-record[m[33m)[m
+Author: Comet0326 <heasung458@gmail.com>
+Date:   Thu Feb 13 15:08:45 2025 +0900
+
+    [chore] 프로젝트 초기 설정
+    
+    프로젝트 초기 설정
+
+[33mcommit 29420e25c8951a31050f6c6b97f3c915ab69ef7e[m
+Author: Comet0326 <heasung458@gmail.com>
+Date:   Thu Feb 13 14:51:47 2025 +0900
+
+    init
+
+[33mcommit 3ff17e24597cff0dec3354fefc2173194ae043bc[m
+Author: Comet0326 <heasung458@gmail.com>
+Date:   Thu Feb 13 14:44:08 2025 +0900
+
+    Initial commit
