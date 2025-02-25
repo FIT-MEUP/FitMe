@@ -42,6 +42,13 @@
                         <div class="col-md-4 mb-3" th:each="meal : ${meals}">
                             <div class="card">
                                 <div class="card-body">
+
+                                    <!-- ✅ 식단 이미지 표시 -->
+                                    <th:block th:if="${meal.savedFileName != null}">
+                                        <img th:src="@{/uploads/meal/{filename}(filename=${meal.savedFileName})}"
+                                            class="img-fluid rounded mb-3" alt="식단 이미지">
+                                    </th:block>
+
                                     <h5 class="card-title" th:text="${meal.mealDate}"></h5>
                                     <p class="card-text">칼로리: <span th:text="${meal.totalCalories}"></span> kcal</p>
                                     <p class="card-text">탄수화물: <span th:text="${meal.totalCarbs}"></span> g</p>
@@ -50,8 +57,7 @@
 
                                     <p class="fw-bold">📌 포함된 음식:</p>
                                     <ul>
-                                        <li th:each="food : ${meal.foodList}"
-                                            th:text="${food.foodName} + ' (' + food.calories + ' kcal)'"></li>
+                                        <li th:each="food : ${meal.foodList}" th:text="${food.foodName}"></li>
                                     </ul>
 
                                     <!-- ✅ 수정 버튼 추가 -->
@@ -88,7 +94,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="/meals">
+                    <form method="post" action="/meals" enctype="multipart/form-data">
                         <input type="hidden" name="userId" th:value="${userId}">
                         <input type="hidden" id="selectedMealDate" name="mealDate" th:value="${selectedDate}" required>
 
@@ -108,6 +114,10 @@
 
                         <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
                             data-bs-target="#foodModal">음식 추가</button>
+
+                        <!-- ✅ 파일 업로드 필드 추가 -->
+                        <label>식단 사진 업로드</label>
+                        <input type="file" name="file" class="form-control mt-2">
 
                         <button type="submit" class="btn btn-primary mt-3 w-100">저장</button>
                     </form>
