@@ -121,4 +121,17 @@ public class MealService {
 		    mealRepository.save(meal); // ✅ 변경된 내용 저장
 		
 	}
+    
+    // 파일 처리 
+    @Transactional
+    public void updateMealImage(Long mealId, String savedFileName, String originalFileName) {
+        MealEntity meal = mealRepository.findById(mealId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 식단을 찾을 수 없습니다."));
+
+        meal.setSavedFileName(savedFileName);
+        meal.setOriginalFileName(originalFileName);
+
+        mealRepository.save(meal);
+    }
+
 }
