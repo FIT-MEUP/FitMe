@@ -10,8 +10,10 @@ import fitmeup.entity.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
 	
 	 // ✅ 이메일로 사용자 찾기 (로그인 또는 중복 체크)
+
     Optional<UserEntity> findByUserEmail(String email);
 
     // ✅ 연락처로 사용자 찾기 (중복 체크)

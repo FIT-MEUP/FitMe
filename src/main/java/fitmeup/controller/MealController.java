@@ -27,14 +27,15 @@ import fitmeup.service.MealService;
 @Controller
 public class MealController {
 
-	@Autowired
+    @Autowired
     private MealService mealService;
 	
 	@Value("${spring.servlet.multipart.location}") // 파일 저장 경로 가져오기
     private String uploadDir;
 
+
 	 // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
-    @GetMapping("/meals" )
+    @GetMapping("/meals")
     public String getMealsPage(
             @RequestParam(name = "userId", required = false) Long userId,
             @RequestParam(name = "mealDate", required = false) String mealDate,
@@ -73,6 +74,7 @@ public class MealController {
     public String saveMeal(
             @RequestParam(name = "userId", required = false) Long userId, // 🔥 FullCalendar 적용: userId 유지
             @RequestParam(name = "mealDate") String mealDate,
+
             @RequestParam(name = "totalCalories" , required = false, defaultValue = "0") Double totalCalories,
             @RequestParam(name = "totalCarbs", required = false, defaultValue = "0") Double totalCarbs,
             @RequestParam(name = "totalProtein", required = false, defaultValue = "0") Double totalProtein,
@@ -80,6 +82,7 @@ public class MealController {
             @RequestParam(name = "mealFoodName", required = false) String mealFoodName,
             @RequestParam(name = "file", required = false) MultipartFile file) {
     	
+
         // ✅ userId가 null이면 기본값 설정 (로그인 기능이 없는 동안)
         if (userId == null) {
             userId = 1L; // 예제 기본값 (로그인 기능 구현 후 변경 필요)
@@ -128,7 +131,6 @@ public class MealController {
         return "redirect:/meals?mealDate=" + mealDate; // ✅ FullCalendar에서 선택한 날짜로 이동
     }
 
-
     // ✅ 특정 식단 삭제 (FullCalendar 적용)
     @PostMapping("/meals/delete")
     public String deleteMeal(
@@ -142,8 +144,10 @@ public class MealController {
         }
         return "redirect:/meals"; // ✅ 기본 화면으로 이동
     }
+
     
  // 특정 식단 수정 (수정 페이지 혹은 모달에서 호출)
+
     @PostMapping("/meals/update")
     public String updateMeal(
             @RequestParam(name = "mealId") Long mealId,

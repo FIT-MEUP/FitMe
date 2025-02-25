@@ -3,25 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>트레이너 상세 프로필</title>
+    
+        <!-- Bootstrap 포함 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-    <!-- Bootstrap 제외하고 내 CSS만 사용 -->
+    <!-- 내 CSS -->
     <link rel="stylesheet" th:href="@{/css/trainer-detail.css}">
 </head>
 
 <body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">FitMeUp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <a href="/login" class="btn btn-outline-primary">로그인</a>
+            </div>
+        </div>
+    </nav>
+    
     <div class="profile-container">
         <div class="profile-card">
-             <!-- 모든 사진을 반복해서 표시 -->
-    		<img th:each="photo : ${trainer.photos}" th:src="${photo}" alt="Trainer Image" class="profile-photo">
-            <h1 class="trainer-name" th:text="${trainer.name}">트레이너 이름</h1>
+            <!-- 트레이너 모든 사진을 표시 -->
+            <div class="photo-gallery">
+                <img th:each="photo : ${trainer.photos}" th:src="${photo.photoUrl}" alt="Trainer Image" class="profile-photo">
+            </div>
+
+            <!-- 트레이너 이름 (userName) -->
+            <h1 class="trainer-name" th:text="${trainer.user.userName}">트레이너 이름</h1>
+
             <p class="trainer-specialization"><strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span></p>
             <p class="trainer-experience"><strong>경력:</strong> <span th:text="${trainer.experience}"></span> 년</p>
             <p class="trainer-bio"><strong>소개:</strong> <span th:text="${trainer.bio}"></span></p>
-            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원</p>
-            
+            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> 
+                <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원
+            </p>
+
             <div class="button-group">
                 <a href="/trainers" class="back-button">목록으로 돌아가기</a>
-                <button class="appointment-button">상담 신청하기</button>
+				<!-- 로그인하지 않은 사용자 -->
+				<button th:if="${not loggedIn}" 
+				        class="appointment-button"
+				        onclick="location.href='/login'">
+				    로그인 후 신청 가능
+				</button>
+				
+				<!-- 로그인한 사용자 & 상담 미신청 -->
+				<button th:if="${loggedIn and not applied}" 
+				        class="appointment-button"
+				        onclick="applyForSession()">
+				    상담 신청하기
+				</button>
+				
+				<!-- 로그인한 사용자 & 상담 신청 완료 -->
+				<button th:if="${loggedIn and applied}" 
+				        class="appointment-button" disabled>
+				    신청 완료
+				</button>
             </div>
         </div>
     </div>
