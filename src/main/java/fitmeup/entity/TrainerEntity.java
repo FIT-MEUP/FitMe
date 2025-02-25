@@ -8,16 +8,20 @@ import java.math.BigDecimal;
 public class TrainerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "trainer_id")
     private Long trainerId;
 
-    @Column(nullable = false)
-    private String name;
+    //트레이너 이름 등등 가져오기
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    private UserEntity userEntity;
 
     @Column(nullable = false)
     private String specialization;
 
-    @Column(nullable = false)
-    private String photo;
+    // @Column(nullable = false)
+    // private String photo;
+    
 
     @Column(nullable = false)
     private int experience; // 🚨 누락된 필드 추가
@@ -35,14 +39,11 @@ public class TrainerEntity {
     public Long getTrainerId() { return trainerId; }
     public void setTrainerId(Long trainerId) { this.trainerId = trainerId; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
     public String getSpecialization() { return specialization; }
     public void setSpecialization(String specialization) { this.specialization = specialization; }
 
-    public String getPhoto() { return photo; }
-    public void setPhoto(String photo) { this.photo = photo; }
+    // public String getPhoto() { return photo; }
+    // public void setPhoto(String photo) { this.photo = photo; }
 
     public int getExperience() { return experience; }
     public void setExperience(int experience) { this.experience = experience; }
