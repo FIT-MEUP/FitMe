@@ -1,3 +1,4 @@
+/*
 package fitmeup.entity;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import lombok.*;
 @Entity
 @Table(name = "trainer_schedule")
 public class TrainerScheduleEntity {
-/*
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trainer_schedule_id")
@@ -38,5 +39,6 @@ public class TrainerScheduleEntity {
             .trainerId(Trainer.builder().trainerId(dto.getTrainerId()).build())
             .build();
     }
-    */
+    
 }
+*/
