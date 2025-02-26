@@ -1,48 +1,40 @@
 package fitmeup.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@Table(name="trainer_application")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "trainer_application")
 public class TrainerApplicationEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long applicationId;
+    private Long applicationId; // 신청 ID (PK)
 
-    @Column(name = "status", nullable = false)
-    private String status;
-    
-    @Column(name = "applied_at", nullable = false)
-    private String appliedAt;
-    
-    @Column(name = "response_at", nullable = false)
-    private String responseAt;
-    
-    
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private UserEntity userEntity;
-    
     @ManyToOne
-    @JoinColumn(name = "trainer_id", referencedColumnName = "trainer_id")
-    private TrainerEntity trainerEntity;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user; // 상담 신청한 사용자 (FK)
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id", nullable = false)
+    private TrainerEntity trainer; // 상담 대상 트레이너 (FK)
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.PENDING; // 신청 상태 (기본값: Pending)
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime appliedAt = LocalDateTime.now(); // 신청 시간 (기본값: 현재 시간)
+
+    private LocalDateTime responseAt; // 승인/거절 응답 시간
+
+    public enum Status {
+        PENDING, APPROVED, REJECTED
+    }
 }

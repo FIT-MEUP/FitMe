@@ -12,15 +12,47 @@
 </head>
 
 <body>
-    <h1>트레이너 목록</h1>
-    
-    <div class="trainer-container">
-        <div class="trainer-card" th:each="trainer : ${trainers}">
-        	<img th:src="${trainer.photos[0]}" alt="Trainer Image" class="trainer-thumbnail">
-            <h2 th:text="${trainer.name}">트레이너 이름</h2>
-			<p th:text="${trainer.specialization}"></p>
-			<a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" class="btn btn-primary">View Details</a>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">FitMeUp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <a href="/login" class="btn btn-outline-primary">로그인</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 광고 배너 -->
+        <div class="text-center mb-4">
+            <a href="https://www.advertisement-url.com" target="_blank">
+                <img src="/images/ad-banner.jpg" alt="광고 배너" class="img-fluid">
+            </a>
+        </div>
+
+        <h1 class="text-center mb-4">트레이너 목록</h1>
+        
+        <div class="row">
+            <div class="col-md-4" th:each="trainer : ${trainers}">
+                <div class="card trainer-card">
+                    <!-- 대표 이미지 (첫 번째 사진) or 기본 이미지 -->
+                    <img th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}" 
+                         alt="Trainer Image" class="card-img-top trainer-thumbnail">
+                    
+                    <div class="card-body text-center">
+                        <h5 class="card-title" th:text="${trainer.user.userName}">트레이너 이름</h5>
+                        <p class="card-text" th:text="${trainer.specialization}">전문 분야</p>
+                        <a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
