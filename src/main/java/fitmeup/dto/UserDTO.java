@@ -1,7 +1,6 @@
 package fitmeup.dto;
 
 import java.time.LocalDate;
-
 import fitmeup.entity.UserEntity;
 import lombok.*;
 
@@ -11,42 +10,47 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-    private Long userId; // 회원 고유 ID
+    private Long userId;
     private String userName;
-    private String userGender; // String 변환
+    private String userGender;
     private LocalDate userBirthdate;
     private String userEmail;
     private String userContact;
-    private String role; // 역할 (User, Trainer, Admin)
+    private String role;
+    private TrainerDTO trainerInfo;
+    
+    // raw 비밀번호를 입력받음; joinProc()에서 암호화하여 Entity로 변환
+    private String passwordHash;
 
-    // ✅ 트레이너 정보 추가 (TrainerDTO)
-    private TrainerDTO trainerInfo; // 트레이너일 경우만 포함
-
-    // ✅ Entity → DTO 변환
+    /**
+     * Entity → DTO 변환
+     */
     public static UserDTO fromEntity(UserEntity userEntity, TrainerDTO trainerDTO) {
         return UserDTO.builder()
                 .userId(userEntity.getUserId())
                 .userName(userEntity.getUserName())
-                .userGender(userEntity.getUserGender().name()) // Enum → String 변환
+                .userGender(userEntity.getUserGender().name())
                 .userBirthdate(userEntity.getUserBirthdate())
                 .userEmail(userEntity.getUserEmail())
                 .userContact(userEntity.getUserContact())
-                .role(userEntity.getRole().name()) // Enum → String 변환
-                .trainerInfo(trainerDTO) // 트레이너 정보 연결
+                .role(userEntity.getRole().name())
+                .trainerInfo(trainerDTO)
                 .build();
     }
 
-    // ✅ DTO → Entity 변환
-    public UserEntity toEntity(String passwordHash) {
+    /**
+     * DTO → Entity 변환 (암호화된 비밀번호 전달)
+     */
+    public UserEntity toEntity(String encryptedPassword) {
         return UserEntity.builder()
                 .userId(this.userId)
-                .passwordHash(passwordHash) // 비밀번호 저장
+                .passwordHash(encryptedPassword)
                 .userName(this.userName)
-                .userGender(UserEntity.Gender.valueOf(this.userGender)) // String → Enum 변환
+                .userGender(UserEntity.Gender.valueOf(this.userGender))
                 .userBirthdate(this.userBirthdate)
                 .userEmail(this.userEmail)
                 .userContact(this.userContact)
-                .role(UserEntity.Role.valueOf(this.role)) // String → Enum 변환
+                .role(UserEntity.Role.valueOf(this.role))
                 .build();
     }
 }
