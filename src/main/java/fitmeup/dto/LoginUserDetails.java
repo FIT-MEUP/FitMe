@@ -23,8 +23,7 @@ public class LoginUserDetails implements UserDetails {
     private static final long serialVersionUID = 1L;
     
     private Long userId;
-    // 암호화된 비밀번호를 담는 필드 이름 통일: passwordHash
-    private String passwordHash;
+    private String password;
     private String userName;
     private String email;
     private String roles;
@@ -36,7 +35,7 @@ public class LoginUserDetails implements UserDetails {
     
     @Override
     public String getPassword() {
-        return this.passwordHash;
+        return this.password;
     }
     
     @Override
@@ -47,7 +46,7 @@ public class LoginUserDetails implements UserDetails {
     public static LoginUserDetails toDTO(UserEntity entity) {
         return LoginUserDetails.builder()
                 .userId(entity.getUserId())
-                .passwordHash(entity.getPasswordHash())
+                .password(entity.getPassword())
                 .userName(entity.getUserName())
                 .email(entity.getUserEmail())
                 .roles(entity.getRole().name())

@@ -25,8 +25,8 @@ public class UserEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "password_hash", length = 255)
-    private String passwordHash;
+    @Column(name = "password", length = 255)
+    private String password;
 
     @Column(name = "user_name", nullable = false, length = 100)
     private String userName;
@@ -47,6 +47,11 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+    
+    // ✅ isOnline 필드 추가
+    @Builder.Default
+    @Column(name = "is_online", nullable = false)
+    private Boolean isOnline = false;  // 기본값 false (오프라인)
 
     public enum Gender {
         Male, Female, Other

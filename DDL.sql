@@ -178,3 +178,7 @@ CREATE TABLE comment (
     FOREIGN KEY (workout_id) REFERENCES workout(workout_id) ON DELETE CASCADE,
     FOREIGN KEY (meal_id) REFERENCES meal(meal_id) ON DELETE CASCADE
 );
+
+ALTER TABLE user ADD COLUMN is_online BOOLEAN DEFAULT FALSE;
+ALTER TABLE user CHANGE COLUMN password_hash password VARCHAR(255) NOT NULL;
+

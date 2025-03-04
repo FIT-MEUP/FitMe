@@ -11,33 +11,37 @@
     <link rel="stylesheet" th:href="@{/css/login.css}">
 </head>
 <body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">FitMeUp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <!-- 로그인 페이지이므로 보통은 로그인 버튼 대신 다른 메뉴 제공 -->
-                <a href="/" class="btn btn-outline-primary">홈으로</a>
-            </div>
-        </div>
-    </nav>
+    <div class="container text-center mt-5">
+        <h1>Fit:me</h1>
+        
+        <!-- 명언 영역 -->
+        <div class="alert alert-warning mt-3">명언</div>
 
-    <div class="container mt-4">
-        <h2 class="text-center">로그인</h2>
-        <form th:action="@{/user/loginProc}" method="post">
-            <div class="mb-3">
-                <label for="userEmail" class="form-label">이메일</label>
-                <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="이메일을 입력하세요" required>
-            </div>
-            <div class="mb-3">
-                <label for="passwordHash" class="form-label">비밀번호</label>
-                <input type="password" class="form-control" id="passwordHash" name="passwordHash" placeholder="비밀번호를 입력하세요" required>
-            </div>
-            <button type="submit" class="btn btn-primary">로그인</button>
-        </form>
+        <!-- 로그인 폼 -->
+        <div class="border p-4 mt-3" style="display: inline-block; background: #f8f9fa;">
+            <form th:action="@{/user/loginProc}" method="post">
+                <div class="mb-3 row">
+                    <label for="userEmail" class="col-form-label col-sm-3">아이디</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="이메일을 입력하세요" required>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="password" class="col-form-label col-sm-3">비밀번호</label>
+                    <div class="col-sm-9">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">로그인</button>
+            </form>
+        </div>
+
+        <!-- 추가 기능 버튼 -->
+        <div class="mt-3">
+            <a th:href="@{/user/roleSelection}" class="btn btn-outline-primary me-2">회원가입</a>
+            <a href="#" class="btn btn-outline-secondary me-2">아이디 찾기</a>
+            <a href="#" class="btn btn-outline-secondary">비밀번호 찾기</a>
+        </div>
     </div>
     
     <!-- Bootstrap JS -->

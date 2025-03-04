@@ -21,40 +21,41 @@ public class UserService {
      * DB에 전달 받은 userId가 존재하는지 확인
      */
     public boolean existId(Long userId) {
-        boolean result = userRepository.existsById(userId);
-        log.info("아이디 존재여부: {}", result);
-        return !result;
+        return userRepository.existsById(userId); // 불필요한 반전(!) 제거
     }
 
     /**
      * 회원 가입 처리
-     * 회원가입 폼에서 입력받은 raw 비밀번호는 UserDTO의 passwordHash 필드에 담긴다고 가정.
+     * 회원가입 폼에서 입력받은 raw 비밀번호는 UserDTO의 password 필드에 담긴다고 가정.
      */
     public boolean joinProc(UserDTO userDTO) {
-        // raw 비밀번호를 암호화
-        String encryptedPassword = bCryptPasswordEncoder.encode(userDTO.getPasswordHash());
-        // DTO → Entity 변환 시 암호화된 비밀번호 전달
+        // 이미 가입된 이메일인지 확인
+        if (userRepository.findByUserEmail(userDTO.getUserEmail()).isPresent()) {
+            return false; // 중복 이메일 방지
+        }
+        
+        // 비밀번호 암호화
+        String encryptedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
+        
+        // DTO → Entity 변환 및 저장
         UserEntity entity = userDTO.toEntity(encryptedPassword);
         userRepository.save(entity);
-        // 저장된 엔티티의 userId가 생성되었는지 확인하여 성공 여부 반환
+        
         return entity.getUserId() != null;
     }
 
     /**
      * 입력한 비밀번호가 맞는지 확인
      */
-    public UserDTO pwdCheck(Long userId, String userPwd) {
+    public boolean pwdCheck(Long userId, String userPwd) {
         Optional<UserEntity> temp = userRepository.findById(userId);
         if (temp.isPresent()) {
             UserEntity entity = temp.get();
-            String encodedPwd = entity.getPasswordHash();
-            boolean result = bCryptPasswordEncoder.matches(userPwd, encodedPwd);
-            if (result) {
-                return UserDTO.fromEntity(entity, null);
-            }
+            return bCryptPasswordEncoder.matches(userPwd, entity.getPassword()); // true/false 반환
         }
-        return null;
+        return false; // 아이디가 없으면 false 반환
     }
+
 
     /**
      * DB에서 개인정보 수정 처리 (비밀번호와 이메일만 수정)
@@ -65,10 +66,9 @@ public class UserService {
         Optional<UserEntity> temp = userRepository.findById(id);
         if (temp.isPresent()) {
             UserEntity entity = temp.get();
-            String encodedPwd = bCryptPasswordEncoder.encode(userDTO.getPasswordHash());
-            String email = userDTO.getUserEmail();
-            entity.setPasswordHash(encodedPwd);
-            entity.setUserEmail(email);
+            entity.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+            entity.setUserEmail(userDTO.getUserEmail());
+            userRepository.save(entity); // 변경사항 저장 추가!
         }
     }
 }
