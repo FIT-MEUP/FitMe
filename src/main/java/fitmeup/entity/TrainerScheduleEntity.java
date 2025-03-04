@@ -1,7 +1,9 @@
-/*
+
 package fitmeup.entity;
 
 import java.time.LocalDateTime;
+
+import fitmeup.dto.TrainerScheduleDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,4 +43,3 @@ public class TrainerScheduleEntity {
     }
     
 }
-*/

@@ -1,11 +1,15 @@
 package fitmeup.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import fitmeup.entity.AnnouncementEntity;
 import fitmeup.entity.UserEntity;
 import fitmeup.entity.UserEntity.Role;
 import fitmeup.repository.AdminRepository;
+import fitmeup.repository.AnnouncementRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final AnnouncementRepository announcementRepository; // 
 
     /**
      * 승인된 트레이너 목록 (role이 Trainer)
@@ -73,12 +78,13 @@ public class AdminService {
         adminRepository.deleteById(userId);
     }
 
-    /**
-     * 공지사항 업데이트 (구현 보류)
-     */
-    @Transactional
+  @Transactional
     public void updateNotice(String noticeText) {
-        // TODO: Announcement 엔티티를 이용하여 DB에 저장하는 로직 구현
-        System.out.println("공지사항 업데이트: " + noticeText);
+        AnnouncementEntity announcement = AnnouncementEntity.builder()
+            .authorId(1L) // 관리자 계정 ID (변경 가능)
+            .content(noticeText)
+            .createdAt(LocalDateTime.now())
+            .build();
+        announcementRepository.save(announcement);
     }
 }

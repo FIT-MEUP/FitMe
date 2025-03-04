@@ -180,4 +180,6 @@ CREATE TABLE comment (
 );
 
 ALTER TABLE user ADD COLUMN is_online BOOLEAN DEFAULT FALSE;
-ALTER TABLE user CHANGE COLUMN password_hash password VARC;
+ALTER TABLE user CHANGE COLUMN password_hash password VARCHAR(255) NOT NULL;
+
+

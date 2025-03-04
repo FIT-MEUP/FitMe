@@ -27,13 +27,14 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
             .requestMatchers(
                 "/",
+                "/user/login",
                 "/board/boardList",
                 "/board/boardDetail",
                 "/board/download",
                 "/user/join",
                 "/user/idCheck",
                 "/user/joinProc",
-                "/user/login",
+                
                 "/images/**",
                 "/js/**",
                 "/css/**").permitAll()
@@ -48,7 +49,7 @@ public class SecurityConfig {
             .loginPage("/user/login")
             .loginProcessingUrl("/user/loginProc")
             .usernameParameter("userEmail")
-            .passwordParameter("passwordHash")
+            .passwordParameter("password")
             .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler)
             .permitAll());
