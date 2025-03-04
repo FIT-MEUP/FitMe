@@ -1,35 +1,46 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fit:me 로그인</title>
-    <!-- CSS, JS 경로 (Thymeleaf 사용) -->
+    <title>로그인</title>
+    
+    <!-- Bootstrap 포함 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- 내 CSS -->
     <link rel="stylesheet" th:href="@{/css/login.css}">
-    <script th:src="@{/js/login.js}" defer></script>
 </head>
 <body>
-    <h1 class="login-title">Fit:me</h1>
-    <div class="login-quote">명언</div>
-
-    <div class="login-container">
-        <!-- 로그인 폼 -->
-        <form id="loginForm">
-            <label for="userId">아이디</label>
-            <input type="text" id="userId" name="userId" required>
-
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit" class="login-btn">로그인</button>
-        </form>
-
-        <!-- 아래 링크들 -->
-        <div class="login-links">
-            <a th:href="@{/user/roleSelection}">회원가입</a>
-            <a th:href="@{/user/findId}">아이디 찾기</a>
-            <a th:href="@{/user/findPwd}">비밀번호 찾기</a>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">FitMeUp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <!-- 로그인 페이지이므로 보통은 로그인 버튼 대신 다른 메뉴 제공 -->
+                <a href="/" class="btn btn-outline-primary">홈으로</a>
+            </div>
         </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="text-center">로그인</h2>
+        <form th:action="@{/user/loginProc}" method="post">
+            <div class="mb-3">
+                <label for="userEmail" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="이메일을 입력하세요" required>
+            </div>
+            <div class="mb-3">
+                <label for="passwordHash" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="passwordHash" name="passwordHash" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <button type="submit" class="btn btn-primary">로그인</button>
+        </form>
     </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
