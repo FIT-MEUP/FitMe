@@ -112,6 +112,7 @@
                         <h6 class="mt-3">📌 추가된 음식 목록</h6>
                         <ul id="selectedFoodsList" class="list-group mt-2"></ul>
 
+                        <!--음식 추가 버튼 -->
                         <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
                             data-bs-target="#foodModal">음식 추가</button>
 
@@ -167,9 +168,36 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- 음식 검색 입력 필드 -->
                     <input type="text" id="foodSearch" class="form-control mt-2" placeholder="음식 이름 검색">
                     <button type="button" class="btn btn-primary mt-2" id="searchFoodButton">검색</button>
                     <div id="foodResults" class="mt-2"></div>
+
+                    <!-- ✅ 선택한 음식 정보 -->
+                    <h6 class="mt-3"> 선택한 음식</h6>
+                    <input type="text" id="selectedFoodName" class="form-control" placeholder="선택한 음식" readonly>
+                    <input type="text" id="standardWeight" class="form-control mt-2" placeholder="표준중량: -" readonly>
+                    <input type="number" id="userWeight" class="form-control mt-2" placeholder="먹은 g 수 입력" min="1">
+
+                    <h6 class="mt-3"> 자동 계산된 영양소</h6>
+                    <label>총 칼로리</label>
+                    <input type="text" id="foodCalories" class="form-control mt-2" placeholder="총 칼로리" readonly>
+
+                    <label>탄수화물</label>
+                    <input type="text" id="foodCarbs" class="form-control mt-2" placeholder="탄수화물" readonly>
+
+                    <label>단백질</label>
+                    <input type="text" id="foodProtein" class="form-control mt-2" placeholder="단백질" readonly>
+
+                    <label>지방</label>
+                    <input type="text" id="foodFat" class="form-control mt-2" placeholder="지방" readonly>
+
+
+                    <!-- ✅ 음식 추가 버튼 -->
+                    <button type="button" class="btn btn-primary w-100 mt-2" id="addFoodButton">추가</button>
+
+
+                    <button type="submit" class="btn btn-primary mt-3 w-100">저장</button>
                 </div>
             </div>
         </div>

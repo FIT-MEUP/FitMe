@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>트레이너 회원가입</title>
+    
+    <!-- Bootstrap 포함 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- 내 CSS -->
+    <link rel="stylesheet" th:href="@{/css/join.css}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">트레이너 회원가입</h2>
+        <form th:action="@{/trainer/joinProc}" method="post">
+            <div class="mb-3">
+                <label for="userEmail" class="form-label">이메일 *</label>
+                <input type="email" class="form-control" id="userEmail" name="userEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호 *</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="userName" class="form-label">이름 *</label>
+                <input type="text" class="form-control" id="userName" name="userName" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">성별 *</label><br>
+                <input type="radio" name="userGender" value="Male" required> 남
+                <input type="radio" name="userGender" value="Female"> 여
+            </div>
+            <div class="mb-3">
+                <label for="userBirthdate" class="form-label">생년월일 *</label>
+                <input type="date" class="form-control" id="userBirthdate" name="userBirthdate" required>
+            </div>
+            <div class="mb-3">
+                <label for="userContact" class="form-label">연락처 *</label>
+                <input type="text" class="form-control" id="userContact" name="userContact" required>
+            </div>
+
+            <!-- 트레이너 추가 정보 -->
+            <div class="mb-3">
+                <label for="specialization" class="form-label">전문 분야 *</label>
+                <input type="text" class="form-control" id="specialization" name="specialization" required>
+            </div>
+            <div class="mb-3">
+                <label for="experience" class="form-label">경력 (년) *</label>
+                <input type="number" class="form-control" id="experience" name="experience" required>
+            </div>
+            <div class="mb-3">
+                <label for="bio" class="form-label">자기소개 *</label>
+                <textarea class="form-control" id="bio" name="bio" rows="3" required></textarea>
+            </div>
+
+            <input type="hidden" name="role" value="Trainer">
+            <button type="submit" class="btn btn-warning w-100">트레이너 가입</button>
+            <a href="/" class="btn btn-secondary w-100 mt-2">취소</a>
+        </form>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
