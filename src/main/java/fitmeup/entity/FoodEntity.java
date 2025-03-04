@@ -44,4 +44,7 @@ public class FoodEntity {
 
     @Column(nullable = false)
     private double fat;  // 지방 (g)
+    
+    @Column(nullable = true)
+    private String standardWeight; // 표준 중량 (예: "100g")
 }

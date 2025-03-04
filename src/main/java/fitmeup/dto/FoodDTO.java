@@ -23,6 +23,8 @@ public class FoodDTO {
     private double protein;    // 단백질 (g)
     private double fat;        // 지방 (g)
     
+    private String standardWeight; // 표준 중량
+    
  // ✅ Entity → DTO 변환
     public static FoodDTO fromEntity(FoodEntity foodEntity) {
         return FoodDTO.builder()
@@ -33,6 +35,9 @@ public class FoodDTO {
                 .carbs(foodEntity.getCarbs())
                 .protein(foodEntity.getProtein())
                 .fat(foodEntity.getFat())
+                
+                .standardWeight(foodEntity.getStandardWeight()) // 표준중량 추가 
+                .mealId(foodEntity.getMeal() != null ? foodEntity.getMeal().getMealId() : null) //  Null 체크 추가
                 .build();
     }
 
@@ -45,6 +50,10 @@ public class FoodDTO {
                 .carbs(this.carbs)
                 .protein(this.protein)
                 .fat(this.fat)
+                
+                .standardWeight(this.standardWeight) // 표준중량 추가 
+               
+               
                 .build();
     }
 }
