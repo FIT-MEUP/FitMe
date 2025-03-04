@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.TrainerScheduleDTO;
+import fitmeup.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ public class ScheduleController {
 
 	private final ScheduleService scheduleService;
 	
-	@GetMapping({"/",""})
+	@GetMapping({"/TrainerSchedule"})
 	public String index(Model model) {
 		System.out.println("dddddd");
 	    List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll();

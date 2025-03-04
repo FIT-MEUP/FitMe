@@ -20,7 +20,7 @@ public class UserDTO {
     private TrainerDTO trainerInfo;
     
     // raw 비밀번호를 입력받음; joinProc()에서 암호화하여 Entity로 변환
-    private String passwordHash;
+    private String password;
 
     /**
      * Entity → DTO 변환
@@ -44,7 +44,7 @@ public class UserDTO {
     public UserEntity toEntity(String encryptedPassword) {
         return UserEntity.builder()
                 .userId(this.userId)
-                .passwordHash(encryptedPassword)
+                .password(encryptedPassword)
                 .userName(this.userName)
                 .userGender(UserEntity.Gender.valueOf(this.userGender))
                 .userBirthdate(this.userBirthdate)
