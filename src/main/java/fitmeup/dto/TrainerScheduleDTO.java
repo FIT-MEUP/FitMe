@@ -1,4 +1,4 @@
-/*package fitmeup.dto;
+package fitmeup.dto;
 
 import java.time.LocalDateTime;
 
@@ -46,4 +46,3 @@ public class TrainerScheduleDTO {
 	    }
 
 }
-*/
