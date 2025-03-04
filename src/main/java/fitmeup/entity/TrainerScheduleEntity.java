@@ -3,9 +3,9 @@
 
 package fitmeup.entity;
 
-import fitmeup.dto.TrainerScheduleDTO;
 import java.time.LocalDateTime;
 
+import fitmeup.dto.TrainerScheduleDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
