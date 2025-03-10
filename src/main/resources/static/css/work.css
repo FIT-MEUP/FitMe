@@ -1,0 +1,97 @@
+/* 전체 레이아웃 스타일 */
+.container {
+    display: flex;
+    gap: 20px;
+}
+
+/* 왼쪽 사이드바 스타일 */
+.col-md-3 {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* 검색 입력창과 버튼을 가로로 정렬 */
+.search-container {
+    display: flex;
+    gap: 5px;
+    /* 🔥 검색창과 버튼 사이 간격 줄이기 */
+    align-items: center;
+}
+
+/* 검색 입력창 스타일 */
+#search {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    flex: 1;
+    /* 🔥 입력창이 가능한 공간을 차지하도록 조정 */
+}
+
+/* 검색 버튼 스타일 */
+#searchBtn {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    /* 🔥 내부 여백 최적화 */
+    white-space: nowrap;
+}
+
+/* 댓글 섹션 스타일 */
+.comment-section {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 💬 댓글 제목 스타일 조정 */
+.comment-section h4 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* 댓글 목록 스타일 */
+#commentList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+/* 댓글 항목 스타일 */
+#commentList li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9rem;
+}
+
+/* ✅ 댓글 입력창과 버튼을 같은 줄에 정렬 */
+.comment-input-container {
+    display: flex;
+    gap: 8px;
+    /* 🔥 입력창과 버튼 간격 */
+    align-items: center;
+    width: 100%;
+}
+
+/* 댓글 입력창 스타일 */
+#commentInput {
+    flex: 1;
+    /* 🔥 가능한 최대 너비 차지 */
+    min-height: 40px;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+/* ✅ 댓글 작성 버튼을 입력창 옆에 배치 */
+#commentBtn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* 🔥 버튼 크기 유지 */
+}

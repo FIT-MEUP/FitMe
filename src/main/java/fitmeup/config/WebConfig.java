@@ -1,17 +1,26 @@
 package fitmeup.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	@Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) { //Spring MVC에게 "특정 경로의 파일들을 정적 리소스로 제공해!" 라고 설정하는 부분
-        registry.addResourceHandler("/uploads/meal/**") // 브라우저에서 /uploads/meal/파일명 경로로 요청이 오면,
-        												// Spring Boot가 실제 파일이 있는 위치에서 찾아서 제공
-                .addResourceLocations("file:///c:/uploadPath/");
-        //실제 파일이 저장된 로컬 경로(c:/uploadPath/) 와 연결
+	
+	@Value("${upload.meal.path}")
+    private String mealUploadDir;
+    
+    @Value("${upload.video.path}")
+    private String videoUploadDir;
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/meal/**")
+                .addResourceLocations("file:///" + mealUploadDir);
+        
+        registry.addResourceHandler("/uploads/video/**")
+                .addResourceLocations("file:///" + videoUploadDir);
     }
 
 }

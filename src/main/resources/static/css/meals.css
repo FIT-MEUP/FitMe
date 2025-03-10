@@ -32,3 +32,38 @@
      margin: 0 auto;
      /* 🔹 중앙 정렬 */
  }
+
+ .comment-section {
+     margin-top: 20px;
+     padding: 15px;
+     background: #f9f9f9;
+     border-radius: 8px;
+ }
+
+ #mealCommentList {
+     list-style: none;
+     padding: 0;
+ }
+
+ #mealCommentList li {
+     padding: 10px;
+     border-bottom: 1px solid #ddd;
+ }
+
+ #mealCommentList li:last-child {
+     border-bottom: none;
+ }
+
+ .selected-date {
+     background-color: #ffeb99 !important;
+     /* 🔥 선택한 날짜의 배경색 */
+     border-radius: 5px;
+ }
+
+ .fc-daygrid-day {
+     transition: background-color 0.2s ease-in-out;
+ }
+
+ .fc-daygrid-day:hover {
+     background-color: #f0f0f0;
+ }

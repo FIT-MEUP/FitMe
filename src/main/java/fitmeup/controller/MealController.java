@@ -27,14 +27,13 @@ import fitmeup.service.MealService;
 @Controller
 public class MealController {
 
-    @Autowired
+	@Autowired
     private MealService mealService;
 	
-	@Value("${spring.servlet.multipart.location}") // 파일 저장 경로 가져오기
+    @Value("${upload.meal.path}") // 수정됨: 음식 게시판 업로드 경로로 변경
     private String uploadDir;
 
-
-	 // ✅ 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
+	 // 특정 회원의 특정 날짜 식단 조회 (mealDate를 기준으로 조회)
     @GetMapping("/meals")
     public String getMealsPage(
             @RequestParam(name = "userId", required = false) Long userId,
@@ -43,7 +42,7 @@ public class MealController {
 
         List<MealDTO> meals = Collections.emptyList(); // ✅ 기본값: 빈 리스트
 
-        // ✅ mealDate가 없거나 잘못된 형식이면 오늘 날짜로 설정
+        // mealDate가 없거나 잘못된 형식이면 오늘 날짜로 설정
         LocalDate selectedDate;
         if (mealDate == null || mealDate.isEmpty()) {
             selectedDate = LocalDate.now();
@@ -66,15 +65,14 @@ public class MealController {
         model.addAttribute("selectedDate", selectedDate.toString()); // ✅ 선택한 날짜 유지
         model.addAttribute("userId", userId);
 
-        return "meals"; // ✅ Thymeleaf에서 meals.html을 렌더링
+        return "meals"; // Thymeleaf에서 meals.html을 렌더링
     }
 
-    // ✅ 새로운 식단 추가 (FullCalendar 적용)
+    // 새로운 식단 추가 (FullCalendar 적용)
     @PostMapping("/meals")
     public String saveMeal(
-            @RequestParam(name = "userId", required = false) Long userId, // 🔥 FullCalendar 적용: userId 유지
+            @RequestParam(name = "userId", required = false) Long userId, // FullCalendar 적용: userId 유지
             @RequestParam(name = "mealDate") String mealDate,
-
             @RequestParam(name = "totalCalories" , required = false, defaultValue = "0") Double totalCalories,
             @RequestParam(name = "totalCarbs", required = false, defaultValue = "0") Double totalCarbs,
             @RequestParam(name = "totalProtein", required = false, defaultValue = "0") Double totalProtein,
@@ -82,13 +80,12 @@ public class MealController {
             @RequestParam(name = "mealFoodName", required = false) String mealFoodName,
             @RequestParam(name = "file", required = false) MultipartFile file) {
     	
-
-        // ✅ userId가 null이면 기본값 설정 (로그인 기능이 없는 동안)
+        // userId가 null이면 기본값 설정 (로그인 기능이 없는 동안)
         if (userId == null) {
             userId = 1L; // 예제 기본값 (로그인 기능 구현 후 변경 필요)
         }
         
-        // ✅ mealDate가 null이거나 비어있다면, URL에서 전달된 값을 사용 (자동으로 오늘 날짜로 설정하지 않음)
+        // mealDate가 null이거나 비어있다면, URL에서 전달된 값을 사용 (자동으로 오늘 날짜로 설정하지 않음)
         if (mealDate == null || mealDate.trim().isEmpty()) {
             System.out.println("🚨 mealDate가 전달되지 않음, 기본값을 오늘로 설정");
             mealDate = LocalDate.now().toString(); 
@@ -131,7 +128,8 @@ public class MealController {
         return "redirect:/meals?mealDate=" + mealDate; // ✅ FullCalendar에서 선택한 날짜로 이동
     }
 
-    // ✅ 특정 식단 삭제 (FullCalendar 적용)
+
+    // 특정 식단 삭제 (FullCalendar 적용)
     @PostMapping("/meals/delete")
     public String deleteMeal(
             @RequestParam(name = "mealId") Long mealId,
@@ -144,10 +142,8 @@ public class MealController {
         }
         return "redirect:/meals"; // ✅ 기본 화면으로 이동
     }
-
     
  // 특정 식단 수정 (수정 페이지 혹은 모달에서 호출)
-
     @PostMapping("/meals/update")
     public String updateMeal(
             @RequestParam(name = "mealId") Long mealId,
@@ -169,26 +165,26 @@ public class MealController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(name = "userId", required = false) Long userId) {
 
-        // ✅ 회원 시스템이 없으므로 임시로 userId 설정 (로그인 기능 적용 후 변경)
+        // 회원 시스템이 없으므로 임시로 userId 설정 (로그인 기능 적용 후 변경)
         if (userId == null) {
-            userId = 1L; // 🔥 회원 기능 추가 전까지 임시 사용자 ID 사용
+            userId = 1L; // 회원 기능 추가 전까지 임시 사용자 ID 사용
         }
 
         try {
-            // 1️⃣ 파일 유효성 검사 (확장자 체크)
+            // 파일 유효성 검사 (확장자 체크)
             String originalFileName = file.getOriginalFilename();
             if (originalFileName == null || (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".png"))) {
                 return ResponseEntity.badRequest().body("지원하는 파일 형식은 JPG, PNG만 가능합니다.");
             }
 
-            // 2️⃣ 고유한 파일명 생성 (UUID 사용)
+            // 고유한 파일명 생성 (UUID 사용)
             String savedFileName = UUID.randomUUID() + "_" + originalFileName;
 
-            // 3️⃣ 파일 저장 (c:/uploadPath/ 에 저장)
+            // 파일 저장 (c:/uploadPath/ 에 저장)
             File destinationFile = new File(Paths.get(uploadDir, savedFileName).toString());
             file.transferTo(destinationFile);
 
-            // 4️⃣ DB에 파일 정보 저장 (MealService 사용)
+            // DB에 파일 정보 저장 (MealService 사용)
             mealService.updateMealImage(id, savedFileName, originalFileName);
 
             return ResponseEntity.ok("파일 업로드 성공: " + savedFileName);
