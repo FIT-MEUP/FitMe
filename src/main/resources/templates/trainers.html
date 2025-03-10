@@ -1,59 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>트레이너 목록</title>
-    
-    <!-- Bootstrap 포함 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    
-    <!-- 내 CSS -->
-    <link rel="stylesheet" th:href="@{/css/trainers.css}">
+<meta charset="UTF-8">
+<title>트레이너 목록</title>
+
+<!-- Bootstrap 포함 -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<!-- 내 CSS -->
+<link rel="stylesheet" th:href="@{/css/trainers.css}">
 </head>
 
 <body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">FitMeUp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
-                <a th:href="@{/user/login}" class="btn btn-outline-primary">로그인</a>
-            </div>
-        </div>
-    </nav>
+	<!-- 네비게이션 바 -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<div class="container">
+			<a class="navbar-brand" href="/">FitMeUp</a>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse justify-content-end"
+				id="navbarNav">
+				<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
 
-    <div class="container mt-4">
-        <!-- 광고 배너 -->
-        <div class="text-center mb-4">
-            <a href="https://www.advertisement-url.com" target="_blank">
-                <img src="/images/ad-banner.jpg" alt="광고 배너" class="img-fluid">
-            </a>
-        </div>
+				<div id="user">
+					<ul>
+						<!-- 인증하지 않은 사용자 -->
+						<th:block sec:authorize="isAnonymous()">
+							<li><a th:href="@{/user/login}">로그인</a></li>
+						</th:block>
 
-        <h1 class="text-center mb-4">트레이너 목록</h1>
-        
-        <div class="row">
-            <div class="col-md-4" th:each="trainer : ${trainers}">
-                <div class="card trainer-card">
-                    <!-- 대표 이미지 (첫 번째 사진) or 기본 이미지 -->
-                    <img th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}" 
-                         alt="Trainer Image" class="card-img-top trainer-thumbnail">
-                    
-                    <div class="card-body text-center">
-                        <h5 class="card-title" th:text="${trainer.user.userName}">트레이너 이름</h5>
-                        <p class="card-text" th:text="${trainer.specialization}">전문 분야</p>
-                        <a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+						<!-- 인증한 사용자  -->
+						<th:block sec:authorize="isAuthenticated()">
+							<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
+						</th:block>
+					</ul>
+				</div>
+				</nav>
+			
+	
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<div class="container mt-4">
+		<!-- 광고 배너 -->
+		<div class="text-center mb-4">
+			<a href="https://www.advertisement-url.com" target="_blank"> <img
+				src="/images/ad-banner.jpg" alt="광고 배너" class="img-fluid">
+			</a>
+		</div>
+
+		<h1 class="text-center mb-4">트레이너 목록</h1>
+
+		<div class="row">
+			<div class="col-md-4" th:each="trainer : ${trainers}">
+				<div class="card trainer-card">
+					<!-- 대표 이미지 (첫 번째 사진) or 기본 이미지 -->
+					<img
+						th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
+						alt="Trainer Image" class="card-img-top trainer-thumbnail">
+
+					<div class="card-body text-center">
+						<h5 class="card-title" th:text="${trainer.user.userName}">트레이너
+							이름</h5>
+						<p class="card-text" th:text="${trainer.specialization}">전문 분야</p>
+						<a th:href="@{/trainer/{id}(id=${trainer.trainerId})}"
+							class="btn btn-primary">View Details</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

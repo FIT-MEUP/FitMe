@@ -1,5 +1,7 @@
 package fitmeup.controller;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +31,7 @@ public class UserController {
         return "user/roleSelection"; // templates/user/roleSelection.html
     }
 
-    @GetMapping("/join")
+    @GetMapping("/userJoin")
     public String userJoin(@RequestParam(name="role", required=false, defaultValue="User") String role,
                            Model model) {
         model.addAttribute("role", role);
@@ -45,7 +47,32 @@ public class UserController {
             return "redirect:/user/join?error"; // 실패 시 다시 회원가입 페이지로
         }
     }
+        @GetMapping("/pendingTrainer")
+        public String pendingTrainer() {
+            return "user/pendingTrainer"; // templates/user/pendingTrainer.html
+        }
+        
+        @GetMapping("/findId")
+        public String findIdForm() {
+            return "user/findId"; // 아이디 찾기 페이지 이동 (GET 요청)
+        }
 
+        
+        @PostMapping("/findId")
+        public String findId(@RequestParam("userName") String userName,
+                             @RequestParam("userContact") String userContact,
+                             Model model) {
+            String email = userService.findUserEmail(userName, userContact);
 
+            if ("존재하지 않는 회원정보입니다.".equals(email)) {
+                model.addAttribute("error", email); // 에러 메시지
+            } else {
+                model.addAttribute("email", email); // 정상 이메일
+            }
+
+            return "user/findId";
+        }
+        
 }
+    
 

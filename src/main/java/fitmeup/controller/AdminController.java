@@ -23,31 +23,31 @@ public class AdminController {
         return "admin/adminpage";
     }
 
-    @DeleteMapping("/deleteTrainer/{id}")
+    @DeleteMapping("/deleteTrainer/{userId}")
     @ResponseBody
-    public String deleteTrainer(@PathVariable Long id) {
-        adminService.deleteTrainer(id);
+    public String deleteTrainer(@PathVariable("userId") Long userId) {
+        adminService.deleteTrainer(userId);
         return "{\"message\": \"트레이너 삭제 완료\"}";
     }
 
-    @PutMapping("/approveTrainer/{id}")
+    @PutMapping("/approveTrainer/{userId}")
     @ResponseBody
-    public String approveTrainer(@PathVariable Long id) {
-        adminService.approveTrainer(id);
+    public String approveTrainer(@PathVariable("userId") Long userId) {
+        adminService.approveTrainer(userId);
         return "{\"message\": \"트레이너 승인 완료\"}";
     }
 
-    @DeleteMapping("/rejectTrainer/{id}")
+    @DeleteMapping("/rejectTrainer/{userId}")
     @ResponseBody
-    public String rejectTrainer(@PathVariable Long id) {
-        adminService.rejectTrainer(id);
+    public String rejectTrainer(@PathVariable("userId") Long userId) {
+        adminService.rejectTrainer(userId);
         return "{\"message\": \"트레이너 승인 거절 완료\"}";
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/deleteUser/{userId}")
     @ResponseBody
-    public String deleteUser(@PathVariable Long id) {
-        adminService.deleteUser(id);
+    public String deleteUser(@PathVariable("userId") Long userId) {
+        adminService.deleteUser(userId);
         return "{\"message\": \"회원 삭제 완료\"}";
     }
 

@@ -26,15 +26,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
             .requestMatchers(
-                "/",
-                "/user/login",
-                "/board/boardList",
-                "/board/boardDetail",
-                "/board/download",
-                "/user/join",
-                "/user/idCheck",
-                "/user/joinProc",
-                
+                "/**",
+                "/user/**",
+                "/trainer/**",
                 "/images/**",
                 "/js/**",
                 "/css/**").permitAll()
@@ -57,7 +51,7 @@ public class SecurityConfig {
         // 로그아웃 설정
         http.logout((auth) -> auth
             .logoutUrl("/user/logout")
-            .logoutSuccessHandler(logoutHandler)
+            .logoutSuccessUrl("/")
             .invalidateHttpSession(true)
             .clearAuthentication(true));
         
