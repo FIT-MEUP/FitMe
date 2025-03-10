@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     start: info.startStr,
                     end: info.endStr,
                     allDay: info.allDay,
+					trainerId:trainerId,
                     isNew: true,
                     editable: false
                 };

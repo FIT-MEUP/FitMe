@@ -7,22 +7,39 @@
   <link rel="stylesheet" href="../../static/css/trainercalendar.css" th:href="@{/css/trainerschedule.css}">
   <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
   
-  <!-- 서버에서 전달된 list를 calendarEvents 변수에 할당 (Thymeleaf 인라인 JS 사용) -->
 <script th:inline="javascript">
-var calendarEvents = [
+var calendarEventsFromList = [
   /*[# th:each="event, iterStat : ${list}" ]*/
   {
     id: [[${event.trainerScheduleId}]],
-    title: [[${'PT Session - ' + (event.trainerId != null ? event.trainerId : 'No Trainer')}]],
+    title:'이용가능시간' ,
     start: [[${#temporals.format(event.startTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
     end:   [[${#temporals.format(event.endTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
     editable: false
   }[(${iterStat.last ? '' : ','})]
   /*[/]*/
 ];
-console.log(calendarEvents);
-</script>
 
+var calendarEventsUserList = [
+  /*[# th:each="event, iterStat : ${userlist}" ]*/
+  {
+    userId: [[${event.userId}]],
+    title: [[${' ' + (event.userId != null ? event.userName : 'No User')}]],
+    start: [[${#temporals.format(event.startTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
+    end:   [[${#temporals.format(event.endTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
+    editable: false,
+    backgroundColor: '#800080'  // 보라색 지정 (필요시 textColor 등도 추가 가능)
+  }[(${iterStat.last ? '' : ','})]
+  /*[/]*/
+];
+
+var calendarEvents = calendarEventsFromList.concat(calendarEventsUserList);
+console.log("Merged calendarEvents:", calendarEvents);
+</script>
+<script th:inline="javascript">
+    var trainerId = [[${trainerId}]];
+    // trainerId가 1이라면, 자바스크립트 변수 trainerId에 1이 할당됩니다.
+</script>
 
 
 
@@ -36,7 +53,7 @@ console.log(calendarEvents);
       <button id="member-management">회원관리</button>
       <button id="schedule-management" style="display:none;">일정관리</button>
       <button id="reset-button" style="display:none;">초기화</button>
-      <div id="left-placeholder">여기에 나중에 글을 작성할 예정입니다.</div>
+      <div id="left-placeholder">공지사항란</div>
     </div>
     <!-- 중앙 캘린더 -->
     <div id="calendar"></div>
