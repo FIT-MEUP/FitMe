@@ -30,17 +30,7 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
-	@GetMapping({ "/", "" })
-	public String index(
-			Model model
-			//,Long userId
-			) {
-		Long userId=1L;
-		model.addAttribute("userId",userId);
-		
-		
-		return "/mypage";
-	}
+	
 
 	@GetMapping("/user/ptData")
 	public String ptData() {
