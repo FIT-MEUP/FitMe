@@ -21,7 +21,7 @@ public class TrainerEntity {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user; // 트레이너는 User와 연결됨
+    private UserEntity user;
 
     @Column(nullable = false)
     private String specialization;
@@ -32,18 +32,19 @@ public class TrainerEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal fee;
 
+    @Column(nullable = false)
+    private String shortIntro;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String bio;
 
-    // 🔹 트레이너는 여러 개의 사진을 가질 수 있음
     @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TrainerPhotoEntity> photos;
 
-    // ✅ 대표 사진을 가져오는 메서드 추가
     public String getPhotoUrl() {
         if (photos != null && !photos.isEmpty()) {
-            return photos.get(0).getPhotoUrl(); // 첫 번째 사진을 대표 사진으로 사용
+            return photos.get(0).getPhotoUrl();
         }
-        return "/images/default-trainer.png"; // 기본 이미지
+        return "/images/default-trainer.png";
     }
 }

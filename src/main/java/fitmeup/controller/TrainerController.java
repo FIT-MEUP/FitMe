@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
 import lombok.RequiredArgsConstructor;
@@ -35,20 +36,26 @@ public class TrainerController {
         TrainerEntity trainer = trainerService.getTrainerById(trainerId);
         List<TrainerPhotoEntity> photos = trainerService.getTrainerPhotos(trainerId);
 
-        // ✅ 로그인 여부 확인
         boolean loggedIn = (userDetails != null);
         model.addAttribute("loggedIn", loggedIn);
 
-        // ✅ 상담 신청 여부 확인 (로그인한 사용자만)
         boolean applied = false;
-        if (loggedIn) {
-            String userEmail = userDetails.getUsername(); // 현재 로그인한 사용자의 이메일 가져오기
-            applied = consultationService.isAlreadyApplied(userEmail, trainerId);
-        }
-        model.addAttribute("applied", applied);
+        boolean isTrainer = false; // ✅ 트레이너 본인 여부
 
+        if (loggedIn) {
+            String userEmail = userDetails.getUsername();
+            applied = consultationService.isAlreadyApplied(userEmail, trainerId);
+
+            // ✅ 트레이너 본인인지 확인
+            UserEntity loggedInUser = trainerService.getUserByEmail(userEmail);
+            isTrainer = (loggedInUser.equals(trainer.getUser())); 
+        }
+
+        model.addAttribute("applied", applied);
+        model.addAttribute("isTrainer", isTrainer);
         model.addAttribute("trainer", trainer);
         model.addAttribute("photos", photos);
+
         return "trainer-detail";
     }
 }

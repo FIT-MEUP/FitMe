@@ -15,7 +15,7 @@
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="/">FitMeUp</a>
+            <a class="navbar-brand" href="/">Fit:Me</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -36,6 +36,11 @@
 
         <h1 class="text-center mb-4">트레이너 목록</h1>
         
+		<!-- 운동 동기부여 명언 영역 추가 -->
+        <div id="motivational-quote-section" class="mt-5 text-center">
+            <p id="motivational-quote">명언 로딩 중...</p>
+        </div>
+        
         <div class="row">
             <div class="col-md-4" th:each="trainer : ${trainers}">
                 <div class="card trainer-card">
@@ -55,5 +60,24 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 명언 API 호출 스크립트 -->
+    <script>
+        function loadMotivationalQuote() {
+            fetch('/api/quote')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("motivational-quote").innerText = data.quote;
+                })
+                .catch(error => {
+                    console.error("명언 호출 중 오류:", error);
+                    document.getElementById("motivational-quote").innerText = "명언을 불러오는 중 오류 발생.";
+                });
+        }
+        
+        // 페이지 로드 시 자동으로 명언 로딩
+        window.onload = loadMotivationalQuote;
+    </script>
+    
 </body>
 </html>
