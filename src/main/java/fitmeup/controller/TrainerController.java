@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +48,24 @@ public class TrainerController {
         boolean loggedIn = (userDetails != null);
         model.addAttribute("loggedIn", loggedIn);
 
+
+        boolean applied = false;
+        boolean isTrainer = false; // ✅ 트레이너 본인 여부
+
         if (loggedIn) {
             String userEmail = userDetails.getUsername();
-            model.addAttribute("applied", consultationService.isAlreadyApplied(userEmail, trainerId));
+            applied = consultationService.isAlreadyApplied(userEmail, trainerId);
+
+            // ✅ 트레이너 본인인지 확인
+            UserEntity loggedInUser = trainerService.getUserByEmail(userEmail);
+            isTrainer = (loggedInUser.equals(trainer.getUser())); 
         }
+
+        model.addAttribute("applied", applied);
+        model.addAttribute("isTrainer", isTrainer);
         model.addAttribute("trainer", trainer);
         model.addAttribute("photos", photos);
+
         return "trainer-detail";
     }
     

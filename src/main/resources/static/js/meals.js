@@ -32,6 +32,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     calendar.render();
 
+    /**  캘린더에서 이미 선택된 날짜 강조 */
+    setTimeout(() => {
+        let selectedCell = document.querySelector(`[data-date="${selectedDate}"]`);
+        if (selectedCell) {
+            selectedCell.classList.add("selected-date");
+        }
+    }, 300);
+
+    //사용자가 직접 입력한 음식 이름 표시 */
+    document.getElementById("mealFoodName").addEventListener("input", function () {
+        let manualFoodName = document.getElementById("manualFoodName");
+        manualFoodName.textContent = this.value.trim() || "직접 입력된 음식이 없습니다.";
+    });
+
     /** ✅ 식단 추가 버튼 활성화/비활성화 */
     function updateAddButtonState() {
         let meals = document.querySelectorAll(".card");
@@ -60,11 +74,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
             fetch(form.action, { method: form.method, body: formData })
                 .then(() => {
-                    console.log("✅ 삭제 완료 - 유지할 날짜:", mealDate);
                     window.location.href = `/meals?mealDate=${mealDate}`;
                 });
         });
     });
+
+    document.querySelectorAll(".edit-meal-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            // 버튼에서 기존 데이터 가져오기
+            let mealId = this.getAttribute("data-mealid");
+            let mealDate = this.getAttribute("data-mealdate");
+            let totalCalories = this.getAttribute("data-totalcalories");
+            let totalCarbs = this.getAttribute("data-totalcarbs");
+            let totalProtein = this.getAttribute("data-totalprotein");
+            let totalFat = this.getAttribute("data-totalfat");
+
+            // 수정 모달에 데이터 채우기
+            document.getElementById("editMealId").value = mealId;
+            document.getElementById("editMealDate").value = mealDate;
+            document.getElementById("editTotalCalories").value = totalCalories;
+            document.getElementById("editTotalCarbs").value = totalCarbs;
+            document.getElementById("editTotalProtein").value = totalProtein;
+            document.getElementById("editTotalFat").value = totalFat;
+        });
+    });
+
 
     /** ✅ 음식 검색 기능 */
     let foodSearchInput = document.getElementById("foodSearch");
@@ -82,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     data.forEach(food => {
                         let btn = document.createElement("button");
                         btn.className = "btn btn-light w-100 mt-1";
-                        btn.textContent = `${food.foodName} (${food.standardWeight}g, ${food.calories} kcal)`;
+                        btn.textContent = `${food.foodName}`;
                         btn.onclick = function () {
                             selectFood(food);
                         };
@@ -96,27 +130,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /** ✅ 음식 선택 시 자동 입력 및 먹은 g 수 입력 칸으로 이동 */
     function selectFood(food) {
-        console.log("🧐 선택된 음식 데이터:", food);
+        console.log("선택된 음식 데이터:", food);
 
         document.getElementById("selectedFoodName").value = food.foodName;
-        document.getElementById("standardWeight").value = `표준중량: ${food.standardWeight}g`;
+        document.getElementById("standardWeight").value = `표준중량: ${food.standardWeight}`;
 
         let userWeightInput = document.getElementById("userWeight");
 
-        // ✅ 숫자만 추출해서 넣기 (단위 제거)
-        let weightOnly = parseFloat(food.standardWeight) || 0;
-        userWeightInput.value = weightOnly;
+        // 자동 입력 제거 (빈칸 유지)
+        userWeightInput.value = "";
 
-        // ✅ 기존 리스너 제거 후 추가 (중복 방지)
+        // "먹은 g 수" 입력 칸으로 자동 이동
+        userWeightInput.focus();
+
+        // 기존 리스너 제거 후 추가 (중복 방지)
         userWeightInput.removeEventListener("input", handleUserWeightInput);
         userWeightInput.addEventListener("input", function () {
             handleUserWeightInput(food);
         });
-
-        updateNutritionalValues(food, weightOnly);
-
-        // ✅ "먹은 g 수" 입력 칸으로 자동 이동
-        userWeightInput.focus();
     }
 
 
@@ -129,12 +160,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // 영양소 계산 
     function updateNutritionalValues(food, gram) {
         gram = parseFloat(gram) || 0;
-        let ratio = gram / parseFloat(food.standardWeight) || 1;
 
-        document.getElementById("foodCalories").value = (parseFloat(food.calories) * ratio).toFixed(1);
-        document.getElementById("foodCarbs").value = (parseFloat(food.carbs) * ratio).toFixed(1);
-        document.getElementById("foodProtein").value = (parseFloat(food.protein) * ratio).toFixed(1);
-        document.getElementById("foodFat").value = (parseFloat(food.fat) * ratio).toFixed(1);
+        document.getElementById("foodCalories").value = (parseFloat(food.calories) * gram).toFixed(1);
+        document.getElementById("foodCarbs").value = (parseFloat(food.carbs) * gram).toFixed(1);
+        document.getElementById("foodProtein").value = (parseFloat(food.protein) * gram).toFixed(1);
+        document.getElementById("foodFat").value = (parseFloat(food.fat) * gram).toFixed(1);
     }
 
 
@@ -157,68 +187,112 @@ document.addEventListener("DOMContentLoaded", function () {
             let foodList = document.getElementById("selectedFoodsList");
             let listItem = document.createElement("li");
             listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+            listItem.dataset.foodName = foodName;
+            listItem.dataset.calories = foodCalories;
+            listItem.dataset.carbs = foodCarbs;
+            listItem.dataset.protein = foodProtein;
+            listItem.dataset.fat = foodFat;
+
             listItem.innerHTML = `
                 <span>${foodName} (${userWeight}g, ${foodCalories} kcal)</span>
                 <button class="btn btn-danger btn-sm remove-food">삭제</button>
             `;
 
-            // ✅ 삭제 버튼 이벤트 추가
+            // 삭제 버튼 이벤트 추가
             listItem.querySelector(".remove-food").addEventListener("click", function () {
                 foodList.removeChild(listItem);
                 updateTotalNutrition();
+                updateMealFoodList();
             });
 
             foodList.appendChild(listItem);
 
-            // ✅ 총 영양소 업데이트
+            // 총 영양소 업데이트
             updateTotalNutrition();
 
-            // ✅ 음식 추가 모달 닫고 새 식단 추가 모달로 이동
-            let foodModal = bootstrap.Modal.getInstance(document.getElementById("foodModal"));
-            foodModal.hide();
+            // 포함된 음식 업데이트 
+            updateMealFoodList();
 
-            setTimeout(() => {
-                let mealModal = new bootstrap.Modal(document.getElementById("mealModal"));
+            // ✅ 검색 모달 닫기
+            let foodModalElement = document.getElementById("foodModal");
+            let foodModal = bootstrap.Modal.getInstance(foodModalElement) || new bootstrap.Modal(foodModalElement);
+
+            foodModal.hide(); // 🔥 검색 모달을 닫는다
+
+            // ✅ 기존 이벤트 리스너 제거 (중복 실행 방지)
+            foodModalElement.removeEventListener("hidden.bs.modal", openMealModal);
+
+            // ✅ 검색 모달이 닫힌 후 실행될 이벤트 등록
+            function openMealModal() {
+                let mealModalElement = document.getElementById("mealModal");
+                let mealModal = bootstrap.Modal.getInstance(mealModalElement) || new bootstrap.Modal(mealModalElement);
                 mealModal.show();
-            }, 300);
 
-            // ✅ 음식 추가 후 검색어 지우기
-            document.getElementById("addFoodButton").addEventListener("click", function () {
-                document.getElementById("foodSearch").value = "";
-                document.getElementById("foodResults").innerHTML = "";
-            });
+                foodModalElement.removeEventListener("hidden.bs.modal", openMealModal);
+            }
+
+            foodModalElement.addEventListener("hidden.bs.modal", openMealModal);
+
+
+            // 음식 추가 후 검색창 초기화
+            document.getElementById("foodSearch").value = "";
+            document.getElementById("foodResults").innerHTML = "";
+            document.getElementById("selectedFoodName").value = "";
+            document.getElementById("foodCalories").value = "";
+            document.getElementById("foodCarbs").value = "";
+            document.getElementById("foodProtein").value = "";
+            document.getElementById("foodFat").value = "";
+            document.getElementById("standardWeight").value = "";
+            document.getElementById("userweight").value = "";
+
+
+
+
         });
-
-
     }
 
-    /** ✅ 총 영양소 합산 */
+    /**포함된 음식 리스트 업데이트 */
+    function updateMealFoodList() {
+        let mealFoodList = document.querySelectorAll(".meal-food-list");
+        let selectedFoods = document.querySelectorAll("#selectedFoodsList li");
+
+        //포함된 음식 리스트 비우기
+        mealFoodList.forEach(list => list.innerHTML = "");
+
+        // 추가된 음식 목록에서 음식 이름 가져와서 포함된 음식에 추가
+        selectedFoods.forEach(foodItem => {
+            let foodName = foodItem.dataset.foodName;
+            mealFoodList.forEach(list => {
+                let li = document.createElement("li");
+                li.textContent = foodName;
+                list.appendChild(li);
+            });
+        });
+    }
+
+    /**  총 영양소 합산 */
     function updateTotalNutrition() {
         let totalCalories = 0, totalCarbs = 0, totalProtein = 0, totalFat = 0;
 
         document.querySelectorAll("#selectedFoodsList li").forEach(foodItem => {
-            let text = foodItem.innerText;
-
-            let values = text.match(/(\d+(\.\d+)?)g, (\d+(\.\d+)?) kcal, (\d+(\.\d+)?)g, (\d+(\.\d+)?)g, (\d+(\.\d+)?)g/);
-
-            if (values) {
-                let calories = parseFloat(values[3]) || 0;
-                let carbs = parseFloat(values[5]) || 0;
-                let protein = parseFloat(values[7]) || 0;
-                let fat = parseFloat(values[9]) || 0;
-
-                totalCalories += calories;
-                totalCarbs += carbs;
-                totalProtein += protein;
-                totalFat += fat;
-            }
+            totalCalories += parseFloat(foodItem.dataset.calories) || 0;
+            totalCarbs += parseFloat(foodItem.dataset.carbs) || 0;
+            totalProtein += parseFloat(foodItem.dataset.protein) || 0;
+            totalFat += parseFloat(foodItem.dataset.fat) || 0;
         });
 
+        // 새 식단 추가 모달의 입력 필드에 값 반영
         document.getElementById("mealCalories").value = totalCalories.toFixed(1);
         document.getElementById("mealCarbs").value = totalCarbs.toFixed(1);
         document.getElementById("mealProtein").value = totalProtein.toFixed(1);
         document.getElementById("mealFat").value = totalFat.toFixed(1);
     }
+
+    // 음식 추가 후 검색어 지우기 (이벤트 중복 방지)
+    document.getElementById("foodSearch").addEventListener("input", function () {
+        document.getElementById("foodResults").innerHTML = "";
+    });
+
 
 
 });

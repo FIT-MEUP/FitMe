@@ -10,5 +10,9 @@ import fitmeup.entity.UserEntity;
 
 @Repository
 public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
+
 	List<TrainerEntity> findByUser_Role(UserEntity.Role role);
+  List<TrainerEntity> findByTrainerIdAndStatus(Long trainerId, String status);
+
+
 }

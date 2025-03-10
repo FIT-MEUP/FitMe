@@ -2,7 +2,6 @@ package fitmeup.controller;
 
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
 import fitmeup.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -23,57 +23,149 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ScheduleController {
 
-	private final ScheduleService scheduleService;
 	
-	@GetMapping({"/TrainerSchedule"})
-	public String index(Model model) {
-		System.out.println("dddddd");
-	    List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll();
+private final ScheduleService scheduleService;
+	
+	
+	//ScheuldeDTO를 list형태로 front단에 보내주는 method
+//	@GetMapping({"/",""})
+	public String index(Model model
+			//,Long userId
+			) {
+		Long userId= 4L;
+//		 Long trainerId=scheduleService.findTrainerId(4L);
+		  Long trainerId=scheduleService.findTrainerId(userId);
+		 
+	    List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
+
 	    model.addAttribute("list", list);
+	
+//	    model.addAttribute("userId",4);
+	    model.addAttribute("userId",userId);
 	    
-	   log.info(list.toString());
-		return "trainerschedule";
+	    
+	    List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
+	
+	    
+	    
+	   
+	    model.addAttribute("trainerId",trainerId);
+	    model.addAttribute("userlist",userlist);
+	   
+	    log.info(trainerId.toString());
+	    log.info(list.toString());
+	    
+	 // 현재 로그인한 사용자의 userName을 추가합니다.
+        String userName = scheduleService.findUserName(userId);
+        model.addAttribute("userName", userName);
+	    
+		return "schedule/userschedule";
+	
+	//trainerSchedule을 Delete하는 메소드
 	}
 	
 	
 	
+	//Schedule을 Create하는 method
+//	@GetMapping("/calendar")
+//	@ResponseBody
+//	public String trainercalendarInsert(
+//			@RequestParam("start") String start,
+//			@RequestParam("end") String end
+//			,@RequestParam("userId") Long userId
+//			) {
+//		// 오프셋 없이 로컬 날짜/시간으로 파싱
+//		LocalDateTime startTime = LocalDateTime.parse(start, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+//		LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+//		
+//		
+//		ScheduleDTO scheduleDTO = new ScheduleDTO();
+//		
+//		//해당 유저의 trainerId를 findbyId를 통해 찾고 그걸을 setter을 통해 저장
+//		Long trainerId=scheduleService.findTrainerId(userId);
+//		scheduleDTO.setUserId(userId);
+//		scheduleDTO.setTrainerId(trainerId);
+//		scheduleDTO.setStartTime(startTime);
+//		scheduleDTO.setEndTime(endTime);
+//		scheduleService.insertSchedule(scheduleDTO);
+//		log.info("Start Time: " + startTime);
+//		log.info("End Time: " + endTime);
+//		
+//		
+//		return "success";
+//	}
 	
-	@GetMapping("/trainercalendar")
+	
+	@GetMapping("/calendar")
 	@ResponseBody
 	public String trainercalendarInsert(
 	        @RequestParam("start") String start,
-	        @RequestParam("end") String end
-	) {
-	    // 오프셋이 포함된 문자열을 파싱한 후 바로 LocalDateTime으로 변환 (추가 변환 X)
-	    LocalDateTime startTime = OffsetDateTime
-	                                .parse(start, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-	                                .toLocalDateTime();
-	    LocalDateTime endTime = OffsetDateTime
-	                                .parse(end, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-	                                .toLocalDateTime();
+	        @RequestParam("end") String end,
+	        @RequestParam("userId") Long userId) {
 
-	    TrainerScheduleDTO trainerScheduleDTO = new TrainerScheduleDTO();
-	    trainerScheduleDTO.setStartTime(startTime);
-	    trainerScheduleDTO.setEndTime(endTime);
+	    // 요청 받은 start, end를 LocalDateTime으로 파싱
+	    LocalDateTime newStart = LocalDateTime.parse(start, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+	    LocalDateTime newEnd = LocalDateTime.parse(end, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-	    scheduleService.insertTrainerSchedule(trainerScheduleDTO);
-	    log.info("Start Time: " + startTime);
-	    log.info("End Time: " + endTime);
+	    // userId를 통해 trainerId 찾기
+	    Long trainerId = scheduleService.findTrainerId(userId);
+
+	    // 1. 가능한 시간(TrainerScheduleDTO 목록) 가져오기
+	    List<TrainerScheduleDTO> availableIntervals = scheduleService.selectTrainerScheduleAll(trainerId);
+	    log.info(availableIntervals.toString());
+	    // 요청 시간(newStart~newEnd)이 가능한 시간 중 하나의 범위 안에 있는지 확인
+	    boolean withinRange = availableIntervals.stream()
+	            .anyMatch(interval ->
+	                    !newStart.isBefore(interval.getStartTime()) && !newEnd.isAfter(interval.getEndTime())
+	            );
+	    if (!withinRange) {
+	        return "noRange";
+	    }
+
+	    // 2. 기존 예약(ScheduleDTO 목록) 가져오기
+	    List<ScheduleDTO> existingSchedules = scheduleService.selectAll(trainerId);
+	    log.info(existingSchedules.toString());
+	    // 요청 시간과 기존 예약이 겹치는지 확인 (겹치면 overlap 발생)
+	    boolean overlaps = existingSchedules.stream()
+	            .anyMatch(schedule ->
+	                    newStart.isBefore(schedule.getEndTime()) && newEnd.isAfter(schedule.getStartTime())
+	            );
+	    if (overlaps) {
+	        return "alreadySchedule";
+	    }
 	    
+	 // 3. 추가 제약: 현재 로그인한 사용자(userId)가 이미 미래 예약을 가지고 있는지 확인
+	    List<ScheduleDTO> mySchedules = scheduleService.selectAllByUserId(userId);
+	    boolean alreadyHaveFutureSchedule = mySchedules.stream()
+	            .anyMatch(schedule -> schedule.getStartTime().isAfter(LocalDateTime.now()));
+	    if (alreadyHaveFutureSchedule) {
+	        return "alreadyHaveSchedule";
+	    }
+
+	    // 두 조건 모두 만족하면 예약 생성
+	    ScheduleDTO scheduleDTO = new ScheduleDTO();
+	    scheduleDTO.setUserId(userId);
+	    scheduleDTO.setTrainerId(trainerId);
+	    scheduleDTO.setStartTime(newStart);
+	    scheduleDTO.setEndTime(newEnd);
+	    scheduleService.insertSchedule(scheduleDTO);
+
+	    log.info("Start Time: " + newStart);
+	    log.info("End Time: " + newEnd);
+
 	    return "success";
 	}
 	
-	@GetMapping("/trainercalendar/delete")
+	
+	
+	@GetMapping("/usercalendar/delete")
 	@ResponseBody
 	public boolean boardDelete(
-			@RequestParam(name="id") Integer trainerScheduleId
-			) {
-		log.info(trainerScheduleId.toString());
-		scheduleService.deleteOne(trainerScheduleId);
-		
-		
-		
-		return true;
+	    @RequestParam(name="scheduleId") Integer scheduleId
+	) {
+	    log.info("trainerSchedule삭제    {}",scheduleId.toString());
+	    scheduleService.deleteSchedule(scheduleId);
+	    return true;
 	}
 	
 	
