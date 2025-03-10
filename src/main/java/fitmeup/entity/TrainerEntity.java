@@ -16,6 +16,7 @@ import java.util.List;
 public class TrainerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "trainer_id")
     private Long trainerId;
 
     @OneToOne

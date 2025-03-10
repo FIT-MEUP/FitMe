@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    
+
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -71,4 +74,5 @@ public class UserService {
             userRepository.save(entity); // 변경사항 저장 추가!
         }
     }
+
 }

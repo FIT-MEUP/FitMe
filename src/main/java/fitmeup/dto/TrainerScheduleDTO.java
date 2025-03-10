@@ -16,33 +16,30 @@ import lombok.Setter;
 @Builder
 public class TrainerScheduleDTO {
 
-	 private Integer trainerScheduleId;
-	    private Integer trainerId;
+	   private Integer trainerScheduleId;
+	    private Long trainerId;
 	    private LocalDateTime startTime;
 	    private LocalDateTime endTime;
 
-	    //log.info를 사용하기위한 tostring재정의
 	    @Override
 	    public String toString() {
 	        return "TrainerScheduleDTO{" +
-	    
-					"trainerScheduleId='" + trainerScheduleId + '\'' +
-	                "trainerId='" + trainerId + '\'' +
+	                "trainerScheduleId='" + trainerScheduleId + '\'' +
+	                ", trainerId='" + trainerId + '\'' +
 	                ", startTime='" + startTime + '\'' +
 	                ", endTime='" + endTime + '\'' +
 	                '}';
 	    }
-	    
-	    
+
 	    
 	    // Entity → DTO 변환 메서드
 	    public static TrainerScheduleDTO toDTO(TrainerScheduleEntity entity) {
 	        return TrainerScheduleDTO.builder()
-	            .trainerScheduleId(entity.getTrainerScheduleId())
-	            .trainerId(entity.getTrainerId())
-	            .startTime(entity.getStartTime())
-	            .endTime(entity.getEndTime())
-	            .build();
+	                .trainerScheduleId(entity.getTrainerScheduleId())
+	                .trainerId(entity.getTrainer() != null ? entity.getTrainer().getTrainerId() : null)
+	                .startTime(entity.getStartTime())
+	                .endTime(entity.getEndTime())
+	                .build();
 	    }
 
 }

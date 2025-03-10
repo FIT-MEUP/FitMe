@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+import fitmeup.dto.TrainerApplicationDTO;
+
 @Entity
 @Getter
 @Setter
@@ -15,6 +17,7 @@ public class TrainerApplicationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "application_id")
     private Long applicationId; // 신청 ID (PK)
 
     @ManyToOne
@@ -26,15 +29,27 @@ public class TrainerApplicationEntity {
     private TrainerEntity trainer; // 상담 대상 트레이너 (FK)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="status", nullable = false)
     private Status status = Status.PENDING; // 신청 상태 (기본값: Pending)
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "applied_at", nullable = false, updatable = false)
     private LocalDateTime appliedAt = LocalDateTime.now(); // 신청 시간 (기본값: 현재 시간)
 
+    @Column(name = "response_at")
     private LocalDateTime responseAt; // 승인/거절 응답 시간
 
     public enum Status {
         PENDING, APPROVED, REJECTED
+    }
+
+    public static TrainerApplicationEntity toEntity(TrainerApplicationDTO dto, UserEntity user, TrainerEntity trainer) {
+        return TrainerApplicationEntity.builder()
+                .applicationId(dto.getApplicationId())
+                .user(user)
+                .trainer(trainer)
+                .status(Status.valueOf(dto.getStatus().toUpperCase())) //  String → ENUM 변환
+                .appliedAt(dto.getAppliedAt() != null ? dto.getAppliedAt() : LocalDateTime.now()) // null 방지
+                .responseAt(dto.getResponseAt())
+                .build();
     }
 }
