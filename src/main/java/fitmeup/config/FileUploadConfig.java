@@ -12,22 +12,32 @@ import jakarta.annotation.PostConstruct;
 @Configuration
 public class FileUploadConfig {
 	
-	@Value("${spring.servlet.multipart.location}") // application.properties 설정값 가져오기
-    private String uploadDir;
+	@Value("${upload.meal.path}")
+	private String mealUploadDir;
+
+	@Value("${upload.video.path}")
+	private String videoUploadDir;
+
 
 	@PostConstruct
-    public void createUploadDirectory() {
-        Path path = Paths.get(uploadDir);
-        try {
-            if (!Files.exists(path)) { // 폴더가 없으면 생성
-                Files.createDirectories(path);
-                System.out.println("Upload directory created at: " + uploadDir);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Could not create upload folder!", e);
-        }
-    }
-
+	public void createUploadDirectory() {
+	    // 음식 게시판 업로드 폴더 생성
+	    Path mealPath = Paths.get(mealUploadDir);
+	    // 운동 게시판 업로드 폴더 생성
+	    Path videoPath = Paths.get(videoUploadDir);
+	    try {
+	        if (!Files.exists(mealPath)) {
+	            Files.createDirectories(mealPath);
+	            System.out.println("Meal upload directory created at: " + mealUploadDir);
+	        }
+	        if (!Files.exists(videoPath)) {
+	            Files.createDirectories(videoPath);
+	            System.out.println("Video upload directory created at: " + videoUploadDir);
+	        }
+	    } catch (Exception e) {
+	        throw new RuntimeException("Could not create upload folders!", e);
+	    }
+	}
 }
 
 /*

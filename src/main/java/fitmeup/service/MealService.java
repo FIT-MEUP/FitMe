@@ -29,7 +29,7 @@ public class MealService {
     @Autowired
     private UserRepository userRepository;
 
- // ✅ 1. 특정 회원의 특정 날짜 식단 조회
+ // 특정 회원의 특정 날짜 식단 조회
     public List<MealDTO> getMealsByUserAndDate(Long userId, LocalDate mealDate) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
@@ -47,7 +47,7 @@ public class MealService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 2. 특정 회원의 전체 식단 조회 (날짜 순 정렬)
+    // 특정 회원의 전체 식단 조회 (날짜 순 정렬)
     public List<MealDTO> getMealsByUser(Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
@@ -65,17 +65,17 @@ public class MealService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 새로운 식단 저장 (음식도 함께 저장)
+    // 새로운 식단 저장 (음식도 함께 저장)
     @Transactional
     public MealDTO saveMeal(MealDTO mealDTO) {
         UserEntity userEntity = userRepository.findById(mealDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없음"));
 
-        // 1️⃣ MealEntity 저장
+        // 1MealEntity 저장
         MealEntity meal = mealDTO.toEntity(userEntity);
         MealEntity savedMeal = mealRepository.save(meal);
 
-        // 2️⃣ FoodEntity 저장 (음식 리스트가 있으면 추가)
+        // FoodEntity 저장 (음식 리스트가 있으면 추가)
         if (mealDTO.getFoodList() != null && !mealDTO.getFoodList().isEmpty()) {
             List<FoodEntity> foodEntities = mealDTO.getFoodList().stream()
                     .map(foodDTO -> foodDTO.toEntity(savedMeal)) // MealEntity와 연결
@@ -84,7 +84,7 @@ public class MealService {
             foodRepository.saveAll(foodEntities);
         }
 
-        // 3️⃣ 저장된 데이터를 다시 조회하여 반환 (음식 정보 포함)
+        // 저장된 데이터를 다시 조회하여 반환 (음식 정보 포함)
         List<FoodDTO> savedFoodList = foodRepository.findByMeal(savedMeal)
                 .stream()
                 .map(FoodDTO::fromEntity)
@@ -93,16 +93,16 @@ public class MealService {
         return MealDTO.fromEntity(savedMeal, savedFoodList);
     }
     
- // ✅ 4. 특정 식단 삭제 (음식도 함께 삭제)
+ // 4. 특정 식단 삭제 (음식도 함께 삭제)
     @Transactional
     public void deleteMeal(Long mealId) {
         MealEntity meal = mealRepository.findById(mealId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 식단을 찾을 수 없습니다."));
 
-        // ✅ 먼저 연결된 음식 데이터 삭제
+        // 먼저 연결된 음식 데이터 삭제
         foodRepository.deleteByMeal(meal);
 
-        // ✅ 식단 삭제
+        // 식단 삭제
         mealRepository.delete(meal);
     }
 
