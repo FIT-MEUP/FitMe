@@ -183,3 +183,31 @@ ALTER TABLE user ADD COLUMN is_online BOOLEAN DEFAULT FALSE;
 ALTER TABLE user CHANGE COLUMN password_hash password VARCHAR(255) NOT NULL;
 
 
+CREATE TABLE trainer_schedule (
+    trainer_schedule_id INT PRIMARY KEY AUTO_INCREMENT,
+    trainer_id INT NOT NULL,
+    startTime DATETIME NOT NULL,
+    endTime DATETIME NOT NULL,
+    FOREIGN KEY (trainer_id) REFERENCES trainer(trainer_id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE schedule 
+MODIFY COLUMN attendance_status ENUM('Present', 'Absent', 'PT_ Session') NOT NULL;
+
+ALTER TABLE food MODIFY COLUMN meal_id INT NULL;
+ALTER TABLE food ADD COLUMN standard_weight VARCHAR(10);
+
+ALTER TABLE user MODIFY role ENUM('User', 'PendingTrainer', 'Trainer', 'Admin') NOT NULL DEFAULT 'User';
+
+ALTER TABLE trainer_schedule 
+    CHANGE COLUMN startTime start_time DATETIME NOT NULL,
+    CHANGE COLUMN endTime end_time DATETIME NOT NULL;
+
+    
+   
+    ALTER TABLE schedule
+  ADD COLUMN start_time DATETIME NOT NULL,
+  ADD COLUMN end_time DATETIME NOT NULL;
+  
+  ALTER TABLE trainer ADD COLUMN short_intro VARCHAR(255) NOT NULL DEFAULT '소개 없음';

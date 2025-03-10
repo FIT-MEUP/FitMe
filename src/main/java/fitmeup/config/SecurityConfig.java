@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import fitmeup.handler.CustomLogoutSuccessHandler;
 import fitmeup.handler.LoginFailureHandler;
 import fitmeup.handler.LoginSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -34,7 +35,9 @@ public class SecurityConfig {
                 "/user/join",
                 "/user/idCheck",
                 "/user/joinProc",
-                
+                "/trainer/**",
+                "/trainers",
+                "/api/**",
                 "/images/**",
                 "/js/**",
                 "/css/**").permitAll()
@@ -43,6 +46,15 @@ public class SecurityConfig {
             // 마이페이지 접근: ADMIN 또는 USER 권한 필요
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
             .anyRequest().authenticated());
+        
+        // 인증 실패 시, 리다이렉트 대신 401 JSON 응답을 반환
+        http.exceptionHandling(exception -> exception
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Unauthorized\"}");
+            })
+        );
         
         // 로그인 설정: 이메일 로그인으로 변경 (usernameParameter -> "userEmail")
         http.formLogin((auth) -> auth

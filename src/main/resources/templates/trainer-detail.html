@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>트레이너 상세 프로필</title>
     
-        <!-- Bootstrap 포함 -->
+    <!-- Bootstrap 포함 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
     <!-- 내 CSS -->
@@ -15,7 +15,7 @@
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="/">FitMeUp</a>
+            <a class="navbar-brand" href="/">Fit:Me</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -24,47 +24,83 @@
             </div>
         </div>
     </nav>
-    
-    <div class="profile-container">
-        <div class="profile-card">
-            <!-- 트레이너 모든 사진을 표시 -->
-            <div class="photo-gallery">
-                <img th:each="photo : ${trainer.photos}" th:src="${photo.photoUrl}" alt="Trainer Image" class="profile-photo">
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- 왼쪽: 사진 & 긴 자기소개 -->
+            <div class="col-md-7">
+                <h3>선생님 소개</h3>
+
+                <!-- 사진 갤러리 -->
+                <div class="row g-2">
+                    <div class="col-4" th:each="photo, stat : ${trainer.photos}" th:if="${stat.index < 8}">
+                        <img th:src="${photo.photoUrl}" class="img-fluid rounded" alt="Trainer Image">
+                    </div>
+                    <div class="col-4" th:if="${#lists.size(trainer.photos) > 8}">
+                        <a href="#" class="more-photos d-flex justify-content-center align-items-center">
+                            더보기
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 긴 자기소개 -->
+                <div class="mt-3">
+                    <p class="trainer-bio" th:text="${trainer.bio}"></p>
+                </div>
             </div>
 
-            <!-- 트레이너 이름 (userName) -->
-            <h1 class="trainer-name" th:text="${trainer.user.userName}">트레이너 이름</h1>
+            <!-- 오른쪽: 트레이너 프로필 정보 -->
+            <div class="col-md-5">
+                <div class="profile-card p-4 shadow-sm rounded bg-white">
+                    <!-- 대표 사진 -->
+                    <div class="text-center">
+                        <img th:src="${trainer.photoUrl}" 
+                             class="rounded-circle img-fluid" 
+                             style="width: 120px; height: 120px;" 
+                             alt="Trainer Profile">
+                    </div>
 
-            <p class="trainer-specialization"><strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span></p>
-            <p class="trainer-experience"><strong>경력:</strong> <span th:text="${trainer.experience}"></span> 년</p>
-            <p class="trainer-bio"><strong>소개:</strong> <span th:text="${trainer.bio}"></span></p>
-            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> 
-                <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원
-            </p>
+                    <!-- 트레이너 기본 정보 -->
+                    <h4 class="text-center mt-3" th:text="${trainer.user.userName ?: '이름 없음'} + ' 선생님'">트레이너 이름</h4>
+					<p class="text-center text-muted" th:text="${trainer.shortIntro ?: '소개 없음'}">짧은 자기소개</p>
 
-            <div class="button-group">
-                <a href="/trainers" class="back-button">목록으로 돌아가기</a>
-				<!-- 로그인하지 않은 사용자 -->
-				<button th:if="${not loggedIn}" 
-				        class="appointment-button"
-				        onclick="location.href='/login'">
-				    로그인 후 신청 가능
-				</button>
-				
-				<!-- 로그인한 사용자 & 상담 미신청 -->
-				<button th:if="${loggedIn and not applied}" 
-				        class="appointment-button"
-				        onclick="applyForSession()">
-				    상담 신청하기
-				</button>
-				
-				<!-- 로그인한 사용자 & 상담 신청 완료 -->
-				<button th:if="${loggedIn and applied}" 
-				        class="appointment-button" disabled>
-				    신청 완료
-				</button>
+                    <!-- 전문 분야 & 경력 -->
+                    <p><strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span></p>
+                    <p><strong>경력:</strong> <span th:text="${trainer.experience}"></span> 년</p>
+
+                    <!-- PT 비용 -->
+                    <p><strong>대표 가격 (회당):</strong> 
+                        <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원
+                    </p>
+
+					<!-- 상담 신청 또는 프로필 수정 버튼 -->
+					<div class="text-center mt-3">
+					    <!-- ✅ 본인이라면 "프로필 수정" 버튼 -->
+					    <button th:if="${isTrainer}" class="btn btn-warning w-100" onclick="location.href='/trainer/edit'">
+					        프로필 수정
+					    </button>
+					
+					    <!-- ✅ 일반 사용자가 로그인했다면 "방문 상담 신청" -->
+					    <button th:if="${loggedIn and not applied and not isTrainer}" class="btn btn-primary w-100" onclick="applyForSession()">
+					        방문 상담 신청
+					    </button>
+					
+					    <!-- ✅ 이미 신청한 경우 -->
+					    <button th:if="${loggedIn and applied and not isTrainer}" class="btn btn-secondary w-100" disabled>
+					        신청 완료
+					    </button>
+					
+					    <!-- ✅ 로그인하지 않은 경우 -->
+					    <button th:if="${not loggedIn}" class="btn btn-outline-primary w-100" onclick="location.href='/login'">
+					        로그인 후 신청 가능
+					    </button>
+					</div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
