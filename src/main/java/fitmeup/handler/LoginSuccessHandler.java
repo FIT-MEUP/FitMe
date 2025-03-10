@@ -13,31 +13,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Component
 @Slf4j
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, 
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        log.info("로그인 성공");
 
-	log.info("성공");
-		
-		// role이 여러개일 경우 모두 넣어주기 위해 list로 만든다 
-		List<String> roleNames = new ArrayList<>();
-		
-		// 한 명의 유저가 여러 Role 정보를 가질 수 있도록 처리  
-		authentication.getAuthorities().forEach((auth) -> 
-			roleNames.add(auth.getAuthority())
-		);
-		
-		// 사용자의 ROLE 정보에 따라 리다이렉트 정보가 달라짐 
-		if (roleNames.contains("ROLE_ADMIN")) {
-			response.sendRedirect("/admin/adminpage");
-		} else if (roleNames.contains("ROLE_USER")) {
-			response.sendRedirect("/");
-		}
-	}
+        // 사용자 권한 리스트를 생성 (ROLE_ 접두어가 붙어있거나 안 붙어있을 수 있으므로 둘 다 처리)
+        List<String> roleNames = new ArrayList<>();
+        authentication.getAuthorities().forEach(auth -> roleNames.add(auth.getAuthority()));
 
+        // 권한에 따라 리다이렉트 처리
+        if (roleNames.contains("ROLE_ADMIN") || roleNames.contains("Admin")) {
+            response.sendRedirect("/admin/adminpage");
+        } else if (roleNames.contains("ROLE_PENDINGTRAINER") || roleNames.contains("PendingTrainer")) {
+            response.sendRedirect("/user/pendingTrainer");
+        } else if (roleNames.contains("ROLE_TRAINER") || roleNames.contains("Trainer")) {
+            response.sendRedirect("/trainerschedule");
+        } else if (roleNames.contains("ROLE_USER") || roleNames.contains("User")) {
+            response.sendRedirect("/trainers");
+        } else {
+            // 다른 권한이 있을 경우 기본적으로 홈으로 리다이렉트
+            response.sendRedirect("/");
+        }
+    }
 }

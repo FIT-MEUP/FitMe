@@ -210,7 +210,9 @@ ALTER TABLE trainer_schedule
     ALTER TABLE schedule
   ADD COLUMN start_time DATETIME NOT NULL,
   ADD COLUMN end_time DATETIME NOT NULL;
+
   
   ALTER TABLE trainer ADD COLUMN short_intro VARCHAR(255) NOT NULL DEFAULT '소개 없음';
+
 
 

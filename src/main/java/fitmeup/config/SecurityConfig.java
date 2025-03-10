@@ -27,14 +27,9 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
             .requestMatchers(
-                "/",
-                "/user/login",
-                "/board/boardList",
-                "/board/boardDetail",
-                "/board/download",
-                "/user/join",
-                "/user/idCheck",
-                "/user/joinProc",
+
+                "/**",
+                "/user/**",
                 "/trainer/**",
                 "/trainers",
                 "/api/**",
@@ -47,14 +42,6 @@ public class SecurityConfig {
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
             .anyRequest().authenticated());
         
-        // 인증 실패 시, 리다이렉트 대신 401 JSON 응답을 반환
-        http.exceptionHandling(exception -> exception
-            .authenticationEntryPoint((request, response, authException) -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Unauthorized\"}");
-            })
-        );
         
         // 로그인 설정: 이메일 로그인으로 변경 (usernameParameter -> "userEmail")
         http.formLogin((auth) -> auth
@@ -69,7 +56,7 @@ public class SecurityConfig {
         // 로그아웃 설정
         http.logout((auth) -> auth
             .logoutUrl("/user/logout")
-            .logoutSuccessHandler(logoutHandler)
+            .logoutSuccessUrl("/")
             .invalidateHttpSession(true)
             .clearAuthentication(true));
         
