@@ -38,11 +38,11 @@ public class MemberManageController {
                                     Model model) {
         // findbyId로 대충 특정했다고 가정하고
         if (loginUser.getRoles() == "Trainer") {
-            Long trainerNum = loginUser.getUserId();
+            Long userNum = loginUser.getUserId();
             //loginuser에서 받은 userId값이 trainerNum으로 들어가서 자동적으로 해당 트레이너가 갖고 있는 유저들을 출력해줌
-            log.info("====================={}", trainerNum);
-            List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Approved);
-            List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Pending);
+            log.info("====================={}", userNum);
+            List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(userNum, TrainerApplicationEntity.Status.Approved);
+            List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(userNum, TrainerApplicationEntity.Status.Pending);
 //            for(String role : roleNames) {
 //            	log.info("====================={}",role);
 //            }
