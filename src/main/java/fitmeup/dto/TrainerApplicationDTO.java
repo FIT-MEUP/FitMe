@@ -2,6 +2,8 @@ package fitmeup.dto;
 
 import java.time.LocalDateTime;
 
+import org.apache.catalina.User;
+
 import fitmeup.entity.TrainerApplicationEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +19,15 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 public class TrainerApplicationDTO {
+	//계약 인덱스넘버
     private Long applicationId;
+    //유저아이디
     private Long userId;
+    //트레이너 아이디
     private Long trainerId;
+    // 승인 상태
     private String status;
+    private String name;
     private LocalDateTime appliedAt;
     private LocalDateTime responseAt;
 
@@ -28,6 +35,7 @@ public class TrainerApplicationDTO {
         return TrainerApplicationDTO.builder()
                 .applicationId(entity.getApplicationId())
                 .userId(entity.getUser().getUserId())
+                .name(entity.getUser().getUserName())
                 .trainerId(entity.getTrainer().getTrainerId())
                 .status(entity.getStatus().toString())
                 .appliedAt(entity.getAppliedAt())
@@ -37,15 +45,4 @@ public class TrainerApplicationDTO {
 }
 
 
-/**
- * CREATE TABLE trainer_application (
-    application_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    trainer_id INT NOT NULL,
-    status ENUM('Pending', 'Approved', 'Rejected') NOT NULL,
-    applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    response_at DATETIME NULL,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (trainer_id) REFERENCES trainer(trainer_id) ON DELETE CASCADE
-);
- */
+
