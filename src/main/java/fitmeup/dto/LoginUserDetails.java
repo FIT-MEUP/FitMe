@@ -43,6 +43,11 @@ public class LoginUserDetails implements UserDetails {
         return userId != null ? userId.toString() : "";
     }
     
+    // 추가: 화면에 표시할 이름 (실제 회원가입 시 입력한 이름)
+    public String getDisplayName() {
+        return this.userName;
+    }
+    
     public static LoginUserDetails toDTO(UserEntity entity) {
         return LoginUserDetails.builder()
                 .userId(entity.getUserId())

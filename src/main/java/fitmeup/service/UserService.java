@@ -75,4 +75,10 @@ public class UserService {
         }
     }
 
+    
+    // 이름과 연락처를 기반으로 이메일 찾기
+    public String findUserEmail(String userName, String userContact) {
+        return userRepository.findEmailByUserNameAndUserContact(userName, userContact)
+                .orElse("존재하지 않는 회원정보입니다.");
+    }
 }

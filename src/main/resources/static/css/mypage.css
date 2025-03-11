@@ -1,4 +1,15 @@
 /* 기본 스타일 */
+.user-info input,
+.user-info select {
+  width: 90%;
+  /* 입력 필드가 셀 내부에 맞게 조정 */
+  box-sizing: border-box;
+  /* 패딩 포함 크기 조정 */
+  font-size: 14px;
+  /* 텍스트 크기 조정 */
+  padding: 5px;
+  /* 여백 추가 */
+}
 
 
 body {
@@ -94,6 +105,20 @@ body {
 }
 
 .pt-history-button:hover {
+  background-color: #e0e0e0;
+}
+
+.body-history-button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.body-history-button:hover {
   background-color: #e0e0e0;
 }
 

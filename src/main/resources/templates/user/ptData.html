@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>나의 신체 데이터</title>
+	 <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<link rel="stylesheet" th:href="@{/css/mypage.css}">
+
+</head>
+
+<body>
+
+	<div class="container">
+		<!-- 상단 메뉴 -->
+		<div class="header">
+			<button class="back-button">돌아가기</button>
+			<h1>PT 이력</h1>
+			<div class="header-right">
+				<button class="back-button">돌아가기</button>
+			</div>
+		</div>
+
+		<div class="content">
+			<h2>최용재 님</h2>
+
+			<table class="user-info">
+				<thead>
+					<tr>
+						<th>키</th>
+						<th>체중</th>
+						<th>BMI</th>
+						<th>체지방률</th>
+						<th>골격근</th>
+						<th>기초대사량</th>
+						<th>날짜</th>
+						<th>수정</th>
+						<th>삭제</th>
+					</tr>
+				</thead>
+				<tbody id="userInfoTable">
+					<!-- 데이터가 동적으로 삽입될 부분 -->
+				</tbody>
+			</table>
+		</div>
+
+
+
+		<script>
+			// 12개월 데이터 (예제 데이터)
+			let userData = [
+				{ id: 1, height: 175, weight: 70, bmi: 22.9, bodyFat: 18, muscleMass: 30, bmr: 1600, date: "2025-01" },
+				{ id: 2, height: 175, weight: 72, bmi: 23.5, bodyFat: 17.5, muscleMass: 31, bmr: 1620, date: "2025-02" },
+				{ id: 3, height: 175, weight: 74, bmi: 24.2, bodyFat: 19, muscleMass: 32, bmr: 1650, date: "2025-03" },
+				{ id: 4, height: 175, weight: 71, bmi: 22.8, bodyFat: 18, muscleMass: 30, bmr: 1610, date: "2025-04" },
+				{ id: 5, height: 175, weight: 69, bmi: 22.3, bodyFat: 17, muscleMass: 29, bmr: 1580, date: "2025-05" },
+				{ id: 6, height: 175, weight: 68, bmi: 21.9, bodyFat: 16.5, muscleMass: 28, bmr: 1570, date: "2025-06" },
+				{ id: 7, height: 175, weight: 67, bmi: 21.5, bodyFat: 16, muscleMass: 27.5, bmr: 1560, date: "2025-07" }
+			
+			];
+
+			// 테이블 초기화 및 데이터 로드
+			function loadTable() {
+				const tableBody = document.getElementById("userInfoTable");
+				tableBody.innerHTML = ""; // 기존 내용 삭제
+
+				userData.forEach(data => {
+					const row = `
+                        <tr id="row-${data.id}">
+                            <td>${data.height} cm</td>
+                            <td>${data.weight} kg</td>
+                            <td>${data.bmi}</td>
+                            <td>${data.bodyFat}%</td>
+                            <td>${data.muscleMass} kg</td>
+                            <td>${data.bmr} kcal</td>
+                            <td>${data.date}</td>
+                            <td><button onclick="editRow(${data.id})">수정</button></td>
+                            <td><button onclick="deleteRow(${data.id})">삭제</button></td>
+                        </tr>
+                    `;
+					tableBody.innerHTML += row;
+				});
+			}
+
+			// 행 삭제 기능
+			function deleteRow(id) {
+				if (confirm("정말 삭제하시겠습니까?")) {
+					userData = userData.filter(data => data.id !== id);
+					loadTable();
+				}
+			}
+
+			// 행 수정 기능
+			function editRow(id) {
+				const row = document.getElementById(`row-${id}`);
+				const data = userData.find(d => d.id === id);
+
+				row.innerHTML = `
+                    <td><input type="number" id="editHeight-${id}" value="${data.height}"></td>
+                    <td><input type="number" id="editWeight-${id}" value="${data.weight}"></td>
+                    <td><input type="number" step="0.1" id="editBmi-${id}" value="${data.bmi}"></td>
+                    <td><input type="number" step="0.1" id="editBodyFat-${id}" value="${data.bodyFat}"></td>
+                    <td><input type="number" step="0.1" id="editMuscleMass-${id}" value="${data.muscleMass}"></td>
+                    <td><input type="number" id="editBmr-${id}" value="${data.bmr}"></td>
+                    <td>${data.date}</td>
+                    <td><button onclick="saveRow(${id})">저장</button></td>
+                    <td><button onclick="loadTable()">취소</button></td>
+                `;
+			}
+
+			// 수정 내용 저장 기능
+			function saveRow(id) {
+				const data = userData.find(d => d.id === id);
+				data.height = document.getElementById(`editHeight-${id}`).value;
+				data.weight = document.getElementById(`editWeight-${id}`).value;
+				data.bmi = document.getElementById(`editBmi-${id}`).value;
+				data.bodyFat = document.getElementById(`editBodyFat-${id}`).value;
+				data.muscleMass = document.getElementById(`editMuscleMass-${id}`).value;
+				data.bmr = document.getElementById(`editBmr-${id}`).value;
+
+				loadTable();
+			}
+
+			// 페이지 로드 시 테이블 표시
+			window.onload = loadTable;
+		</script>
+
+	</div>
+
+</body>
+
+</html>

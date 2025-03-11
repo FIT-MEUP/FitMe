@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import fitmeup.handler.CustomLogoutSuccessHandler;
 import fitmeup.handler.LoginFailureHandler;
 import fitmeup.handler.LoginSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -26,15 +27,12 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> auth
             .requestMatchers(
-                "/",
-                "/user/login",
-                "/board/boardList",
-                "/board/boardDetail",
-                "/board/download",
-                "/user/join",
-                "/user/idCheck",
-                "/user/joinProc",
-                
+
+                "/**",
+                "/user/**",
+                "/trainer/**",
+                "/trainers",
+                "/api/**",
                 "/images/**",
                 "/js/**",
                 "/css/**").permitAll()
@@ -43,6 +41,7 @@ public class SecurityConfig {
             // 마이페이지 접근: ADMIN 또는 USER 권한 필요
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
             .anyRequest().authenticated());
+        
         
         // 로그인 설정: 이메일 로그인으로 변경 (usernameParameter -> "userEmail")
         http.formLogin((auth) -> auth
@@ -57,7 +56,7 @@ public class SecurityConfig {
         // 로그아웃 설정
         http.logout((auth) -> auth
             .logoutUrl("/user/logout")
-            .logoutSuccessHandler(logoutHandler)
+            .logoutSuccessUrl("/")
             .invalidateHttpSession(true)
             .clearAuthentication(true));
         

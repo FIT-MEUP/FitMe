@@ -2,6 +2,7 @@ package fitmeup.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +11,7 @@ import fitmeup.entity.UserEntity;
 import fitmeup.entity.UserEntity.Role;
 import fitmeup.repository.AdminRepository;
 import fitmeup.repository.AnnouncementRepository;
+import fitmeup.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -17,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final AnnouncementRepository announcementRepository; // 
+    private final AnnouncementRepository announcementRepository; 
+    private final UserRepository userRepository;
+    // 
 
     /**
      * 승인된 트레이너 목록 (role이 Trainer)
@@ -52,16 +56,18 @@ public class AdminService {
      * 트레이너 승인 처리: PendingTrainer → Trainer로 역할 변경
      */
     @Transactional
-    public void approveTrainer(Long trainerId) {
-        UserEntity trainer = adminRepository.findById(trainerId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 트레이너가 존재하지 않습니다."));
-        // 현재 역할이 PendingTrainer인 경우 승인 처리
-        if (trainer.getRole() == Role.PendingTrainer) {
-            trainer.setRole(Role.Trainer);
-            adminRepository.save(trainer);
+    public void approveTrainer(Long userId) {
+        UserEntity user = adminRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+        System.out.println("승인 전 역할: " + user.getRole());
+        if (user.getRole() == UserEntity.Role.PendingTrainer) {
+            user.setRole(UserEntity.Role.Trainer);
+            userRepository.save(user);
+            System.out.println("승인 후 역할: " + user.getRole());
+        } else {
+            System.out.println("승인 대상이 아님: " + user.getRole());
         }
     }
-
     /**
      * 트레이너 승인 거절: PendingTrainer 상태인 경우 삭제
      */

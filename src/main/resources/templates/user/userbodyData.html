@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 신체 데이터</title>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 상단 메뉴 -->
+        <div class="header">
+            <button class="back-button">돌아가기</button>
+            <h1>나의 신체 데이터</h1>
+            <div class="header-right">
+                <button class="back-button">돌아가기</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2 th:text="${userName} + ' 님'">사용자 이름</h2>
+
+            <table class="user-info">
+                <thead>
+                    <tr>
+                        <th>키</th>
+                        <th>체중</th>
+                        <th>BMI</th>
+                        <th>체지방률</th>
+                        <th>골격근</th>
+                        <th>기초대사량</th>
+                        <th>날짜</th>
+                        <th>수정</th>
+                        <th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 데이터가 없을 때 메시지 출력 -->
+                    <tr th:if="${list.isEmpty()}">
+                        <td colspan="9" style="text-align:center;">신체 데이터가 없습니다.</td>
+                    </tr>
+                    
+                    <!-- 건강 데이터 반복 출력 -->
+                    <tr th:each="data : ${list}" th:id="'row-' + ${data.dataId}">
+                        <td th:text="${data.height} + ' cm'"></td>
+                        <td th:text="${data.weight} + ' kg'"></td>
+                        <td th:text="${data.bmi}"></td>
+                        <td th:text="${data.fatMass} + '%' "></td>
+                        <td th:text="${data.muscleMass} + ' kg'"></td>
+                        <td th:text="${data.basalMetabolicRate} + ' kcal'"></td>
+                        <td th:text="${data.recordDate}"></td>
+                        <td>
+                            <button onclick="editRow(this)" class="btn btn-warning">수정</button>
+                        </td>
+                        <td>
+                            <button onclick="deleteRow(this)" class="btn btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            // 행 삭제 기능
+            function deleteRow(button) {
+                if (confirm("정말 삭제하시겠습니까?")) {
+                    let row = button.closest('tr');
+                    row.remove();
+                }
+            }
+
+            // 행 수정 기능
+            function editRow(button) {
+                let row = button.closest('tr');
+                let cells = row.querySelectorAll('td');
+                
+                let height = cells[0].innerText.replace(' cm', '');
+                let weight = cells[1].innerText.replace(' kg', '');
+                let bmi = cells[2].innerText;
+                let fatMass = cells[3].innerText.replace('%', '');
+                let muscleMass = cells[4].innerText.replace(' kg', '');
+                let bmr = cells[5].innerText.replace(' kcal', '');
+                let date = cells[6].innerText;
+
+                row.innerHTML = `
+                    <td><input type="number" value="${height}" /></td>
+                    <td><input type="number" value="${weight}" /></td>
+                    <td><input type="number" step="0.1" value="${bmi}" /></td>
+                    <td><input type="number" step="0.1" value="${fatMass}" /></td>
+                    <td><input type="number" step="0.1" value="${muscleMass}" /></td>
+                    <td><input type="number" value="${bmr}" /></td>
+                    <td>${date}</td>
+                    <td><button onclick="saveRow(this)" class="btn btn-success">저장</button></td>
+                    <td><button onclick="cancelEdit(this)" class="btn btn-secondary">취소</button></td>
+                `;
+            }
+
+            // 수정 내용 저장 기능
+            function saveRow(button) {
+                let row = button.closest('tr');
+                let inputs = row.querySelectorAll('input');
+                
+                let height = inputs[0].value;
+                let weight = inputs[1].value;
+                let bmi = inputs[2].value;
+                let fatMass = inputs[3].value;
+                let muscleMass = inputs[4].value;
+                let bmr = inputs[5].value;
+                let date = row.children[6].innerText;
+
+                row.innerHTML = `
+                    <td>${height} cm</td>
+                    <td>${weight} kg</td>
+                    <td>${bmi}</td>
+                    <td>${fatMass}%</td>
+                    <td>${muscleMass} kg</td>
+                    <td>${bmr} kcal</td>
+                    <td>${date}</td>
+                    <td><button onclick="editRow(this)" class="btn btn-warning">수정</button></td>
+                    <td><button onclick="deleteRow(this)" class="btn btn-danger">삭제</button></td>
+                `;
+            }
+
+            // 수정 취소 기능
+            function cancelEdit(button) {
+                let row = button.closest('tr');
+                let dataId = row.id.replace('row-', '');
+                location.reload();
+            }
+        </script>
+    </div>
+</body>
+</html>
