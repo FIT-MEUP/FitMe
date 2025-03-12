@@ -35,6 +35,7 @@
 
 						<!-- 인증한 사용자  -->
 						<th:block sec:authorize="isAuthenticated()">
+							<li><a th:href="@{/user/changePassword}">비밀번호 변경</a></li>  <!-- ✅ 추가 -->
 							<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
 						</th:block>
 					</ul>

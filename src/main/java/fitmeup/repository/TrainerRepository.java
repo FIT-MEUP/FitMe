@@ -16,6 +16,7 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
     Optional<TrainerEntity> findByUser(UserEntity user);
 	List<TrainerEntity> findByUser_Role(UserEntity.Role role);
 //    List<TrainerEntity> findByTrainerIdAndStatus(Long trainerId, String status);
-
+    // ✅ `trainerId`가 아닌 `userId` 기준으로 트레이너 조회
+    Optional<TrainerEntity> findByUser_UserId(Long userId);
 
 }

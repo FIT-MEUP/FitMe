@@ -34,20 +34,26 @@ document.addEventListener("DOMContentLoaded", function () {
         this.value = contact;
 
         if (!contactPattern.test(contact)) {
-            contactError.innerText = "연락처 형식은 010-xxx-xxxx 이어야 합니다.";
+            contactError.innerText = "연락처 형식은 010-xxxx-xxxx 이어야 합니다.";
         } else {
             contactError.innerText = "";
         }
     });
+
+    // 📌 에러 메시지 alert() 표시 (중복 선언 수정)
+    let errorMessage = document.getElementById("error-message");
+    if (errorMessage && errorMessage.innerText.trim() !== "") {
+        alert(errorMessage.innerText.trim());  
+    }
 });
 
 // 폼 제출 전 유효성 검사
 function validateForm() {
-    let passwordError = document.getElementById("passwordError").innerText;
-    let nameError = document.getElementById("nameError").innerText;
-    let contactError = document.getElementById("contactError").innerText;
+    let passwordError = document.getElementById("passwordError").innerText.trim();
+    let nameError = document.getElementById("nameError").innerText.trim();
+    let contactError = document.getElementById("contactError").innerText.trim();
 
-    if (passwordError || nameError || contactError) {
+    if (passwordError !== "" || nameError !== "" || contactError !== "") {
         alert("입력값을 확인하세요.");
         return false;
     }
