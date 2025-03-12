@@ -1,4 +1,4 @@
-package net.scit.aaa.service;
+package fitmeup.service;
 
 import java.util.ArrayList;
 import java.util.List;

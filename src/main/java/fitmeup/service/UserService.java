@@ -90,7 +90,7 @@ public class UserService {
     	Optional<UserEntity> temp = userRepository.findById(userId);
     	log.info(temp.toString());
     	return temp.get().getUserEmail();
-    	
+    }
     	
 
     /**
