@@ -1,6 +1,7 @@
 package fitmeup.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import fitmeup.dto.HealthDataDTO;
@@ -49,22 +50,24 @@ public class HealthDataEntity {
 	@Column(nullable = false, name="muscle_mass", precision = 5, scale = 2)
     private BigDecimal muscleMass;
 	
+	@Column(nullable = false, name="fat_mass", precision = 5, scale = 2)
+    private BigDecimal fatMass;
+	
 	@Column(nullable = false,name="height", precision = 5, scale = 2)
     private BigDecimal height;
 	
 	@Column(nullable = false,name="bmi", precision = 5, scale = 2)
     private BigDecimal bmi;
 	
-	
 	@Column(nullable = false, name="basal_metabolic_rate", precision = 6, scale = 2)
     private BigDecimal basalMetabolicRate;
 	
-	@Column(nullable = false,name="record_date", updatable = false)
-    private LocalDateTime recordDate ;
+	@Column(nullable = false,name="record_date", updatable = true)
+    private LocalDate recordDate ;
     		@PrePersist
     		protected void onCreate() {
     		    if (this.recordDate == null) {
-    		        this.recordDate = LocalDateTime.now();
+    		        this.recordDate = LocalDate.now();
     		    }
     		}
 
@@ -77,9 +80,10 @@ public class HealthDataEntity {
 				.height(healthDTO.getHeight())
 				.weight(healthDTO.getWeight())
 				.muscleMass(healthDTO.getMuscleMass())
+				.fatMass(healthDTO.getFatMass())
 				.bmi(healthDTO.getBmi())
 				.basalMetabolicRate(healthDTO.getBasalMetabolicRate())
-//				.recordDate(healthDTO.getRecordDate())
+				.recordDate(healthDTO.getRecordDate())
 				.build();
 		return entity;
 	

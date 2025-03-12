@@ -40,6 +40,7 @@ public class SecurityConfig {
             .requestMatchers("/admin/**").hasAuthority("Admin")
             // 마이페이지 접근: ADMIN 또는 USER 권한 필요
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
+            .requestMatchers("/user/deleteAccount").authenticated()
             .anyRequest().authenticated());
         
         

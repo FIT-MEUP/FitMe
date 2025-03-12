@@ -1,5 +1,8 @@
 package fitmeup.service;
 
+
+import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -70,11 +73,18 @@ public class TrainerService {
 
     @Transactional
     public boolean joinProc(TrainerDTO trainerDTO) {
-        // 1. 중복 가입 방지를 위해 이메일 또는 연락처 체크
+
+        // 1. 중복 가입 방지를 위해 이메일, 연락처 체크 (예외 발생 X, false 반환)
         if (userRepository.findByUserEmail(trainerDTO.getUserEmail()).isPresent()) {
             log.error("이미 등록된 이메일: {}", trainerDTO.getUserEmail());
             return false;
         }
+
+        if (userRepository.findByUserContact(trainerDTO.getUserContact()).isPresent()) {
+            log.error("이미 등록된 전화번호: {}", trainerDTO.getUserContact());
+            return false; // ❌ 예외 발생 X → false 반환
+        }
+
 
         // 2. 비밀번호 암호화
         String encryptedPassword = bCryptPasswordEncoder.encode(trainerDTO.getPassword());
@@ -100,6 +110,7 @@ public class TrainerService {
                 .specialization(trainerDTO.getSpecialization())
                 .experience(trainerDTO.getExperience())
                 .fee(trainerDTO.getFee())
+                .shortIntro(trainerDTO.getShortIntro()) // ✅ 추가
                 .bio(trainerDTO.getBio())
                 .build();
 
@@ -107,9 +118,11 @@ public class TrainerService {
 
         return trainer.getTrainerId() != null;
     }
+
     public Long findUserId(Long trainerId) {	// 0312 수정 김준우
     	Optional<TrainerEntity> temp = trainerRepository.findById(trainerId);
     	return temp.get().getUser().getUserId();
     }
+
     
 }

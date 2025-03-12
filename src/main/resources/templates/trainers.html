@@ -22,23 +22,30 @@
 				data-bs-toggle="collapse" data-bs-target="#navbarNav">
 				<span class="navbar-toggler-icon"></span>
 			</button>
-			
-			<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
-			<div id="user">
-				<ul>
-					<!-- 인증하지 않은 사용자 -->
-					<th:block sec:authorize="isAnonymous()">
-						<li><a th:href="@{/user/login}">로그인</a></li>
-					</th:block>
 
-					<!-- 인증한 사용자  -->
-					<th:block sec:authorize="isAuthenticated()">
-						<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
-					</th:block>
-				</ul>
-			</div>
-		</div>
-	</nav>
+			<div class="collapse navbar-collapse justify-content-end"
+				id="navbarNav">
+				<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
+
+				<div id="user">
+					<ul>
+						<!-- 인증하지 않은 사용자 -->
+						<th:block sec:authorize="isAnonymous()">
+							<li><a th:href="@{/user/login}">로그인</a></li>
+						</th:block>
+
+						<!-- 인증한 사용자  -->
+						<th:block sec:authorize="isAuthenticated()">
+							<li><a th:href="@{/user/changePassword}">비밀번호 변경</a></li>  <!-- ✅ 추가 -->
+							<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
+						</th:block>
+					</ul>
+          </
+				</div>
+				</nav>
+
+			
+		
 
     <div class="container mt-4">
         <!-- 광고 배너 -->

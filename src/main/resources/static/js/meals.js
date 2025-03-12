@@ -40,11 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }, 300);
 
-    //사용자가 직접 입력한 음식 이름 표시 */
-    document.getElementById("mealFoodName").addEventListener("input", function () {
-        let manualFoodName = document.getElementById("manualFoodName");
-        manualFoodName.textContent = this.value.trim() || "직접 입력된 음식이 없습니다.";
-    });
 
     /** ✅ 식단 추가 버튼 활성화/비활성화 */
     function updateAddButtonState() {
@@ -79,81 +74,139 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.querySelectorAll(".edit-meal-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            // 버튼에서 기존 데이터 가져오기
-            let mealId = this.getAttribute("data-mealid");
-            let mealDate = this.getAttribute("data-mealdate");
-            let totalCalories = this.getAttribute("data-totalcalories");
-            let totalCarbs = this.getAttribute("data-totalcarbs");
-            let totalProtein = this.getAttribute("data-totalprotein");
-            let totalFat = this.getAttribute("data-totalfat");
-
-            // 수정 모달에 데이터 채우기
-            document.getElementById("editMealId").value = mealId;
-            document.getElementById("editMealDate").value = mealDate;
-            document.getElementById("editTotalCalories").value = totalCalories;
-            document.getElementById("editTotalCarbs").value = totalCarbs;
-            document.getElementById("editTotalProtein").value = totalProtein;
-            document.getElementById("editTotalFat").value = totalFat;
-        });
-    });
 
 
-    /** ✅ 음식 검색 기능 */
-    let foodSearchInput = document.getElementById("foodSearch");
-    if (foodSearchInput) {  // ✅ foodSearch가 존재하는 경우에만 실행
-        foodSearchInput.addEventListener("input", function () {
-            let query = this.value.trim();
-            if (query.length < 1) return;
 
-            fetch(`/foodsearch?query=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    let resultsDiv = document.getElementById("foodResults");
-                    resultsDiv.innerHTML = "";
 
-                    data.forEach(food => {
-                        let btn = document.createElement("button");
-                        btn.className = "btn btn-light w-100 mt-1";
-                        btn.textContent = `${food.foodName}`;
-                        btn.onclick = function () {
-                            selectFood(food);
-                        };
-                        resultsDiv.appendChild(btn);
-                    });
-                });
+
+
+    console.log("✅ DOM이 로드되었습니다!");
+
+    let mealTypeSelect = document.getElementById("mealType");
+    if (mealTypeSelect) {
+        mealTypeSelect.addEventListener("change", function () {
+            console.log("🚀 선택된 식사 유형:", this.value);
         });
     } else {
-        console.error("❌ foodSearch 요소를 찾을 수 없음! HTML에 추가되어 있는지 확인하세요.");
+        console.error("❌ mealType 요소를 찾을 수 없음!");
     }
 
-    /** ✅ 음식 선택 시 자동 입력 및 먹은 g 수 입력 칸으로 이동 */
+    /** ✅ 음식 검색 기능 */
+    setTimeout(() => {
+        let foodSearchInput = document.getElementById("foodSearch");
+        if (foodSearchInput) {
+            console.log("✅ 음식 검색창을 찾았습니다.");
+            foodSearchInput.addEventListener("input", function () {
+                let query = this.value.trim();
+                if (query.length < 1) {
+                    document.getElementById("foodResults").innerHTML = "";
+                    return;
+                }
+
+                fetch(`/foodsearch?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let resultsDiv = document.getElementById("foodResults");
+                        resultsDiv.innerHTML = "";
+
+                        if (data.length === 0) {
+                            resultsDiv.innerHTML = `<p class="text-muted">검색 결과 없음</p>`;
+                            return;
+                        }
+
+                        data.forEach(food => {
+                            let btn = document.createElement("button");
+                            btn.className = "btn btn-light w-100 mt-1";
+                            btn.textContent = `${food.foodName}`;
+                            btn.onclick = function () {
+                                selectFood(food);
+                            };
+                            resultsDiv.appendChild(btn);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("❌ 음식 검색 중 오류 발생:", error);
+                    });
+            });
+        } else {
+            console.error("❌ foodSearch 요소를 찾을 수 없음!");
+        }
+    }, 500);  // 0.5초 지연 실행
+
+
+
+    /** ✅ 직접 입력 버튼 */
+    document.getElementById("enableManualEntry").addEventListener("click", function () {
+        isManualEntry = true;
+        resetFoodInputFields();
+        setReadOnly(false); // 🔹 직접 입력 모드에서는 입력 가능하게 변경
+
+        let userWeightInput = document.getElementById("userWeight");
+        if (userWeightInput) {
+            userWeightInput.removeEventListener("input", handleUserWeightInput); // 🔹 자동 계산 기능 비활성화
+        }
+    });
+
+    // `readonly` 속성을 설정/해제하는 함수
+    function setReadOnly(state) {
+        let inputs = ["foodCalories", "foodCarbs", "foodProtein", "foodFat"];
+        let foodNameInput = document.getElementById("selectedFoodName");
+
+        inputs.forEach(id => {
+            let input = document.getElementById(id);
+            if (input) {
+                if (state) {
+                    input.setAttribute("readonly", true); // 🔹 자동 입력 모드에서는 읽기 전용
+                } else {
+                    input.removeAttribute("readonly"); // 🔹 직접 입력 모드에서는 입력 가능
+                }
+            }
+        });
+
+        // 🔹 직접 입력 모드에서는 음식 이름 필드는 입력 가능하도록 설정
+        if (foodNameInput) {
+            if (state) {
+                foodNameInput.setAttribute("readonly", true); // 자동 입력 모드에서는 읽기 전용
+            } else {
+                foodNameInput.removeAttribute("readonly"); // 직접 입력 모드에서는 입력 가능
+            }
+        }
+    }
+
+    /** ✅ 음식 선택 시 자동 입력 */
     function selectFood(food) {
-        console.log("선택된 음식 데이터:", food);
+        isManualEntry = false;
+        console.log("✅ 선택된 음식 데이터:", food);
 
         document.getElementById("selectedFoodName").value = food.foodName;
         document.getElementById("standardWeight").value = `표준중량: ${food.standardWeight}`;
+        document.getElementById("userWeight").value = "";
+        document.getElementById("foodCalories").value = food.calories;
+        document.getElementById("foodCarbs").value = food.carbs;
+        document.getElementById("foodProtein").value = food.protein;
+        document.getElementById("foodFat").value = food.fat;
 
         let userWeightInput = document.getElementById("userWeight");
-
-        // 자동 입력 제거 (빈칸 유지)
         userWeightInput.value = "";
-
-        // "먹은 g 수" 입력 칸으로 자동 이동
         userWeightInput.focus();
 
-        // 기존 리스너 제거 후 추가 (중복 방지)
         userWeightInput.removeEventListener("input", handleUserWeightInput);
         userWeightInput.addEventListener("input", function () {
-            handleUserWeightInput(food);
+            if (!isManualEntry) {  // 직접 입력 모드가 아니면 자동 계산 실행
+                handleUserWeightInput(food);
+            }
         });
+
+        setReadOnly(true);
     }
 
-
-    /** ✅ 먹은 g 입력 시 자동으로 영양소 업데이트 */
+    /**  먹은 g 입력 시 자동으로 영양소 업데이트 */
     function handleUserWeightInput(food) {
         let userWeight = parseFloat(document.getElementById("userWeight").value) || 0;
+
+        if (!userWeight || userWeight <= 0) {
+            return;  // g 수가 입력되지 않았거나 0 이하이면 계산하지 않음
+        }
         updateNutritionalValues(food, userWeight);
     }
 
@@ -167,8 +220,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("foodFat").value = (parseFloat(food.fat) * gram).toFixed(1);
     }
 
+    //입력 필드 초기화 함수 (직접 입력 모드 변경 시)
+    function resetFoodInputFields() {
+        document.getElementById("selectedFoodName").value = "";
+        document.getElementById("foodCalories").value = "";
+        document.getElementById("foodCarbs").value = "";
+        document.getElementById("foodProtein").value = "";
+        document.getElementById("foodFat").value = "";
+        document.getElementById("standardWeight").value = "";
+        document.getElementById("userWeight").value = "";
+    }
 
-    /** ✅ 음식 추가 버튼 클릭 시 실행 */
+    let selectedFoods = []; // 사용자가 추가한 음식 목록
+
+    /** 음식 추가 버튼 클릭 시 실행 */
     let addFoodButton = document.getElementById("addFoodButton");
     if (addFoodButton) {
         addFoodButton.addEventListener("click", function () {
@@ -245,9 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("standardWeight").value = "";
             document.getElementById("userweight").value = "";
 
-
-
-
         });
     }
 
@@ -292,7 +354,5 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("foodSearch").addEventListener("input", function () {
         document.getElementById("foodResults").innerHTML = "";
     });
-
-
 
 });

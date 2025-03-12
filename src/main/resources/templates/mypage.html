@@ -14,10 +14,12 @@
     <div class="container">
         <!-- 상단 메뉴 -->
         <div class="header">
-            <button class="back-button">로고</button>
+            <!-- 기존 로고 버튼 수정 -->
+				<button class="back-button" onclick="location.href='/user/home'">로고 
+    			<!-- 	<img src="/images/logo.png" alt="로고" style="width: 50px; height: 50px;"> -->
+				</button>
             <h1>마이페이지</h1>
             <div class="header-right">
-                <button class="notification-button">🔔</button>
                 <button class="edit-button" onclick="toggleEditMode()">수정</button>
             </div>
         </div>
@@ -57,7 +59,7 @@
                         <td id="height">0 cm</td>
                         <td id="weight">0 kg</td>
                         <td id="bmi">0</td>
-                        <td id="bodyFat">0%</td>
+                        <td id="fatMass">0%</td>
                         <td id="muscleMass">0kg</td>
                         <td id="basalMetabolicRate">0 kcal</td>
                         <td id="current-date"></td>
