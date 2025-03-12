@@ -5,6 +5,14 @@ let selectedWorkoutId = null; // 수정할 workoutId 저장 (초기값: null)
 let videoMap = {}; //  전역 변수로 videoMap 초기화
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    let today = new Date().toISOString().split("T")[0]; // 오늘 날짜 (YYYY-MM-DD)
+    let mainPageLink = document.getElementById("mainPageLink");
+
+    if (mainPageLink) {
+        mainPageLink.href = `/work?workoutDate=${today}`; // 운동 게시판 클릭 시, 오늘 날짜로 이동
+    }
+
     let calendarEl = document.getElementById("calendar");
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
@@ -109,35 +117,34 @@ function loadWorkoutData(date) {
 
 
 
-// ✅ 운동 기록을 테이블에 업데이트하는 함수
 function updateWorkoutTable(workouts, videoMap) {
     let table = document.getElementById("workoutTable").getElementsByTagName("tbody")[0];
     table.innerHTML = workouts.length === 0 ? `<tr><td colspan="7">운동 기록이 없습니다.</td></tr>` : "";
 
     workouts.forEach(workout => {
         let videoFile = videoMap[workout.workoutId] || null;
-        let videoButton = videoFile
-            ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 영상 열기</button>`
-            : `<button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workout.workoutId})">📂 삽입</button>`;
+
         let newRow = table.insertRow();
         newRow.innerHTML = `
-    <td>${workout.part}</td>
-    <td>${workout.exercise}</td>
-    <td>${workout.sets}</td>
-    <td>${workout.reps}</td>
-    <td>${workout.weight}</td>
-    <td>
-        ${videoFile ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 영상 열기</button>`
-                : `<button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workout.workoutId})">📂 삽입</button>`}
-    </td>
-    <td>
-        <button class="btn btn-sm btn-warning" onclick="editWorkout(${workout.workoutId})">수정</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteWorkout(${workout.workoutId})">삭제</button>
-    </td>
-`;
-
+            <td>${workout.part}</td>
+            <td>${workout.exercise}</td>
+            <td>${workout.sets}</td>
+            <td>${workout.reps}</td>
+            <td>${workout.weight}</td>
+            <td id="videoSection-${workout.workoutId}">
+                ${videoFile
+                ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 영상 열기</button>`
+                : `<button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workout.workoutId})">📂 삽입</button>`
+            }
+            </td>
+            <td>
+                <button class="btn btn-sm btn-warning" onclick="editWorkout(${workout.workoutId})">수정</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteWorkout(${workout.workoutId})">삭제</button>
+            </td>
+        `;
     });
 }
+
 
 
 // 수정 버튼 클릭 시, 입력 필드에 기존 데이터 채우고 버튼 상태 전환
@@ -148,8 +155,6 @@ function editWorkout(id) {
         url: `/workout/${id}`,
         type: "GET",
         success: function (workout) {
-            console.log("✅ 기존 운동 기록 불러오기:", workout);
-
             if (workout) {
                 $("#part").val(workout.part);
                 $("#exercise").val(workout.exercise);
@@ -159,17 +164,107 @@ function editWorkout(id) {
 
                 $("#updateWorkoutBtn").removeClass("hidden");
                 $("#addWorkoutBtn").addClass("hidden");
+
+                // ✅ 수정 시 버튼 상태 업데이트
+                loadWorkoutVideo(id);
             } else {
                 alert("🚨 운동 기록을 찾을 수 없습니다.");
             }
         },
-        error: function (xhr, status, error) {
-            console.error("❌ 운동 기록 불러오기 실패!", error);
-            alert("운동 기록을 불러오는 중 오류 발생!");
+        error: function () {
+            alert("운동 기록 불러오기 실패!");
         }
     });
 }
 
+
+function loadWorkoutVideo(workoutId) {
+    $.ajax({
+        url: `/workout/video/${workoutId}`,
+        type: "GET",
+        success: function (videoFileName) {
+            let videoSection = document.getElementById(`videoSection-${workoutId}`);
+            videoSection.innerHTML = "";
+
+            if (videoFileName && videoFileName !== "null") {
+                videoSection.innerHTML = `
+                    <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
+                `;
+            } else {
+                videoSection.innerHTML = `
+                    <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
+                `;
+
+                // ✅ 삭제 후 파일 업로드 필드를 재생성
+                let fileInput = document.getElementById("videoFileForWorkout");
+                if (fileInput) fileInput.remove(); // 기존 input 삭제
+
+                fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.id = "videoFileForWorkout"; // 새로 추가
+                fileInput.style.display = "none"; // UI에서 숨기기
+                document.body.appendChild(fileInput);
+            }
+        },
+        error: function () {
+            console.log("❌ 동영상 정보 없음");
+        }
+    });
+}
+
+
+
+// ✅ 운동 기록에 연결된 동영상 삭제
+function deleteWorkoutVideo(workoutId) {
+    if (!confirm("정말 삭제하시겠습니까?")) return;
+
+    $.ajax({
+        url: `/workout/video/${workoutId}`,
+        type: "DELETE",
+        success: function (response) {
+            alert(response); // ✅ 서버에서 반환된 메시지 표시
+            loadWorkoutVideo(workoutId); // UI 업데이트
+        },
+        error: function (xhr) {
+            alert("❌ 삭제 실패: " + xhr.responseText); // ✅ 서버 응답 메시지 표시
+        }
+    });
+}
+
+
+
+
+
+
+// ✅ 새로운 동영상 업로드
+function uploadNewVideo(workoutId) {
+    let fileInput = document.getElementById("videoFileForWorkout");
+    let file = fileInput.files[0];
+
+    if (!file) {
+        alert("업로드할 영상을 선택하세요!");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("videoFile", file);
+    formData.append("workoutId", workoutId);
+
+    $.ajax({
+        url: "/workout/video",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function () {
+            alert("영상이 업로드되었습니다.");
+            loadWorkoutVideo(workoutId);
+        },
+        error: function () {
+            alert("영상 업로드 중 오류 발생!");
+        }
+    });
+}
 
 
 // 수정 완료 버튼 클릭 시, PUT 요청 전송
@@ -187,7 +282,7 @@ function updateWorkout() {
         weight: $("#weight").val(),
         workoutDate: selectedDate
     };
-    // 🔥 AJAX 요청으로 서버에 수정된 데이터 전송
+
     $.ajax({
         url: `/workout/${selectedWorkoutId}`,
         type: "POST",
@@ -204,6 +299,7 @@ function updateWorkout() {
         }
     });
 }
+
 
 // 입력 폼 초기화 및 버튼 상태 복구
 function resetForm() {
@@ -272,6 +368,16 @@ function deleteWorkout(workoutId) {
 // 영상 업로드 기능
 function uploadVideoForWorkout(workoutId) {
     let fileInput = document.getElementById("videoFileForWorkout");
+
+    // ✅ 기존 input이 없다면 새로 생성
+    if (!fileInput) {
+        fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = "videoFileForWorkout"; // 새로 추가
+        fileInput.style.display = "none"; // UI에서 숨기기
+        document.body.appendChild(fileInput); // body에 추가
+    }
+
     fileInput.onchange = function () {
         let file = fileInput.files[0];
         if (!file) {
@@ -284,23 +390,24 @@ function uploadVideoForWorkout(workoutId) {
         formData.append("workoutId", workoutId);
 
         $.ajax({
-            url: "/workout/videos",
+            url: "/workout/video",
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
-            success: function (response) {
-                alert("영상이 업로드되었습니다.");
-                loadWorkoutData(selectedDate);
+            success: function () {
+                alert("✅ 영상이 업로드되었습니다.");
+                loadWorkoutVideo(workoutId);
             },
-            error: function (xhr, status, error) {
-
-                alert("영상 업로드 중 오류 발생!");
+            error: function () {
+                alert("❌ 영상 업로드 중 오류 발생!");
             }
         });
     };
+
     fileInput.click();
 }
+
 
 // 영상 열기 : 새 창으로 열기 
 function openVideo(videoFileName) {
@@ -322,7 +429,6 @@ document.getElementById("searchBtn").addEventListener("click", function () {
 
 // 검색 결과 업데이트 시 테이블 표시 여부 제어
 function updateSearchResultsTable(workouts, videoMap) {
-
     let title = document.getElementById("searchResultsTitle");
     let table = document.getElementById("searchResultsTable");
     let tbody = table.getElementsByTagName("tbody")[0];
@@ -331,10 +437,9 @@ function updateSearchResultsTable(workouts, videoMap) {
 
     if (workouts.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5">운동 기록이 없습니다.</td></tr>`;
-        table.classList.remove("hidden");  // 
-        table.style.display = "table";  // 
+        table.classList.remove("hidden");
+        table.style.display = "table";
         title.classList.add("hidden");
-
         return;
     }
 
@@ -348,7 +453,11 @@ function updateSearchResultsTable(workouts, videoMap) {
 
         let newRow = tbody.insertRow();
         newRow.innerHTML = `
-            <td>${workout.workoutDate || "날짜 없음"}</td>
+            <td>
+                <a href="/work?workoutDate=${workout.workoutDate}" class="text-primary">
+                    ${workout.workoutDate || "날짜 없음"}
+                </a>
+            </td>
             <td>${workout.part || "부위 없음"}</td>
             <td>${workout.exercise || "운동 이름 없음"}</td>
             <td>${workout.sets || 0} / ${workout.reps || 0} / ${workout.weight || 0}</td>
@@ -356,12 +465,10 @@ function updateSearchResultsTable(workouts, videoMap) {
         `;
     });
 
-
-
     table.classList.remove("hidden"); // ✅ hidden 클래스 제거
     table.style.display = "table"; // ✅ 강제 표시
-
 }
+
 
 
 // ✅ 운동 검색 기능 (AJAX 요청)
@@ -538,4 +645,3 @@ function deleteComment(commentId) {
         }
     });
 }
-

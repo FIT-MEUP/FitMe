@@ -1,10 +1,16 @@
 package fitmeup.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
 import fitmeup.entity.UserEntity;
-
 import fitmeup.entity.UserEntity.Role;
 import fitmeup.repository.TrainerPhotoRepository;
 import fitmeup.repository.TrainerRepository;
@@ -12,11 +18,6 @@ import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -98,4 +99,5 @@ public class TrainerService {
 
 
     }
+    
 }
