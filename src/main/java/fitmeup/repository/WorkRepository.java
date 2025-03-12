@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import fitmeup.entity.UserEntity;
 import fitmeup.entity.WorkEntity;
 
 @Repository
@@ -21,7 +22,5 @@ public interface WorkRepository extends JpaRepository<WorkEntity, Long> {
     //검색 기능 
     @Query("SELECT w FROM WorkEntity w WHERE LOWER(w.exercise) LIKE LOWER(CONCAT('%', :exercise, '%'))")
     List<WorkEntity> findByExerciseContainingIgnoreCase(@Param("exercise") String exercise);
-
-
-	
 }
+

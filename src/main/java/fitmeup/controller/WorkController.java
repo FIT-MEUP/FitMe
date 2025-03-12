@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -128,6 +130,45 @@ public class WorkController {
         }
     }
     
+    //운동 기록에 연결된 동영상 가져오기
+    @GetMapping("/workout/video/{workoutId}")
+    @ResponseBody
+    public ResponseEntity<String> getWorkoutVideo(@PathVariable("workoutId") Long workoutId) {  
+        String videoFileName = workService.getWorkoutVideo(workoutId);
+        return ResponseEntity.ok(videoFileName);
+    }
+    
+    // 운동 기록에 연결된 동영상 삭제
+    @DeleteMapping("/workout/video/{workoutId}")
+    @ResponseBody
+    public ResponseEntity<String> deleteWorkoutVideo(@PathVariable("workoutId") Long workoutId) {
+        boolean isDeleted = workService.deleteWorkoutVideo(workoutId);
+
+        if (isDeleted) {
+            return ResponseEntity.ok("✅ 영상이 삭제되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ 영상 삭제 실패: 파일이 존재하지 않거나 삭제할 수 없습니다.");
+        }
+    }
+
+    
+    //새로운 동영상 업로드
+    @PostMapping("/workout/video")
+    @ResponseBody
+    public ResponseEntity<String> uploadWorkoutVideo(
+            @RequestParam("videoFile") MultipartFile file,
+            @RequestParam("workoutId") Long workoutId) {
+        try {
+            String savedFileName = workService.uploadVideo(file, workoutId);
+            return ResponseEntity.ok(savedFileName);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("failed");
+        }
+    }
+
+
+
+    
  //  검색
     @GetMapping("/workout/search")
     @ResponseBody
@@ -168,8 +209,3 @@ public class WorkController {
 
     
 }
-
-
-
-
-

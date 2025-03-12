@@ -190,10 +190,47 @@ public class WorkService {
     public boolean hasVideo(Long workoutId) {
         return workDataRepository.countByWorkoutId(workoutId) > 0;
     }
-   
+    
+    // 동영상 삭제 
+    @Transactional
+    public boolean deleteWorkoutVideo(Long workoutId) {
+        List<WorkDataEntity> videos = workDataRepository.findByWorkoutId(workoutId);
+
+        if (videos.isEmpty()) {
+            System.out.println("❌ [ERROR] 영상 데이터가 존재하지 않음: workoutId=" + workoutId);
+            return false;
+        }
+
+        boolean isDeleted = false;
+        for (WorkDataEntity video : videos) {
+            Path filePath = Paths.get(uploadDir, video.getSavedFileName());
+
+            if (!Files.exists(filePath)) {
+                System.out.println("⚠ [WARN] 파일이 존재하지 않음: " + filePath);
+            } else {
+                try {
+                    Files.delete(filePath);
+                    System.out.println("✅ 파일 삭제 성공: " + filePath);
+                    isDeleted = true;
+                } catch (IOException e) {
+                    System.out.println("❌ [ERROR] 파일 삭제 실패: " + filePath);
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            workDataRepository.delete(video);
+        }
+        return isDeleted;
     }
 
 
 
+    //동영상 재업로드 
+    @Transactional
+    public String getWorkoutVideo(Long workoutId) {
+        List<WorkDataEntity> videos = workDataRepository.findByWorkoutId(workoutId);
+        return videos.isEmpty() ? null : videos.get(0).getSavedFileName();
+    }
 
-
+   
+}

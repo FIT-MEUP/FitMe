@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +40,9 @@ public class MealEntity {
 
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodEntity> foodList; // 해당 식단에 포함된 음식들 (FoodEntity 리스트)
+    
+    @Column(name = "meal_type")
+    private String mealType;
 
     private double totalCalories; // 총 칼로리
     private double totalCarbs; // 총 탄수화물
