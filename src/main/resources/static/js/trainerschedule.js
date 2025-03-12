@@ -72,18 +72,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     var mainCalendar = new FullCalendar.Calendar(mainCalendarEl, {
+		timeZone: 'UTC', // 여기에 타임존을 설정합니다.
+		
         customButtons: {
             logout: {
                 text: '로그아웃',
-                click: function () {
-                    alert('로그아웃 버튼 클릭됨');
-                }
+				click: function () {
+								                window.location.href = '/user/logout?userId=' + trainerId;
+								            }
             },
             personalInfo: {
                 text: '개인정보',
-                click: function () {
-                    alert('개인정보 버튼 클릭됨');
-                }
+				click: function () {
+								       window.location.href = '/user/mypage?userId=' + trainerId;
+								           }
             }
         },
         headerToolbar: {
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
         select: function (info) {
             if (mainCalendar.view.type === 'timeGridWeek' && editingEnabled) {
                 var newEventData = {
-                    title: "New Event",
+                    title: "이용가능 시간",
                     start: info.startStr,
                     end: info.endStr,
                     allDay: info.allDay,
