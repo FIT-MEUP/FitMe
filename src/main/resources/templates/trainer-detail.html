@@ -19,10 +19,21 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <a href="/login" class="btn btn-outline-primary">로그인</a>
-            </div>
-        </div>
+			<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
+			<div id="user">
+				<ul>
+					<!-- 인증하지 않은 사용자 -->
+					<th:block sec:authorize="isAnonymous()">
+						<li><a th:href="@{/user/login}">로그인</a></li>
+					</th:block>
+
+					<!-- 인증한 사용자  -->
+					<th:block sec:authorize="isAuthenticated()">
+						<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
+					</th:block>
+				</ul>
+			</div>
+		</div>
     </nav>
 
     <div class="container mt-4">
@@ -72,6 +83,11 @@
                     <p><strong>대표 가격 (회당):</strong> 
                         <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원
                     </p>
+                    
+                    <!-- 확인용 지울 예정 -->
+                    <p>로그인한 트레이너 여부: <span th:text="${isTrainer}"></span></p>
+					<p>현재 페이지 트레이너 ID: <span th:text="${trainer.trainerId}"></span></p>
+                    
 
 					<!-- 상담 신청 또는 프로필 수정 버튼 -->
 					<div class="text-center mt-3">
