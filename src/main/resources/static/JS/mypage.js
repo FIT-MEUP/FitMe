@@ -1,6 +1,3 @@
-
-
-
 // 수정 모드 상태를 관리
 let isEditMode = false;
 
@@ -13,10 +10,10 @@ function toggleEditMode() {
         // 수정 모드로 전환
         isEditMode = true;
         editButtons.style.display = "block";
-        // 연도와 월 드롭다운 생성
-
+        
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().getMonth() + 1;
+        const currentDay = new Date().getDate();
 
         let yearOptions = "";
         for (let i = currentYear - 10; i <= currentYear + 10; i++) {
@@ -28,71 +25,110 @@ function toggleEditMode() {
             monthOptions += `<option value="${i}" ${i === currentMonth ? "selected" : ""}>${i}월</option>`;
         }
 
+        let dayOptions = "";
+        for (let i = 1; i <= 31; i++) {
+            dayOptions += `<option value="${i}" ${i === currentDay ? "selected" : ""}>${i}일</option>`;
+        }
+
         // 각 셀을 입력 필드로 변환
         userInfoRow.innerHTML = `
-                <td><input type="number" id="editHeight" value="${document.getElementById("height").innerText.replace(' cm', '')}"> cm</td>
-                <td><input type="number" id="editWeight" value="${document.getElementById("weight").innerText.replace(' kg', '')}"> kg</td>
-                <td><input type="number" step="0.1" id="editBmi" value="${document.getElementById("bmi").innerText}"></td>
-                <td><input type="number" step="0.1" id="editBodyFat" value="${document.getElementById("bodyFat").innerText.replace('%', '')}">%</td>
-                <td><input type="number" step="0.1" id="editMuscleMass" value="${document.getElementById("muscleMass").innerText.replace('kg', '')}">kg</td>
-                <td><input type="number" id="editBmr" value="${document.getElementById("bmr").innerText.replace(' kcal', '')}"> kcal</td>
-                <td>
+            <td><input type="number" id="editHeight" value="${document.getElementById("height").innerText.replace(' cm', '')}"> cm</td>
+            <td><input type="number" id="editWeight" value="${document.getElementById("weight").innerText.replace(' kg', '')}"> kg</td>
+            <td><input type="number" step="0.1" id="editBmi" value="${document.getElementById("bmi").innerText}"></td>
+            <td><input type="number" step="0.1" id="editFatMass" value="${document.getElementById("fatMass").innerText.replace('%', '')}">%</td>
+            <td><input type="number" step="0.1" id="editMuscleMass" value="${document.getElementById("muscleMass").innerText.replace('kg', '')}">kg</td>
+            <td><input type="number" id="editBmr" value="${document.getElementById("basalMetabolicRate").innerText.replace(' kcal', '')}"> kcal</td>
+            <td>
                 <select id="editYear">${yearOptions}</select>
-                <select id="editMonth">${monthOptions}</select>
-                </td>
-                `;
+                <select id="editMonth" onchange="updateDays()">${monthOptions}</select>
+                <select id="editDay">${dayOptions}</select>
+            </td>
+        `;
     } else {
-        // 수정 모드 종료
         cancelEdit();
     }
 }
 
+// 월 변경 시 일 수 업데이트 함수
+function updateDays() {
+    const year = document.getElementById("editYear").value;
+    const month = document.getElementById("editMonth").value;
+    const daySelect = document.getElementById("editDay");
+    
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    let dayOptions = "";
+    for (let i = 1; i <= daysInMonth; i++) {
+        dayOptions += `<option value="${i}">${i}일</option>`;
+    }
+    
+    daySelect.innerHTML = dayOptions;
+}
+
 // 저장 버튼 클릭 시 동작
 function saveChanges() {
-    // 입력 필드 값 가져오기
-
     const height = document.getElementById("editHeight").value;
     const weight = document.getElementById("editWeight").value;
     const bmi = document.getElementById("editBmi").value;
-    const bodyFat = document.getElementById("editBodyFat").value;
+    const fatMass = document.getElementById("editFatMass").value;
     const muscleMass = document.getElementById("editMuscleMass").value;
-    const bmr = document.getElementById("editBmr").value;
+    const basalMetabolicRate = document.getElementById("editBmr").value;
     const year = document.getElementById("editYear").value;
     const month = document.getElementById("editMonth").value;
+    const day = document.getElementById("editDay").value;
+    const userId = 1;
+    
+    // 입력받은 연,월,일을 사용해 "YYYY-MM-DD" 형식의 문자열 생성 (타임존 문제 회피)
+    const formattedMonth = month.toString().padStart(2, '0');
+    const formattedDay = day.toString().padStart(2, '0');
+    const recordDate = `${year}-${formattedMonth}-${formattedDay}`;
 
-    // 기존 테이블에 값 업데이트
     const userInfoRow = document.getElementById("userInfoRow");
     userInfoRow.innerHTML = `
-       
-            <td id="height">${height} cm</td>
-            <td id="weight">${weight} kg</td>
-            <td id="bmi">${bmi}</td>
-            <td id="bodyFat">${bodyFat}%</td>
-            <td id="muscleMass">${muscleMass} kg</td>
-            <td id="bmr">${bmr} kcal</td>
-            <td id="current-date">${year}.${month}</td>`;
+        <td id="height">${height} cm</td>
+        <td id="weight">${weight} kg</td>
+        <td id="bmi">${bmi}</td>
+        <td id="fatMass">${fatMass}%</td>
+        <td id="muscleMass">${muscleMass} kg</td>
+        <td id="basalMetabolicRate">${basalMetabolicRate} kcal</td>
+        <td id="current-date">${year}.${month}.${day}</td>
+    `;
 
-    // 저장 후 수정 모드 종료
     isEditMode = false;
     document.getElementById("editButtons").style.display = "none";
 
-    // 서버로 데이터 전송 (예: AJAX 요청)
-    fetch('/health/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'user/application/json' },
-        body: JSON.stringify({ name, age, gender, height, weight, bmi, bodyFat, muscleMass, bmr })
-    }).then(response => {
-        if (response.ok) alert('저장 성공');
-        else alert('저장 실패');
+    $.ajax({
+        url: '/application/json',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ 
+            height, 
+            weight, 
+            bmi, 
+            fatMass,
+            muscleMass, 
+            basalMetabolicRate, 
+            userId,
+            recordDate
+        }),
+        success: function(response) {
+            alert('저장 성공');
+            console.log("서버 응답:", response);
+        },
+        error: function(xhr, status, error) {
+            alert('저장 실패');
+            console.error("에러 상태:", status);
+            console.error("에러 내용:", error);
+        }
     });
 }
 
 // 취소 버튼 클릭 시 동작
 function cancelEdit() {
-    // 수정 모드 취소: 페이지를 새로고침하거나 기존 데이터를 다시 렌더링
     location.reload();
 }
-////////////////////////여기부터 달력////////////////////////
+
+//////////////////////////////////////////////////////////////여기부터 달력/////////////////////////////////////////////////////////
 let currentYear = new Date().getFullYear(); // 현재 연도
 let currentMonth = new Date().getMonth(); // 현재 월 (0부터 시작, 0 = 1월)
 let selectedDate = new Date(); // 기본 날짜는 현재 날짜
@@ -218,7 +254,7 @@ function showGraph(type) {
 
 // 선택된 그래프에 맞는 데이터 생성 함수
 function generateGraphData(type) {
-    const labels = Array.from({ length: 12 }, (_, i) => `${i + 1} 월`);
+    const labels = Array.from({ length: 30 }, (_, i) => `${i + 1} 사`);
     let data = [];
 
     switch (type) {
@@ -234,11 +270,11 @@ function generateGraphData(type) {
     }
 
     return {
-        labels: labels,
+        labels: ['2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25','2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25','2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25'],
         datasets: [{
             label: type === 'weight' ? '체중' : type === 'muscle' ? '골격근' : '체지방',
             data: data,
-            fill: false,
+            fill: true,
             borderColor: 'rgba(75, 192, 192, 1)',
             tension: 0.1
         }]
