@@ -17,30 +17,28 @@
 	<!-- 네비게이션 바 -->
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container">
-			<a class="navbar-brand" href="/">FitMeUp</a>
+			<a class="navbar-brand" href="/">Fit:Me</a>
 			<button class="navbar-toggler" type="button"
 				data-bs-toggle="collapse" data-bs-target="#navbarNav">
 				<span class="navbar-toggler-icon"></span>
 			</button>
-			<div class="collapse navbar-collapse justify-content-end"
-				id="navbarNav">
-				<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
-
-				<div id="user">
-					<ul>
-						<!-- 인증하지 않은 사용자 -->
-						<th:block sec:authorize="isAnonymous()">
-							<li><a th:href="@{/user/login}">로그인</a></li>
-						</th:block>
-
-						<!-- 인증한 사용자  -->
-						<th:block sec:authorize="isAuthenticated()">
-							<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
-						</th:block>
-					</ul>
-				</div>
-				</nav>
 			
+			<!-- 로그인 버튼의 링크를 /user/login으로 수정 -->
+			<div id="user">
+				<ul>
+					<!-- 인증하지 않은 사용자 -->
+					<th:block sec:authorize="isAnonymous()">
+						<li><a th:href="@{/user/login}">로그인</a></li>
+					</th:block>
+
+					<!-- 인증한 사용자  -->
+					<th:block sec:authorize="isAuthenticated()">
+						<li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
+					</th:block>
+				</ul>
+			</div>
+		</div>
+	</nav>
 
     <div class="container mt-4">
         <!-- 광고 배너 -->

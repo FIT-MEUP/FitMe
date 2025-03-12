@@ -81,4 +81,12 @@ public class UserService {
         return userRepository.findEmailByUserNameAndUserContact(userName, userContact)
                 .orElse("존재하지 않는 회원정보입니다.");
     }
+    
+    public String realUserEmail(Long userId) {	// 0312 수정 김준우
+    	Optional<UserEntity> temp = userRepository.findById(userId);
+    	log.info(temp.toString());
+    	return temp.get().getUserEmail();
+    	
+    	
+    }
 }
