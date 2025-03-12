@@ -58,12 +58,15 @@ public class TrainerService {
     
     @Transactional
     public boolean joinProc(TrainerDTO trainerDTO) {
-        // 1. 중복 가입 방지를 위해 이메일 또는 연락처 체크 (필요시)
+        // 1. 중복 가입 방지를 위해 이메일, 연락처 체크 (예외 발생 X, false 반환)
         if (userRepository.findByUserEmail(trainerDTO.getUserEmail()).isPresent()) {
             log.error("이미 등록된 이메일: {}", trainerDTO.getUserEmail());
             return false;
         }
-        // 추가로 연락처도 중복 체크할 수 있습니다.
+        if (userRepository.findByUserContact(trainerDTO.getUserContact()).isPresent()) {
+            log.error("이미 등록된 전화번호: {}", trainerDTO.getUserContact());
+            return false; // ❌ 예외 발생 X → false 반환
+        }
 
         // 2. 비밀번호 암호화
         String encryptedPassword = bCryptPasswordEncoder.encode(trainerDTO.getPassword());
@@ -89,6 +92,7 @@ public class TrainerService {
                 .specialization(trainerDTO.getSpecialization())
                 .experience(trainerDTO.getExperience())
                 .fee(trainerDTO.getFee())
+                .shortIntro(trainerDTO.getShortIntro()) // ✅ 추가
                 .bio(trainerDTO.getBio())
                 .build();
 

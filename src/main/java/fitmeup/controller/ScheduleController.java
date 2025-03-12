@@ -1,5 +1,4 @@
-package fitmeup.controller;
-
+package net.scit.aaa.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,22 +16,20 @@ import fitmeup.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleController {
-
 	
 private final ScheduleService scheduleService;
 	
 	
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
-//	@GetMapping({"/",""})
+	@GetMapping({"/","","/firstUserCalendar"})
 	public String index(Model model
-			//,Long userId
+			 ,@RequestParam(name = "userId", defaultValue = "3") Long userId
 			) {
-		Long userId= 4L;
+	
 //		 Long trainerId=scheduleService.findTrainerId(4L);
 		  Long trainerId=scheduleService.findTrainerId(userId);
 		 
@@ -59,41 +56,13 @@ private final ScheduleService scheduleService;
         String userName = scheduleService.findUserName(userId);
         model.addAttribute("userName", userName);
 	    
-		return "schedule/userschedule";
+		return "userschedule";
 	
-	//trainerSchedule을 Delete하는 메소드
+	
 	}
 	
+
 	
-	
-	//Schedule을 Create하는 method
-//	@GetMapping("/calendar")
-//	@ResponseBody
-//	public String trainercalendarInsert(
-//			@RequestParam("start") String start,
-//			@RequestParam("end") String end
-//			,@RequestParam("userId") Long userId
-//			) {
-//		// 오프셋 없이 로컬 날짜/시간으로 파싱
-//		LocalDateTime startTime = LocalDateTime.parse(start, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-//		LocalDateTime endTime = LocalDateTime.parse(end, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-//		
-//		
-//		ScheduleDTO scheduleDTO = new ScheduleDTO();
-//		
-//		//해당 유저의 trainerId를 findbyId를 통해 찾고 그걸을 setter을 통해 저장
-//		Long trainerId=scheduleService.findTrainerId(userId);
-//		scheduleDTO.setUserId(userId);
-//		scheduleDTO.setTrainerId(trainerId);
-//		scheduleDTO.setStartTime(startTime);
-//		scheduleDTO.setEndTime(endTime);
-//		scheduleService.insertSchedule(scheduleDTO);
-//		log.info("Start Time: " + startTime);
-//		log.info("End Time: " + endTime);
-//		
-//		
-//		return "success";
-//	}
 	
 	
 	@GetMapping("/calendar")
@@ -169,4 +138,6 @@ private final ScheduleService scheduleService;
 	}
 	
 	
+	
+
 }

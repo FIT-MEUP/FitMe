@@ -77,15 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
         customButtons: {
             logout: {
                 text: '로그아웃',
-                click: function () {
-                    alert('로그아웃 버튼 클릭됨');
-                }
+				click: function () {
+								                window.location.href = '/user/logout?userId=' + trainerId;
+								            }
             },
             personalInfo: {
                 text: '개인정보',
-                click: function () {
-                    alert('개인정보 버튼 클릭됨');
-                }
+				click: function () {
+								       window.location.href = '/user/mypage?userId=' + trainerId;
+								           }
             }
         },
         headerToolbar: {

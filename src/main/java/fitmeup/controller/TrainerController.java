@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerEntity;
@@ -76,14 +77,19 @@ public class TrainerController {
     }
 
     @PostMapping("/trainer/joinProc")
-    public String joinProcess(@ModelAttribute TrainerDTO trainerDTO, Model model) {
-        boolean success = trainerService.joinProc(trainerDTO);
-        if (success) {
-            // 가입 신청 성공 시 "가입 신청 완료" 페이지로 이동
-            return "redirect:/trainer/joinPending";
-        } else {
-            // 실패 시 다시 회원가입 페이지로 (에러 메시지 추가 가능)
-            return "redirect:/trainer/join?error";
+    public String joinProcess(@ModelAttribute TrainerDTO trainerDTO, RedirectAttributes redirectAttributes) {
+        try {
+            boolean success = trainerService.joinProc(trainerDTO);
+            if (success) {
+                return "redirect:/trainer/joinPending"; // 가입 성공 시 이동
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "이미 등록된 이메일 또는 전화번호입니다!");
+                return "redirect:/trainerJoin"; // 가입 실패 시 이동
+            }
+        } catch (Exception e) {
+            log.error("회원가입 중 오류 발생: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "회원가입 처리 중 오류가 발생했습니다.");
+            return "redirect:/trainerJoin"; 
         }
     }
 

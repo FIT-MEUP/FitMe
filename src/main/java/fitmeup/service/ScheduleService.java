@@ -1,4 +1,4 @@
-package fitmeup.service;
+package net.scit.aaa.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +20,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleService {
-
 	private final ScheduleRepository scheduleRepository;
 	private final TrainerScheduleRepository trainerScheduleRepository;
 	private final TrainerApplicationRepository trainerApplicationRepository;
@@ -119,7 +117,5 @@ public class ScheduleService {
 		                    .map(ScheduleDTO::toDTO)
 		                    .collect(Collectors.toList());
 		 }
-
-	
 
 }

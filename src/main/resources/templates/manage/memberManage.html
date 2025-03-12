@@ -4,32 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 관리 시스템</title>
-    <script src="../../static/JS/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/trainer-detail.css}" href="../../static/css/tailwind.css">
+    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../static/JS/memberManage.js"></script>
+    <script src="../../static/js/memberManage.js" th:src="@{/js/memberManage.js}"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-200">
     <!-- 헤더 -->
-    <header class="flex justify-between items-center bg-blue-500 text-white p-4 shadow-lg">
-        <button class="bg-white bg-opacity-20 px-4 py-2 rounded-md hover:bg-opacity-40 transition">로그아웃</button>
-        <h1 class="text-3xl font-bold">회원 관리</h1>
-        <button class="bg-white bg-opacity-20 px-4 py-2 rounded-md hover:bg-opacity-40 transition">개인 정보</button>
+    <header class="relative flex items-center justify-between bg-[#262626] text-white p-4 shadow-lg">
+        <!-- 로고 -->
+        <a href="#" th:href="@{/trainerschedule}" class="flex items-center gap-20 py-3 px-5">
+            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="w-[200px] object-contain">
+        </a>
+    
+        <!-- 중앙 제목 -->
+        <h1 class="absolute left-1/2 transform -translate-x-1/2 text-3xl font-bold">회원 관리</h1>
+    
+        <!-- 우측 버튼 -->
+        <div class="flex items-center gap-4">
+            <a th:href="@{/user/logout}">
+                <button class="bg-blue-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">로그아웃</button>
+            </a>
+            <a th:href="@{#}">
+                <button class="bg-blue-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">개인 정보</button>
+            </a>
+        </div>
     </header>
     
     <div class="flex gap-4 p-4">
         <!-- 왼쪽 네비게이션 -->
-        <nav class="w-1/5 bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-blue-600 border-b-2 border-blue-600 pb-2">이용자 명단</h2>
-            <ul class="memberList mt-3 space-y-2">
+        <nav class="w-1/5 bg-[#262626] p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">이용자 명단</h2>
+            <ul class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
                 <!-- 회원 버튼이 동적으로 추가됨 -->
+                <li>
+                    <a href="#" class="block bg-blue-100 text-black font-bold text-2xl p-2 rounded-lg text-center hover:bg-blue-700 transition select-btn" 
+                    th:data-id="${ApprovedItem.applicationId}" 
+                    th:text="${ApprovedItem.name}"></a>
+                </li>
             </ul>
         </nav>
 
         <!-- 메인 콘텐츠 -->
-        <main class="flex-1 bg-white p-6 rounded-lg shadow-md">
+        <main class="flex-1 bg-[#262626] py-6 px-8 rounded-lg shadow-md">
             <div>
-                <h2 class="text-3xl font-semibold text-blue-600">공지사항</h2>
-                <p class="text-gray-600 mt-2">회원의 정보를 관리하고 승인할 수 있습니다.</p>
+                <h2 class="text-3xl font-semibold text-white">공지사항</h2>
+                <div class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
+                    <!-- 공지사항 내용 -->
+                    <p id="noticeText" class="text-gray-600 mt-2">트레이너 공지 사항 내용</p>
+            
+                    <!-- 공지사항 수정 입력창 (초기에는 숨김) -->
+                    <textarea id="editNotice" class="w-full p-2 border rounded mt-2 hidden"></textarea>
+            
+                    <!-- 버튼 그룹 -->
+                    <div class="flex justify-end space-x-2 mt-3">
+                        <button id="editBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition">수정</button>
+                        <button id="saveBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition hidden">완료</button>
+                        <button id="cancelBtn" class="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600 transition hidden">취소</button>
+                    </div>
+                </div>
             </div>
             <!-- 선택된 회원 정보 표시 -->
             <div id="userInfo" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
@@ -37,23 +70,23 @@
                 <p class="text-gray-600">회원 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
             </div>
 
-            <!-- 2×2 추가 박스 -->
+            <!-- 2×2 추가 박스 -->        
             <div class="grid grid-cols-2 gap-4 mt-6">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                <div id="diet-section" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <p>해당 이용자의 오늘의 식단</p>
-                    <p class="text-blue-600 font-semibold mt-2">클릭하면 이용자 식단 게시판 이동</p>
+                    <p class="text-blue-500 font-semibold mt-2">클릭하면 이용자 식단 게시판 이동</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                <div id="workout-section" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <p>해당 이용자의 오늘의 운동</p>
-                    <p class="text-blue-600 font-semibold mt-2">클릭하면 이용자 운동 게시판 이동</p>
+                    <p class="text-blue-500 font-semibold mt-2">클릭하면 이용자 운동 게시판 이동</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <p class="text-lg font-semibold text-blue-600">이번 달 PT 현황</p>
+                <!-- <div id="pt-status" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                    <p class="text-lg font-semibold text-blue-500">이번 달 PT 현황</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                <div class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <table class="w-full border border-gray-300">
                         <thead>
-                            <tr class="bg-blue-500 text-white">
+                            <tr class="bg-[#262626] text-white">
                                 <th class="p-2">일</th><th class="p-2">월</th><th class="p-2">화</th>
                                 <th class="p-2">수</th><th class="p-2">목</th><th class="p-2">금</th><th class="p-2">토</th>
                             </tr>
@@ -69,32 +102,37 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                </div> -->
             </div>
         </main>
 
         <!-- 오른쪽 네비게이션 -->
-        <nav class="w-1/5 bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-lg font-semibold text-blue-600 border-b-2 border-blue-600 pb-2">신청 회원</h2>
-            <table class="w-full border border-gray-300 mt-3">
+        <nav class="w-1/5 bg-[#262626] p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">신청 회원</h2>
+            <table class="w-full mt-4 border-collapse py-6 px-8 rounded-lg shadow-md bg-blue-100">
                 <thead>
-                    <tr class="bg-blue-500 text-white">
-                        <th class="p-2">이름</th><th class="p-2">수락</th><th class="p-2">거절</th>
+                    <tr class=" text-black  text-xl font-bold border-b border-blue-600">
+                        <th class="p-2 border-x-0">이름</th>
+                        <th class="p-2 border-x-0">수락</th>
+                        <th class="p-2 border-x-0">거절</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr class="border-t border-gray-300">
-                        <td class="p-2">최용재</td>
-                        <td class="p-2"><button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition">수락</button></td>
-                        <td class="p-2"><button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition">거절</button></td>
-                    </tr>
-                    <tr class="border-t border-gray-300">
-                        <td class="p-2">최용자</td>
-                        <td class="p-2"><button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-700 transition">수락</button></td>
-                        <td class="p-2"><button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition">거절</button></td>
+                <tbody id="pendingUser" th:each="PendingItem : ${PendingList}">
+                    <tr class="border-y-2 border-[#262626]">
+                        <td class="p-2 text-black font-semibold text-center border-x-0" th:text="${PendingItem.name}">최용재</td>
+                        <td class="p-2 text-center border-x-0">
+                            <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800 transition approve-btn" th:data-id="${PendingItem.applicationId}">수락</button>
+                        </td>
+                        <td class="p-2 text-center border-x-0">
+                            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition reject-btn" th:data-id="${PendingItem.applicationId}">거절</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
+            <!-- 채팅창 공간!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+
+
+
         </nav>
     </div>
 

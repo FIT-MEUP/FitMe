@@ -22,34 +22,36 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TrainerScheduleController {
 
-	
 	private final ScheduleService scheduleService;
 	
 	
 	//TrainerScheuldeDTO를 list형태로 front단에 보내주는 method
-//	@GetMapping({"/",""})
+	@GetMapping({"/","","firstTrainerSchedule"})
 	public String index(Model model
-//			,Long trainerId
+//			
+			,@RequestParam(name = "trainerId", defaultValue = "1") Long trainerId
 			) {
 		System.out.println("dddddd");
 
-		List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
-		//	List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
+//		List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
+			List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
 	    model.addAttribute("list", list);
 	    log.info(list.toString());
-	    model.addAttribute("trainerId",1);
-//	    model.addAttribute("trainerId",trainerId);
+//	    model.addAttribute("trainerId",1);
+	    model.addAttribute("trainerId",trainerId);
 	  
 
-	    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
-	    // List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
+//	    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
+	     List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
 	    
 	   
 	    
 	    model.addAttribute("userlist",userlist);
 	   log.info(list.toString());
 	   log.info("             {}",userlist.toString());
-		return "schedule/trainerschedule";
+	   
+	   System.out.println("Default TimeZone: " + java.util.TimeZone.getDefault().getID());
+		return "trainerschedule";
 	}
 	
 	
@@ -95,5 +97,6 @@ public class TrainerScheduleController {
 		
 		return true;
 	}
+	
 	
 }
