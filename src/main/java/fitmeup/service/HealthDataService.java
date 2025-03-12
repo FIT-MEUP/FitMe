@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.HealthDataDTO;
 import fitmeup.entity.HealthDataEntity;
@@ -14,6 +15,7 @@ import fitmeup.entity.UserEntity;
 import fitmeup.repository.HealthDataRepository;
 import fitmeup.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,26 +37,58 @@ public class HealthDataService {
 		healthRepository.save(entity);
 	}
 	/**
-	 * 등록한 신체 데이터 조회 (구매일 기준 역순)
+	 * 등록한 신체 데이터 조회 (역순)
 	 * @return
 	 */
-	public List<HealthDataDTO> selectAll() {
-		List<HealthDataEntity> temp = healthRepository.findAll(Sort.by(Sort.Direction.DESC, "recordDate"));
-		List<HealthDataDTO> list = new ArrayList<>(); 
+	
+	  public List<HealthDataDTO> selectAll() { List<HealthDataEntity> temp =
+	  healthRepository.findAll(Sort.by(Sort.Direction.DESC, "recordDate"));
+	  List<HealthDataDTO> list = new ArrayList<>();
+	  
+	  temp.forEach((entity) -> list.add(HealthDataDTO.toDTO(entity)));
+	  
+	  return list; }
+	  
+	  public List <HealthDataDTO> listFindByUserId(Long userId){ List
+	  <HealthDataEntity> temp = healthRepository.findByUserId(userId,
+	  Sort.by(Sort.Direction.DESC, "recordDate"));
+	  
+	  List<HealthDataDTO> list = new ArrayList<>();
+	  
+	  temp.forEach((entity) -> list.add(HealthDataDTO.toDTO(entity))); return list;
+	  }
+	 
+	
+	
+	/**
+	 * 등록한 신체 데이터 db 및 페이지에서 수정 & 삭제
+	 * @return
+	 */
+	
+	  @Transactional
+	public void update(HealthDataDTO healthDTO) {
+	    Optional<HealthDataEntity> optionalEntity = healthRepository.findById(healthDTO.getDataId());
+	    if (optionalEntity.isPresent()) {
+	        HealthDataEntity entity = optionalEntity.get();
+	        entity.setHeight(healthDTO.getHeight());
+	        entity.setWeight(healthDTO.getWeight());
+	        entity.setMuscleMass(healthDTO.getMuscleMass());
+	        entity.setBmi(healthDTO.getBmi());
+	       // entity.setFatMass(healthDTO.getFatMass());
+	        entity.setBasalMetabolicRate(healthDTO.getBasalMetabolicRate());
+	        entity.setRecordDate(healthDTO.getRecordDate());
+	        
+	        healthRepository.save(entity);
+	    }
+	}
+
+	public void delete(Long dataId) {
 		
-		temp.forEach((entity) -> list.add(HealthDataDTO.toDTO(entity)));
-		
-		return list;
+	    healthRepository.deleteById(dataId);
 	}
 	
-	public List <HealthDataDTO> listFindByUserId(Long userId){
-		List <HealthDataEntity>	temp = healthRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "recordDate"));
-		
-		List<HealthDataDTO> list = new ArrayList<>(); 
-		
-		temp.forEach((entity) -> list.add(HealthDataDTO.toDTO(entity)));
-		return list;
-	}
+
+
 	
 //	  public void insert(HealthDataDTO healthDTO) {
 //	        // userId를 이용해 UserEntity 가져오기
@@ -81,7 +115,7 @@ public class HealthDataService {
 //	    }
 //	  public List<HealthDataDTO> getAllHealthData(Long userId) {
 //		    // userId에 해당하는 모든 건강 데이터를 조회
-//		    List<HealthDataEntity> entities = healthRepository.findByUser_UserId(userId);
+//		    List<HealthDataEntity> entities = healthRepository.findByUserId(userId);
 //
 //		    return entities.stream()
 //		            .map(HealthDataDTO::toDTO)
