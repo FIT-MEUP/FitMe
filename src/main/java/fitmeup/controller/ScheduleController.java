@@ -1,4 +1,4 @@
-package net.scit.aaa.controller;
+package fitmeup.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +25,7 @@ private final ScheduleService scheduleService;
 	
 	
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
-	@GetMapping({"/","","/firstUserCalendar"})
+	@GetMapping({"/firstUserCalendar"})
 	public String index(Model model
 			 ,@RequestParam(name = "userId", defaultValue = "3") Long userId
 			) {

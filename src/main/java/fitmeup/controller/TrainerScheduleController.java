@@ -26,7 +26,7 @@ public class TrainerScheduleController {
 	
 	
 	//TrainerScheuldeDTO를 list형태로 front단에 보내주는 method
-	@GetMapping({"/","","firstTrainerSchedule"})
+	@GetMapping({"firstTrainerSchedule"})
 	public String index(Model model
 //			
 			,@RequestParam(name = "trainerId", defaultValue = "1") Long trainerId
