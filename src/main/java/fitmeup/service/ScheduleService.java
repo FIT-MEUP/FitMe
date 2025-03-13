@@ -1,18 +1,22 @@
 package fitmeup.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
+import fitmeup.entity.PtSessionHistoryEntity;
 import fitmeup.entity.ScheduleEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
+import fitmeup.repository.PtSessionHistoryRepository;
 import fitmeup.repository.ScheduleRepository;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerRepository;
@@ -31,6 +35,7 @@ public class ScheduleService {
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final UserRepository userRepository;
 	private final TrainerRepository trainerRepository;
+	private final PtSessionHistoryRepository ptSessionHistoryRepository;
 	
 	//trainerSchedule Read
 	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
@@ -139,5 +144,36 @@ public class ScheduleService {
 			 return temp.get().getUser().getUserId(); 
 		 }
 		 
+		 public PtSessionHistoryEntity selectfirstByUserId(Long userId) {
+			 List<PtSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
+			 PtSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+			 return latestHistory;
+		 }
+		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
+		 //pt시작 버튼을 누르면 없어지는 형태
+		 public String minusChangeAmount(Long userId) {
+			// Trainer의 userId로 schedule 목록을 가져옵니다.
+			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(userId);
+			    log.info("Retrieved schedules: {}", scheduleList.size());
+
+			    // 현재 시간과 10분 후 시간 계산
+			    LocalDateTime now = LocalDateTime.now();
+			    LocalDateTime tenMinutesLater = now.plusMinutes(10);
+			  
+			    // scheduleList에서 startTime이 [now, tenMinutesLater) 범위에 있는지 확인
+			    log.info("현재 시각: {}", now);
+			    log.info("10분 후 시각: {}", tenMinutesLater);
+			    boolean exists = scheduleList.stream()
+			            .anyMatch(schedule -> {
+			            	 
+			                LocalDateTime startTime = schedule.getStartTime();
+			                log.info("schedule startTime: {}", schedule.getStartTime());
+			                return ( !startTime.isBefore(now) ) && startTime.isBefore(tenMinutesLater);
+			            });
+			   
+			    log.info(exists ? "success" : "false");
+			    return exists ? "success" : "false";
+			
+		 }	
 
 }
