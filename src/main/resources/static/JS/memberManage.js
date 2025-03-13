@@ -166,14 +166,14 @@ function showUserInfo(response) {
 //     $userInfoDiv.html(`
 //       <h3 class="text-2xl font-semibold text-left px-2 py-1 text-black" th:text="${ApprovedList.Name}"></h3>
 //       <table class="w-full border border-white mt-2">
-//           <tr class="bg-[#262626]">
+//           <tr class="bg-gray-800">
 //               <th class="p-2 text-white">나이</th><th class="p-2 text-white">성별</th>
 //           </tr>
 //           <tr class="border-t">
 //               <td class="p-2"><input type="number" id="editAge" class="border p-1 w-full text-center" value="${ApprovedList.나이}" readonly></td>
 //               <td class="p-2"><input type="text" id="editGender" class="border p-1 w-full text-center" value="${ApprovedList.성별}" readonly></td>
 //           </tr>
-//           <tr class="bg-[#262626]">
+//           <tr class="bg-gray-800">
 //               <th class="p-2 text-white">키</th><th class="p-2 text-white">체중</th>
 //           </tr>
 //           <tr class="border-t">
