@@ -1,3 +1,6 @@
+let loggedInUserId = document.getElementById("loggedInUserId").value;
+let isTrainer = document.getElementById("isTrainer").value === "true"; // Trainer 여부 (Boolean)
+
 let urlParams = new URLSearchParams(window.location.search);
 let selectedDate = urlParams.get("workoutDate") || new Date().toISOString().split("T")[0];
 
@@ -327,7 +330,7 @@ function addWorkout() {
         return;
     }
 
-    console.log("🔥 운동 등록 요청:", { part, exercise, sets, reps, weight, workoutDate }); // ✅ 디버깅용 콘솔 로그 추가
+    console.log("🔥 운동 등록 요청:", { part, exercise, sets, reps, weight, workoutDate, userId: loggedInUserId }); // ✅ 디버깅용 콘솔 로그 추가
 
     $.ajax({
         url: "/workout",
@@ -390,7 +393,7 @@ function uploadVideoForWorkout(workoutId) {
         formData.append("workoutId", workoutId);
 
         $.ajax({
-            url: "/workout/video",
+            url: "/workout/upload/video",
             type: "POST",
             data: formData,
             processData: false,
@@ -481,7 +484,7 @@ function searchWorkout(query) {
     }
 
     $.ajax({
-        url: `/workout/search?query=${query}&hasVideo=${hasVideo}`,
+        url: `/workout/search?query=${query}&hasVideo=${hasVideo}&userId=${loggedInUserId}`,
         type: "GET",
         success: function (response) {
 
