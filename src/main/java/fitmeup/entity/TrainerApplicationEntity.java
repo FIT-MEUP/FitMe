@@ -30,7 +30,7 @@ public class TrainerApplicationEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name="status", nullable = false)
-    private Status status = Status.PENDING; // 신청 상태 (기본값: Pending)
+    private Status status = Status.Pending; // 신청 상태 (기본값: Pending)
 
     @Column(name = "applied_at", nullable = false, updatable = false)
     private LocalDateTime appliedAt = LocalDateTime.now(); // 신청 시간 (기본값: 현재 시간)
@@ -39,7 +39,7 @@ public class TrainerApplicationEntity {
     private LocalDateTime responseAt; // 승인/거절 응답 시간
 
     public enum Status {
-        PENDING, APPROVED, REJECTED
+    	Pending, Approved, Rejected
     }
 
     public static TrainerApplicationEntity toEntity(TrainerApplicationDTO dto, UserEntity user, TrainerEntity trainer) {

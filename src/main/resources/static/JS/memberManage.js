@@ -1,128 +1,173 @@
-// 회원 정보 데이터
-let users = {
-  A: { 이름: "김철수", 나이: 25, 성별: "남", 키: "178cm", 체중: "75kg" },
-  B: { 이름: "이영희", 나이: 22, 성별: "여", 키: "165cm", 체중: "55kg" },
-  C: { 이름: "박민수", 나이: 30, 성별: "남", 키: "182cm", 체중: "85kg" },
-  D: { 이름: "정수진", 나이: 27, 성별: "여", 키: "170cm", 체중: "60kg" },
-  E: { 이름: "최준호", 나이: 23, 성별: "남", 키: "175cm", 체중: "70kg" },
-};
-
-// 회원 목록을 동적으로 생성하는 함수
-function updateUserList() {
-  let $memberList = $(".memberList");
-  $memberList.empty(); // 기존 목록 초기화
-
-  Object.keys(users).forEach((key) => {
-    $memberList.append(`
-                    <li>
-                        <a href="#" class="block bg-blue-500 text-white p-2 rounded-lg text-center hover:bg-blue-700 transition" data-user="${key}">
-                            ${key}
-                        </a>
-                    </li>
-                `);
+// memberManage.js
+$(document).ready(function () {
+  // "수락" 버튼 클릭 시
+  $(".approve-btn").click(function () {
+    let applicationId = $(this).data("id");
+    console.log(applicationId);
+    $.ajax({
+      url: `/trainer/approve`,
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ applicationId: applicationId }),
+      success: function (response) {
+        alert("신청이 승인되었습니다.");
+        location.reload();
+      },
+      error: function (xhr) {
+        alert("승인 중 오류가 발생했습니다.");
+        console.error("Error:", xhr);
+      }
+    });
   });
 
-  // 새롭게 추가된 버튼에 클릭 이벤트 바인딩
-  $(".memberList a")
-    .off("click")
-    .on("click", function (event) {
-      event.preventDefault();
-      let userKey = $(this).data("user");
-      showUserInfo(userKey);
+  // "거절" 버튼 클릭 시
+  $(".reject-btn").click(function () {
+    let applicationId = $(this).data("id");
+    $.ajax({
+      url: `/trainer/reject`,
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ applicationId: applicationId }),
+      success: function (response) {
+        alert("신청이 거절되었습니다.");
+        location.reload();
+      },
+      error: function (xhr) {
+        alert("거절 중 오류가 발생했습니다.");
+        console.error("Error:", xhr);
+      }
     });
-}
-
-// 회원 정보 표시 함수
-function updateUserList() {
-  let $memberList = $(".memberList");
-  $memberList.empty(); // 기존 목록 초기화
-
-  Object.keys(users).forEach((key) => {
-    $memberList.append(`
-                    <li>
-                        <a href="#" class="block bg-blue-500 text-white p-2 rounded-lg text-center hover:bg-blue-700 transition" data-user="${key}">
-                            ${key}
-                        </a>
-                    </li>
-                `);
   });
 
-  // 새롭게 추가된 버튼에 클릭 이벤트 바인딩
-  $(".memberList a")
-    .off("click")
-    .on("click", function (event) {
-      event.preventDefault();
-      let userKey = $(this).data("user");
-      showUserInfo(userKey);
+  // 관리 회원 목록 클릭 시
+  $(".select-btn").click(function () {
+    let applicationId = $(this).data("id");
+    console.log("선택한 applicationId:", applicationId);
+
+    // 회원 정보 조회 (선택된 신청서의 정보를 출력)
+    $.ajax({
+      url: `/trainer/select?applicationId=${applicationId}`,
+      type: "GET",
+      success: function (response) {
+        alert("회원 정보 불러오기 성공");
+        console.log(response);
+        showUserInfo(response);
+      },
+      error: function (xhr) {
+        alert("회원 정보 조회 중 오류가 발생했습니다.");
+        console.error("Error:", xhr);
+      }
     });
-}
+    window.targetApplicationId = applicationId;
+    console.log("선택한 회원의 applicationId:", applicationId);
 
-// 회원 정보 표시 및 수정 기능 추가
-function showUserInfo(userKey) {
-  const user = users[userKey];
-  const $userInfoDiv = $("#userInfo");
+    // AJAX를 통해 채팅 프래그먼트 불러오기, 파라미터로 applicationId 전달
+    $.ajax({
+      url: `/chat?applicationId=${encodeURIComponent(applicationId)}`,
+      type: "GET",
+      success: function (htmlFragment) {
+        $("#chatFragmentContainer").html(htmlFragment);
+        if (typeof initChat === "function") {
+          initChat();
+        }
+        // hidden div #chatData에서 currentUser와 targetUser 정보를 읽어서 저장
+        var chatData = $("#chatData");
+        if(chatData.length) {
+          window.currentUser = {
+            userId: parseInt(chatData.data("current-user-id")),
+            userName: chatData.data("current-user-name")
+          };
+          window.targetUser = {
+            userId: parseInt(chatData.data("target-user-id")),
+            userName: chatData.data("target-user-name")
+          };
+          console.log("로그인한 사용자:", window.currentUser);
+          console.log("대상 회원:", window.targetUser);
+        }
+        if (!window.stompClient || !window.stompClient.connected) {
+          connectChat();
+        }
+      },
+      error: function (xhr) {
+        alert("채팅창 로드 중 오류가 발생했습니다.");
+        console.error("Error:", xhr);
+      }
+    });
+  });
 
-  if (!user) {
-    $userInfoDiv.html(
-      `<p class="text-red-500">해당 회원이 존재하지 않습니다.</p>`
-    );
-    return;
+  // 동적 요소인 #sendBtn 이벤트 위임
+  $(document).on("click", "#sendBtn", function () {
+    window.sendChatMessage();
+  });
+
+  // 메시지 전송 함수
+  window.sendChatMessage = function () {
+    const msgInput = $("#newMessage");
+    const message = msgInput.val().trim();
+    if (!message || !window.targetUser || !window.targetUser.userId) return;
+    const chatMessage = {
+      senderId: window.currentUser.userId,
+      receiverId: window.targetUser.userId,
+      content: message
+    };
+    if (window.stompClient && window.stompClient.connected) {
+      window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+      updateChatWindow(chatMessage);
+    } else {
+      console.error("WS 연결이 되어있지 않습니다.");
+    }
+    msgInput.val("");
+  };
+
+  // WebSocket 연결 함수
+  function connectChat() {
+    const socket = new SockJS('/ws');
+    window.stompClient = Stomp.over(socket);
+    window.stompClient.connect({}, function (frame) {
+      console.log('WS 연결 성공: ' + frame);
+      $("#sendBtn").prop("disabled", false);
+      window.stompClient.subscribe(`/queue/chat/${window.currentUser.userId}`, function (response) {
+        const chat = JSON.parse(response.body);
+        if (
+            (chat.senderId === window.targetUser.userId && chat.receiverId === window.currentUser.userId) ||
+            (chat.senderId === window.currentUser.userId && chat.receiverId === window.targetUser.userId)
+        ) {
+          updateChatWindow(chat);
+          console.log("currentUser:", window.currentUser);
+        } else {
+          updateUnreadCount(chat.senderId);
+        }
+      });
+    }, function (error) {
+      console.error("WS 연결 오류:", error);
+    });
   }
 
-  $userInfoDiv.html(`
-                <h3 class="text-2xl font-semibold text-center text-blue-700">${user.이름}</h3>
-                <table class="w-full border border-white mt-2">
-                    <tr class="bg-blue-500">
-                        <th class="p-2 text-white">나이</th><th class="p-2 text-white">성별</th>
-                    </tr>
-                    <tr class="border-t">
-                        <td class="p-2"><input type="number" id="editAge" class="border p-1 w-full text-center" value="${user.나이}" readonly></td>
-                        <td class="p-2"><input type="text" id="editGender" class="border p-1 w-full text-center" value="${user.성별}" readonly></td>
-                    </tr>
-                    <tr class="bg-blue-500">
-                        <th class="p-2 text-white">키</th><th class="p-2 text-white">체중</th>
-                    </tr>
-                    <tr class="border-t">
-                        <td class="p-2"><input type="text" id="editHeight" class="border p-1 w-full text-center" value="${user.키}" readonly></td>
-                        <td class="p-2"><input type="text" id="editWeight" class="border p-1 w-full text-center" value="${user.체중}" readonly></td>
-                    </tr>
-                </table>
-                <div class="flex justify-end mt-3">
-                    <button id="editUserBtn" class="bg-blue-500 text-white px-4 py-2 mt-3 rounded hover:bg-blue-700 transition">수정</button>
-                    <button id="saveUserBtn" class="bg-green-500 text-white px-4 py-2 mt-3 rounded hover:bg-green-700 transition hidden">저장</button>
-                </div>
-            `);
+  function updateUnreadCount(userId) {
+    const sel = `.user-item[data-user-id="${userId}"] .unread-count`;
+    const unreadSpan = $(sel);
+    if (unreadSpan.length) {
+      let val = parseInt(unreadSpan.text()) || 0;
+      unreadSpan.text(val + 1);
+    }
+  }
 
-  // 수정 버튼 클릭 시 입력 필드 활성화
-  $("#editUserBtn")
-    .off("click")
-    .on("click", function () {
-      $("#editAge, #editGender, #editHeight, #editWeight").removeAttr(
-        "readonly"
-      );
-      $("#editUserBtn").hide();
-      $("#saveUserBtn").show();
-    });
-
-  // 저장 버튼 클릭 시 데이터 업데이트 및 다시 읽기 전용으로 변경
-  $("#saveUserBtn")
-    .off("click")
-    .on("click", function () {
-      users[userKey].나이 = $("#editAge").val();
-      users[userKey].성별 = $("#editGender").val();
-      users[userKey].키 = $("#editHeight").val();
-      users[userKey].체중 = $("#editWeight").val();
-
-      alert("회원 정보가 수정되었습니다!");
-      showUserInfo(userKey); // 변경 사항을 다시 표시
-    });
-}
-
-// 페이지가 로드될 때 회원 목록 자동 생성
-$(document).ready(function () {
-  updateUserList();
-
-  // 버튼 클릭 이벤트 바인딩
-  $("#addUserBtn").on("click", addUser);
-  $("#removeUserBtn").on("click", removeUser);
+  function updateChatWindow(chat) {
+    const conversationArea = $("#conversationArea");
+    const messageDiv = $("<div>").addClass("message");
+    let senderName = (chat.senderId === window.currentUser.userId)
+        ? window.currentUser.userName
+        : window.targetUser.userName;
+    messageDiv.html(`<strong>${senderName}</strong>: <span>${chat.content}</span>`);
+    conversationArea.append(messageDiv);
+    conversationArea.scrollTop(conversationArea.prop("scrollHeight"));
+  }
 });
+
+function showUserInfo(response) {
+  const $userInfoDiv = $("#userInfo");
+  console.log(response);
+  $userInfoDiv.html(`
+    <h3 class="text-2xl font-semibold text-left px-2 py-1 text-black"> ${response}</h3>
+  `);
+}

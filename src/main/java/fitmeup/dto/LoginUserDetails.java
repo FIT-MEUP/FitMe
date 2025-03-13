@@ -32,6 +32,9 @@ public class LoginUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(roles));
     }
+    public Long getUserId() {
+        return userId;
+    }
     
     @Override
     public String getPassword() {
@@ -47,7 +50,11 @@ public class LoginUserDetails implements UserDetails {
     public String getDisplayName() {
         return this.userName;
     }
-    
+
+    public String getRoles() {
+        return roles;
+    }
+
     public static LoginUserDetails toDTO(UserEntity entity) {
         return LoginUserDetails.builder()
                 .userId(entity.getUserId())
@@ -57,4 +64,6 @@ public class LoginUserDetails implements UserDetails {
                 .roles(entity.getRole().name())
                 .build();
     }
+
+
 }
