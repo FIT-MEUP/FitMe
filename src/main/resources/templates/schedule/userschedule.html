@@ -15,7 +15,7 @@ var calendarEventsFromList = [
   /*[# th:each="event, iterStat : ${list}" ]*/
   {
     id: [[${event.trainerScheduleId}]],
-    title:'이용 가능 시간',
+    title:'이용시간',
     start: [[${#temporals.format(event.startTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
     end:   [[${#temporals.format(event.endTime, 'yyyy-MM-dd''T''HH:mm:ss')}]],
     editable: false
@@ -71,7 +71,7 @@ console.log("Merged calendarEvents:", calendarEvents);
       </div>
       <button id="pt-button">PT시작</button>
         <button id="delete-button">기존 일정 삭제</button>
-      <div id="pt-info">잔여 PT:</div>
+      <div id="pt-info">잔여 PT : [[${changeAmount}]]</div>
       <!-- 신규: month view일 때 채팅박스 -->
       <div id="chat-box" style="display:none;">여기에 채팅 내용이 표시됩니다.</div>
     </div>

@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personalInfo: {
                 text: '개인정보',
 				click: function () {
-				               window.location.href = '/user/mypage?userId=' + userId;
+				               window.location.href = '/userbodyData';
 				           }
             }
         },
