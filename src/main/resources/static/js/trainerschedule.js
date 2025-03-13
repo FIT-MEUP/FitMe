@@ -11,7 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var editingEnabled = false;
     var pendingCreations = [];
     var pendingDeletions = [];
-
+	
+	var memberManagementButton = document.getElementById('member-management');
+	memberManagementButton.addEventListener('click', function () {
+	    window.location.href = "trainer/memberManage";
+	
 	scheduleManagementButton.addEventListener('click', function () {
 	    editingEnabled = !editingEnabled;
 	    if (editingEnabled) {
@@ -84,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personalInfo: {
                 text: '개인정보',
 				click: function () {
-								       window.location.href = '/user/mypage?userId=' + trainerId;
+										window.location.href = '/trainer/' + realTrainerId;
 								           }
             }
         },

@@ -5,12 +5,14 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
 import fitmeup.service.ScheduleService;
@@ -26,33 +28,44 @@ public class TrainerScheduleController {
 	
 	
 	//TrainerScheuldeDTO를 list형태로 front단에 보내주는 method
-	@GetMapping({"firstTrainerSchedule"})
-	public String index(Model model
-//			
-			,@RequestParam(name = "trainerId", defaultValue = "1") Long trainerId
-			) {
-		System.out.println("dddddd");
+		@GetMapping({"firstTrainerSchedule"})
+		public String index(Model model
+//				
+//				,@RequestParam(name = "trainerId", defaultValue = "3") Long userId
+				,@AuthenticationPrincipal LoginUserDetails loginUser
+				) {
+			Long userId= loginUser.getUserId();
+			
+//			List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
+				List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(userId);
+		    model.addAttribute("list", list);
+		    log.info(list.toString());
+//		    model.addAttribute("trainerId",1);
+		    model.addAttribute("trainerId",userId);
+		  
 
-//		List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
-			List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
-	    model.addAttribute("list", list);
-	    log.info(list.toString());
-//	    model.addAttribute("trainerId",1);
-	    model.addAttribute("trainerId",trainerId);
-	  
-
-//	    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
-	     List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
-	    
-	   
-	    
-	    model.addAttribute("userlist",userlist);
-	   log.info(list.toString());
-	   log.info("             {}",userlist.toString());
-	   
-	   System.out.println("Default TimeZone: " + java.util.TimeZone.getDefault().getID());
-		return "trainerschedule";
-	}
+//		    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
+		     List<ScheduleDTO> userlist = scheduleService.selectAll(userId);
+		    
+		   
+		    
+		    model.addAttribute("userlist",userlist);
+		   log.info(list.toString());
+		   log.info("             {}",userlist.toString());
+		   
+		   System.out.println("Default TimeZone: " + java.util.TimeZone.getDefault().getID());
+			
+		   
+		   
+		   //User_id를 통해서 trainerEntity의 Trainerid가져오기
+		   Long realTrainerId= scheduleService.findTrainerIdbyUserId(userId);
+		   log.info("realTrainerId: {}",realTrainerId);
+		   model.addAttribute("realTrainerId",realTrainerId);
+		   
+		   
+		   
+		   return "trainerschedule";
+		}
 	
 	
 	
@@ -72,10 +85,13 @@ public class TrainerScheduleController {
 	                                .parse(end, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 	                                .toLocalDateTime();
 
+	    log.info("end : {}", endTime);
+	    log.info("start : {}", startTime);
+	    Long realtrainerId = scheduleService.findTrainerIdbyUserId(trainerId);
 	    TrainerScheduleDTO trainerScheduleDTO = new TrainerScheduleDTO();
 	    trainerScheduleDTO.setStartTime(startTime);
 	    trainerScheduleDTO.setEndTime(endTime);
-	    trainerScheduleDTO.setTrainerId(trainerId);
+	    trainerScheduleDTO.setTrainerId(realtrainerId);
 
 	    scheduleService.insertTrainerSchedule(trainerScheduleDTO);
 	    log.info("Start Time: " + startTime);

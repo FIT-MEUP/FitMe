@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
 import fitmeup.entity.ScheduleEntity;
+import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
 import fitmeup.repository.ScheduleRepository;
 import fitmeup.repository.TrainerApplicationRepository;
+import fitmeup.repository.TrainerRepository;
 import fitmeup.repository.TrainerScheduleRepository;
 import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -28,10 +30,12 @@ public class ScheduleService {
 	private final TrainerScheduleRepository trainerScheduleRepository;
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final UserRepository userRepository;
-
+	private final TrainerRepository trainerRepository;
 	
 	//trainerSchedule Read
-	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long trainerId){
+	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
+		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
+		Long trainerId = trainer.get().getTrainerId();
 		
 		List<TrainerScheduleEntity> temp= trainerScheduleRepository.findByTrainerTrainerId(trainerId);
 		List<TrainerScheduleDTO> list = new ArrayList<>();
@@ -39,6 +43,12 @@ public class ScheduleService {
 		temp.forEach((entity) -> list.add(TrainerScheduleDTO.toDTO(entity)));
 		
 		return list;	
+	}
+	
+	
+	public long findTrainerIdbyUserId(Long userId) {
+		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
+		return trainer.get().getTrainerId();
 	}
 	
 	//trainerSchedule Create
@@ -97,9 +107,14 @@ public class ScheduleService {
 
 		
 		public long findTrainerId(Long userId) {
-		    return trainerApplicationRepository.findByUserUserId(userId)
+		    log.info("트레이너 아이디: ",
+		    		trainerApplicationRepository.findByUserUserId(userId)
+		           .map(app -> app.getTrainer().getTrainerId())
+		           .orElse(0L));
+			return trainerApplicationRepository.findByUserUserId(userId)
 		           .map(app -> app.getTrainer().getTrainerId())
 		           .orElse(0L);
+		    
 		}
 		
 		//자신의 이름 검색
@@ -117,5 +132,12 @@ public class ScheduleService {
 		                    .map(ScheduleDTO::toDTO)
 		                    .collect(Collectors.toList());
 		 }
+		 
+		 public Long findTrainerUserId(Long trainerId) {
+			 Optional<TrainerEntity> temp = trainerRepository.findById(trainerId);
+			 
+			 return temp.get().getUser().getUserId(); 
+		 }
+		 
 
 }
