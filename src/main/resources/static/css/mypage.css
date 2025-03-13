@@ -94,33 +94,36 @@ body {
   background-color: #e0e0e0;
 }
 
-.pt-history-button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  text-align: center;
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  cursor: pointer;
+.menu-buttons {
+   display: flex;
+    flex-direction: column;  /* ✅ 버튼을 세로로 정렬 */
+    gap: 10px; /* ✅ 버튼 간격 조정 */
+    align-items: center; /* ✅ 중앙 정렬 */
+    margin-top: 20px;
 }
 
-.pt-history-button:hover {
-  background-color: #e0e0e0;
+.button {
+    background-color: #f5f5f5;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+    font-size: 16px;
+    text-decoration: none;  /* ✅ 링크 밑줄 제거 */
+    color: black;  
+    display: inline-block; /* ✅ 버튼처럼 보이도록 변경 */
+    width: 300px;
 }
 
-.body-history-button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  text-align: center;
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  cursor: pointer;
+
+
+.button:hover {
+    background-color: #ddd;
 }
 
-.body-history-button:hover {
-  background-color: #e0e0e0;
-}
+
 
 .content {
   flex: 2;
@@ -160,7 +163,7 @@ body {
   margin-top: 30px;
   width: 600px;
   height: 400px;
-  display: none;
+  display: block;
 }
 
 #graphCanvas {
