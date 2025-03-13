@@ -35,19 +35,25 @@ public class UserService {
     /**
      * 회원 가입 처리 (중복 검사 추가)
      */
-    public void joinProc(UserDTO userDTO) {
+    /**
+     * 회원 가입 처리 (중복 검사 추가)
+     */
+    public String joinProc(UserDTO userDTO) {
         if (userRepository.findByUserEmail(userDTO.getUserEmail()).isPresent()) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다!");
+            return "이미 존재하는 이메일입니다!";
         }
 
         if (userRepository.findByUserContact(userDTO.getUserContact()).isPresent()) {
-            throw new IllegalStateException("이미 등록된 전화번호입니다!");
+            return "이미 등록된 전화번호입니다!";
         }
+
 
         // 비밀번호 암호화 후 저장
         String encryptedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
         UserEntity entity = userDTO.toEntity(encryptedPassword);
         userRepository.save(entity);
+        
+        return null; // 성공 시 null 반환
     }
 
     /**
@@ -97,7 +103,7 @@ public class UserService {
      * 비밀번호 찾기 - 콘솔에 임시 비밀번호 출력
      */
     @Transactional
-    public boolean verifyUserAndGenerateTempPassword(String userName, String userEmail, String userContact) {
+    public String verifyUserAndGenerateTempPassword(String userName, String userEmail, String userContact) {
         log.info("🔍 입력된 값: 이름={}, 이메일={}, 연락처={}", userName, userEmail, userContact);
 
         // 📌 수정된 부분: 전화번호 변환 제거
@@ -115,7 +121,7 @@ public class UserService {
                 log.warn("❌ 이름과 이메일도 불일치!");
             }
 
-            return false;
+            return null;
         }
 
         UserEntity user = userOpt.get();
@@ -128,11 +134,10 @@ public class UserService {
         user.setPassword(encryptedPassword);
         userRepository.save(user);
 
-        // ✅ 3. 콘솔에 임시 비밀번호 출력 (이메일 전송 대신)
+        // 임시 비밀번호 콘솔에 출력
         log.info("📩 임시 비밀번호 생성 완료: {}", tempPassword);
-        log.info("✅ {} 님의 이메일 ({})로 비밀번호를 전송했다고 가정합니다.", userName, userEmail);
+        return tempPassword;
 
-        return true;
     }
     
     /**
