@@ -15,6 +15,10 @@ import fitmeup.entity.UserEntity;
 public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
 
 
+    List<TrainerEntity> findByTrainerId(Long trainerId);
+
+
+
     // ✅ 특정 역할(Role)을 가진 트레이너 목록 가져오기
     List<TrainerEntity> findByUser_Role(UserEntity.Role role);
     Optional<TrainerEntity> findById(Long trainerId);    
@@ -23,10 +27,8 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
     // ✅ `trainerId`가 아닌 `userId` 기준으로 트레이너 조회
     Optional<TrainerEntity> findByUser_UserId(Long userId);
 
-
-    // ✅ 이메일 기반으로 트레이너 ID 조회 (불필요한 UserEntity 조회 방지)
-    @Query("SELECT t.trainerId FROM TrainerEntity t WHERE t.user.userEmail = :email")
-    Optional<Long> findTrainerIdByUserEmail(@Param("email") String email);
+    // ✅ 사용자의 이메일로 트레이너 정보를 조회
+    Optional<TrainerEntity> findByUser_UserEmail(String email);
     
     // ✅ UserEntity를 기반으로 TrainerEntity 찾기
     Optional<TrainerEntity> findByUser(UserEntity user);

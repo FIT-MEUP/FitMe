@@ -40,6 +40,7 @@ public class HealthDataService {
 	 * 등록한 신체 데이터 조회 (역순)
 	 * @return
 	 */
+
 	
 	  public List<HealthDataDTO> selectAll() { List<HealthDataEntity> temp =
 	  healthRepository.findAll(Sort.by(Sort.Direction.DESC, "recordDate"));
@@ -85,6 +86,18 @@ public class HealthDataService {
 	public void delete(Long dataId) {
 		
 	    healthRepository.deleteById(dataId);
+	}
+	
+	public HealthDataDTO getLatestHealthData(Long userId) {
+	    List<HealthDataEntity> dataList = healthRepository.findByUserId(
+	        userId, Sort.by(Sort.Direction.DESC, "recordDate"));
+	    
+	    if (!dataList.isEmpty()) {
+	        return HealthDataDTO.toDTO(dataList.get(0)); // 가장 최신 데이터 반환
+	    }
+	    
+	    return null; // 데이터 없으면 null 반환
+
 	}
 	
 

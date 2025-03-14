@@ -1,10 +1,6 @@
 package fitmeup.service;
 
-
-import java.util.Collections;
-
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,24 +43,18 @@ public class TrainerService {
         return trainerPhotoRepository.findByTrainer_TrainerId(trainerId);
     }
 
-    // ✅ 트레이너 ID 가져오기 (userEmail 기반)
-    public Long getTrainerIdByUserEmail(String userEmail) {//userEmail= User 테이블의 PK
-        log.info("🔍 입력된 이메일: {}", userEmail); // ✅ 입력된 이메일 확인
-        Long trainerId = trainerRepository.findTrainerIdByUserEmail(userEmail).orElse(null);
-        log.info("🔍 조회된 trainerId: {}", trainerId); // ✅ 조회 결과 확인
-
-        // ✅ trainerId가 null이면 DB에서 UserEntity가 제대로 연관되었는지 확인 필요
-        if (trainerId == null) {
-            UserEntity user = userRepository.findByUserEmail(userEmail).orElse(null);
-            log.info("🔍 UserEntity 조회 결과: {}", user);
-            if (user != null) {
-                TrainerEntity trainer = trainerRepository.findByUser(user).orElse(null);
-                log.info("🔍 TrainerEntity 조회 결과: {}", trainer);
-            }
-        }
-        return trainerId;
+    public TrainerEntity getTrainerByUserEmail(String userEmail) {
+        return trainerRepository.findByUser_UserEmail(userEmail).orElse(null);
     }
 
+    public Long getTrainerIdByUserEmail(String userEmail) {
+        TrainerEntity trainer = getTrainerByUserEmail(userEmail);
+        return (trainer != null) ? trainer.getTrainerId() : null;
+    }
+
+    public TrainerEntity getTrainerByUserId(Long userId) {
+        return trainerRepository.findByUser_UserId(userId).orElse(null);
+    }
 
     // ✅ 트레이너 정보 저장
     public void saveTrainer(TrainerEntity trainer) {
@@ -118,11 +108,5 @@ public class TrainerService {
 
         return trainer.getTrainerId() != null;
     }
-
-    public Long findUserId(Long trainerId) {	// 0312 수정 김준우
-    	Optional<TrainerEntity> temp = trainerRepository.findById(trainerId);
-    	return temp.get().getUser().getUserId();
-    }
-
     
 }

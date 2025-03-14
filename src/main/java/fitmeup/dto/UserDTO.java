@@ -46,11 +46,29 @@ public class UserDTO {
                 .userId(this.userId)
                 .password(encryptedPassword)
                 .userName(this.userName)
-                .userGender(UserEntity.Gender.valueOf(this.userGender))
+                .userGender(convertToGenderEnum(this.userGender))  // ✅ 변환 함수 사용
                 .userBirthdate(this.userBirthdate)
                 .userEmail(this.userEmail)
                 .userContact(this.userContact)
-                .role(UserEntity.Role.valueOf(this.role))
+                .role(convertToRoleEnum(this.role))  // ✅ 변환 함수 사용
                 .build();
+    }
+
+    // ✅ 안전한 Gender 변환 함수
+    private UserEntity.Gender convertToGenderEnum(String gender) {
+        try {
+            return UserEntity.Gender.valueOf(gender.substring(0, 1).toUpperCase() + gender.substring(1).toLowerCase());
+        } catch (Exception e) {
+            return UserEntity.Gender.Other;  // ❗예외 발생 시 기본값 반환 (Optional)
+        }
+    }
+
+    // ✅ 안전한 Role 변환 함수
+    private UserEntity.Role convertToRoleEnum(String role) {
+        try {
+            return UserEntity.Role.valueOf(role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase());
+        } catch (Exception e) {
+            return UserEntity.Role.User;  // ❗예외 발생 시 기본값 반환 (Optional)
+        }
     }
 }

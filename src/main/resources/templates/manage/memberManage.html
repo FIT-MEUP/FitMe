@@ -8,10 +8,17 @@
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../../static/js/memberManage.js" th:src="@{/js/memberManage.js}"></script>
+
+    <!-- SockJS와 Stomp.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
 </head>
 <body class="bg-gray-200">
     <!-- 헤더 -->
-    <header class="relative flex items-center justify-between bg-[#262626] text-white p-4 shadow-lg">
+    <header class="relative flex items-center justify-between bg-gray-800 text-white p-4 shadow-lg h-28">
+
         <!-- 로고 -->
         <a href="#" th:href="@{/trainerschedule}" class="flex items-center gap-20 py-3 px-5">
             <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="w-[200px] object-contain">
@@ -33,7 +40,9 @@
     
     <div class="flex gap-4 p-4">
         <!-- 왼쪽 네비게이션 -->
-        <nav class="w-1/5 bg-[#262626] p-6 rounded-lg shadow-md">
+
+        <nav class="w-1/5 bg-gray-800 p-6 rounded-lg shadow-md">
+
             <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">이용자 명단</h2>
             <ul class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
                 <!-- 회원 버튼이 동적으로 추가됨 -->
@@ -46,7 +55,9 @@
         </nav>
 
         <!-- 메인 콘텐츠 -->
-        <main class="flex-1 bg-[#262626] py-6 px-8 rounded-lg shadow-md">
+
+        <main class="flex-1 bg-gray-800 py-6 px-8 rounded-lg shadow-md">
+
             <div>
                 <h2 class="text-3xl font-semibold text-white">공지사항</h2>
                 <div class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
@@ -60,7 +71,9 @@
                     <div class="flex justify-end space-x-2 mt-3">
                         <button id="editBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition">수정</button>
                         <button id="saveBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition hidden">완료</button>
-                        <button id="cancelBtn" class="bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600 transition hidden">취소</button>
+
+                        <button id="cancelBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition hidden">취소</button>
+
                     </div>
                 </div>
             </div>
@@ -86,7 +99,9 @@
                 <div class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <table class="w-full border border-gray-300">
                         <thead>
-                            <tr class="bg-[#262626] text-white">
+
+                            <tr class="bg-gray-800 text-white">
+
                                 <th class="p-2">일</th><th class="p-2">월</th><th class="p-2">화</th>
                                 <th class="p-2">수</th><th class="p-2">목</th><th class="p-2">금</th><th class="p-2">토</th>
                             </tr>
@@ -107,7 +122,9 @@
         </main>
 
         <!-- 오른쪽 네비게이션 -->
-        <nav class="w-1/5 bg-[#262626] p-6 rounded-lg shadow-md">
+
+        <nav class="w-1/5 bg-gray-800 p-6 rounded-lg shadow-md">
+
             <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">신청 회원</h2>
             <table class="w-full mt-4 border-collapse py-6 px-8 rounded-lg shadow-md bg-blue-100">
                 <thead>
@@ -118,7 +135,9 @@
                     </tr>
                 </thead>
                 <tbody id="pendingUser" th:each="PendingItem : ${PendingList}">
-                    <tr class="border-y-2 border-[#262626]">
+
+                    <tr class="border-y-2 border-gray-800">
+
                         <td class="p-2 text-black font-semibold text-center border-x-0" th:text="${PendingItem.name}">최용재</td>
                         <td class="p-2 text-center border-x-0">
                             <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800 transition approve-btn" th:data-id="${PendingItem.applicationId}">수락</button>
@@ -131,6 +150,9 @@
             </table>
             <!-- 채팅창 공간!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
+            <!-- 최상위 컨테이너에 로그인 사용자 이름을 data-user-name 속성으로 설정 (JS에서 사용) -->
+            <div class="container" th:data-user-name="${loginUserId}" style="display:none;"></div>
+            <div id="chatFragmentContainer" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md"></div>
 
 
         </nav>
