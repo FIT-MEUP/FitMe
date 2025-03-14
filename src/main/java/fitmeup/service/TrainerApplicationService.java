@@ -1,17 +1,30 @@
 package fitmeup.service;
 
+
 import fitmeup.dto.UserDTO;
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+
 import fitmeup.dto.ApproveRequestDTO;
 import fitmeup.dto.TrainerApplicationDTO;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerApplicationEntity.Status;
 import fitmeup.repository.TrainerApplicationRepository;
+
+import fitmeup.dto.TrainerApplicationDTO;
+import fitmeup.entity.TrainerApplicationEntity;
+import fitmeup.entity.TrainerEntity;
+import fitmeup.entity.UserEntity;
+import fitmeup.repository.TrainerApplicationRepository;
+import fitmeup.repository.TrainerRepository;
+import fitmeup.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +33,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class TrainerApplicationService {
-
+	private final UserRepository userRepository;
+	private final TrainerRepository trainerRepository;
     private final TrainerApplicationRepository trainerApplicationRepository;
 
     public boolean isAlreadyApplied(String userEmail, Long trainerId) {
         return trainerApplicationRepository.existsByUserUserEmailAndTrainerTrainerId(userEmail, trainerId);
     }
 
+
     public List<TrainerApplicationDTO> getApplicationById(Long trainerNum, TrainerApplicationEntity.Status status) {
         List<TrainerApplicationEntity> entityList = trainerApplicationRepository.findByTrainerTrainerId(trainerNum);
+
         List<TrainerApplicationDTO> dtoList = new ArrayList<>();
 
         entityList.forEach(entity -> {
@@ -53,7 +69,9 @@ public class TrainerApplicationService {
         }
     }
 
-    public String selectOne(Long applicationId) {
+
+	public String selectOne(Long applicationId) {
+
         Optional<TrainerApplicationEntity> applicationOptional = trainerApplicationRepository.findById(applicationId);
 
         if (applicationOptional.isPresent()) {
@@ -62,6 +80,24 @@ public class TrainerApplicationService {
         } else {
             throw new RuntimeException("Application not found with ID: " + applicationId);
         }
+
+		
 	}
+
+	public void createApplication(Long userId, Long trainerId) {
+		Optional<UserEntity> temp = userRepository.findById(userId);
+		Optional<TrainerEntity> temp2 = trainerRepository.findById(trainerId);
+		String name = temp.get().getUserName();
+	    TrainerApplicationDTO trainerApplicationDTO= new TrainerApplicationDTO();
+	    trainerApplicationDTO.setName(name);
+	    //trainerApplicationDTO.setStatus("Pending");
+	    
+	    TrainerApplicationEntity trainerApplicationEntity =
+	    		TrainerApplicationEntity.toEntity(trainerApplicationDTO, temp.get(), temp2.get());
+	    trainerApplicationRepository.save(trainerApplicationEntity);
+	}
+	
+	
+
 
 }

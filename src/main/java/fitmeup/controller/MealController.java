@@ -54,9 +54,9 @@ public class MealController {
             }
         }
 
-        // ✅ 특정 userId가 있으면 해당 유저의 식단을 가져오고, 없으면 기본값(userId=1L) 사용
+        // 특정 userId가 있으면 해당 유저의 식단을 가져오고, 없으면 기본값(userId=1L) 사용
         if (userId == null) {
-            userId = 1L; // 🔥 로그인 기능 추가 전까지 임시 userId 사용
+            userId = 1L; // 로그인 기능 추가 전까지 임시 userId 사용
         }
 
         meals = mealService.getMealsByUserAndDate(userId, selectedDate);
@@ -73,6 +73,7 @@ public class MealController {
     public String saveMeal(
             @RequestParam(name = "userId", required = false) Long userId, // FullCalendar 적용: userId 유지
             @RequestParam(name = "mealDate") String mealDate,
+            @RequestParam(name = "mealType", required = false) String mealType,
             @RequestParam(name = "totalCalories" , required = false, defaultValue = "0") Double totalCalories,
             @RequestParam(name = "totalCarbs", required = false, defaultValue = "0") Double totalCarbs,
             @RequestParam(name = "totalProtein", required = false, defaultValue = "0") Double totalProtein,
@@ -93,7 +94,8 @@ public class MealController {
 
         MealDTO mealDTO = new MealDTO();
         mealDTO.setUserId(userId);
-        mealDTO.setMealDate(LocalDate.parse(mealDate)); // 🔥 FullCalendar에서 선택된 날짜 적용
+        mealDTO.setMealDate(LocalDate.parse(mealDate)); // FullCalendar에서 선택된 날짜 적용
+        mealDTO.setMealType(mealType); 
         mealDTO.setTotalCalories(totalCalories);
         mealDTO.setTotalCarbs(totalCarbs);
         mealDTO.setTotalProtein(totalProtein);
@@ -146,16 +148,30 @@ public class MealController {
  // 특정 식단 수정 (수정 페이지 혹은 모달에서 호출)
     @PostMapping("/meals/update")
     public String updateMeal(
-            @RequestParam(name = "mealId") Long mealId,
-            @RequestParam(name = "totalCalories") double totalCalories,
-            @RequestParam(name = "totalCarbs") double totalCarbs,
-            @RequestParam(name = "totalProtein") double totalProtein,
-            @RequestParam(name = "totalFat") double totalFat,
-            @RequestParam(name = "mealDate") String mealDate) {
+    		@RequestParam(name = "mealId") Long mealId,
+            @RequestParam(name = "mealDate") String mealDate,
+            @RequestParam(name = "mealType") String mealType,
+            @RequestParam(name = "totalCalories") Double totalCalories,
+            @RequestParam(name = "totalCarbs") Double totalCarbs,
+            @RequestParam(name = "totalProtein") Double totalProtein,
+            @RequestParam(name = "totalFat") Double totalFat,
+            @RequestParam(name = "foodList", required = false) List<Long> foodIds,
+            @RequestParam(name = "file", required = false) MultipartFile file) {
 
-        mealService.updateMeal(mealId, totalCalories, totalCarbs, totalProtein, totalFat);
-        return "redirect:/meals?mealDate=" + mealDate; // ✅ 수정 후 해당 날짜 페이지로 리디렉트
+    mealService.updateMeal(mealId, mealType, totalCalories, totalCarbs, totalProtein, totalFat, foodIds, file);
+                return "redirect:/meals?mealDate=" + mealDate;
     }
+    
+    @GetMapping("/meals/{mealId}")
+    public ResponseEntity<MealDTO> getMealById(@PathVariable("mealId") Long mealId) {  // ✅ 변수명 명시
+        MealDTO meal = mealService.getMealById(mealId);
+
+        if (meal == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(meal);
+    }
+
     
     
     // 파일 업로드 

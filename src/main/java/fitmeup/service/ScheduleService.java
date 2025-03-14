@@ -1,39 +1,46 @@
 package fitmeup.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
+import fitmeup.entity.PtSessionHistoryEntity;
 import fitmeup.entity.ScheduleEntity;
+import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
+import fitmeup.repository.PtSessionHistoryRepository;
 import fitmeup.repository.ScheduleRepository;
 import fitmeup.repository.TrainerApplicationRepository;
+import fitmeup.repository.TrainerRepository;
 import fitmeup.repository.TrainerScheduleRepository;
 import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleService {
-
 	private final ScheduleRepository scheduleRepository;
 	private final TrainerScheduleRepository trainerScheduleRepository;
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final UserRepository userRepository;
-
+	private final TrainerRepository trainerRepository;
+	private final PtSessionHistoryRepository ptSessionHistoryRepository;
 	
 	//trainerSchedule Read
-	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long trainerId){
+	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
+		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
+		Long trainerId = trainer.get().getTrainerId();
 		
 		List<TrainerScheduleEntity> temp= trainerScheduleRepository.findByTrainerTrainerId(trainerId);
 		List<TrainerScheduleDTO> list = new ArrayList<>();
@@ -41,6 +48,12 @@ public class ScheduleService {
 		temp.forEach((entity) -> list.add(TrainerScheduleDTO.toDTO(entity)));
 		
 		return list;	
+	}
+	
+	
+	public long findTrainerIdbyUserId(Long userId) {
+		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
+		return trainer.get().getTrainerId();
 	}
 	
 	//trainerSchedule Create
@@ -99,9 +112,14 @@ public class ScheduleService {
 
 		
 		public long findTrainerId(Long userId) {
-		    return trainerApplicationRepository.findByUserUserId(userId)
+		    log.info("트레이너 아이디: ",
+		    		trainerApplicationRepository.findByUserUserId(userId)
+		           .map(app -> app.getTrainer().getTrainerId())
+		           .orElse(0L));
+			return trainerApplicationRepository.findByUserUserId(userId)
 		           .map(app -> app.getTrainer().getTrainerId())
 		           .orElse(0L);
+		    
 		}
 		
 		//자신의 이름 검색
@@ -119,7 +137,43 @@ public class ScheduleService {
 		                    .map(ScheduleDTO::toDTO)
 		                    .collect(Collectors.toList());
 		 }
+		 
+		 public Long findTrainerUserId(Long trainerId) {
+			 Optional<TrainerEntity> temp = trainerRepository.findById(trainerId);
+			 
+			 return temp.get().getUser().getUserId(); 
+		 }
+		 
+		 public PtSessionHistoryEntity selectfirstByUserId(Long userId) {
+			 List<PtSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
+			 PtSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+			 return latestHistory;
+		 }
+		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
+		 //pt시작 버튼을 누르면 없어지는 형태
+		 public String minusChangeAmount(Long userId) {
+			// Trainer의 userId로 schedule 목록을 가져옵니다.
+			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(userId);
+			    log.info("Retrieved schedules: {}", scheduleList.size());
 
-	
+			    // 현재 시간과 10분 후 시간 계산
+			    LocalDateTime now = LocalDateTime.now();
+			    LocalDateTime tenMinutesLater = now.plusMinutes(10);
+			  
+			    // scheduleList에서 startTime이 [now, tenMinutesLater) 범위에 있는지 확인
+			    log.info("현재 시각: {}", now);
+			    log.info("10분 후 시각: {}", tenMinutesLater);
+			    boolean exists = scheduleList.stream()
+			            .anyMatch(schedule -> {
+			            	 
+			                LocalDateTime startTime = schedule.getStartTime();
+			                log.info("schedule startTime: {}", schedule.getStartTime());
+			                return ( !startTime.isBefore(now) ) && startTime.isBefore(tenMinutesLater);
+			            });
+			   
+			    log.info(exists ? "success" : "false");
+			    return exists ? "success" : "false";
+			
+		 }	
 
 }

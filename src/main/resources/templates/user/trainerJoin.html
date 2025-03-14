@@ -1,80 +1,142 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>트레이너 회원가입</title>
-    
-     <!-- jQuery -->
-   <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-   <script defer th:src="@{/js/trainerJoin.js}"></script>
-   
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Bootstrap 포함 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    
-    <!-- 내 CSS -->
-    <link rel="stylesheet" th:href="@{/css/join.css}">
+<meta charset="UTF-8">
+<title>트레이너 회원가입</title>
+
+
+
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script defer th:src="@{/js/trainerJoin.js}"></script>
+
+<!-- Bootstrap JS -->
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap 포함 -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<!-- 내 CSS -->
+<link rel="stylesheet" th:href="@{/css/join.css}">
+
+<meta name="errorMessage" th:if="${errorMessage}"
+	th:content="${errorMessage}">
+
 </head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center">트레이너 회원가입</h2>
-        <form th:action="@{/trainer/joinProc}" method="post" onsubmit="return validateForm()">
-            <div class="mb-3">
-                <label for="userEmail" class="form-label">이메일 *</label>
-                <input type="email" class="form-control" id="userEmail" name="userEmail" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">비밀번호 *</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-                <span id="passwordError" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label for="userName" class="form-label">이름 *</label>
-                <input type="text" class="form-control" id="userName" name="userName" required>
-                <span id="nameError" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">성별 *</label><br>
-                <input type="radio" name="userGender" value="Male" required> 남
-                <input type="radio" name="userGender" value="Female"> 여
-            </div>
-            <div class="mb-3">
-                <label for="userBirthdate" class="form-label">생년월일 *</label>
-                <input type="date" class="form-control" id="userBirthdate" name="userBirthdate" required>
-            </div>
-            <div class="mb-3">
-                <label for="userContact" class="form-label">연락처 *</label>
-                <input type="text" class="form-control" id="userContact" name="userContact" required>
-                <span id="contactError" class="text-danger"></span>
-            </div>
-
-            <!-- 트레이너 추가 정보 -->
-            <div class="mb-3">
-                <label for="specialization" class="form-label">전문 분야 *</label>
-                <input type="text" class="form-control" id="specialization" name="specialization" required>
-            </div>
-            <div class="mb-3">
-                <label for="experience" class="form-label">경력 (년) *</label>
-                <input type="number" class="form-control" id="experience" name="experience" required>
-            </div>
-              
-            <div class="mb-3">
-                <label for="fee" class="form-label">수업료 *</label>
-                <input type="number" step="0.01" class="form-control" id="fee" name="fee" required>
-            </div>
-            <div class="mb-3">
-                <label for="bio" class="form-label">자기소개 *</label>
-                <textarea class="form-control" id="bio" name="bio" rows="3" required></textarea>
-            </div>
-
-            <input type="hidden" name="role" value="Trainer">
-            <button type="submit" class="btn btn-warning w-100">트레이너 가입</button>
-            <a href="/" class="btn btn-secondary w-100 mt-2">취소</a>
-        </form>
-    </div>
+	<script>
+        // 서버에서 전달된 에러 메시지가 있으면 alert 표시
+        document.addEventListener("DOMContentLoaded", function () {
+            const errorMessage = document.querySelector("meta[name='errorMessage']")?.content;
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+        });
+    </script>
     
-   
+	<div class="container mt-5">
+		<h2 class="text-center">트레이너 회원가입</h2>
+
+
+
+		<form th:action="@{/trainer/joinProc}" method="post"
+			onsubmit="return validateForm()">
+			<!-- 이메일 입력 -->
+			<div class="mb-3">
+				<label for="userEmail" class="form-label">이메일 *</label> <input
+					type="email" class="form-control" id="userEmail" name="userEmail"
+					required>
+			</div>
+
+			<!-- 비밀번호 입력 -->
+			<div class="mb-3">
+				<label for="password" class="form-label">비밀번호 *</label> <input
+					type="password" class="form-control" id="password" name="password"
+					required> <span id="passwordError" class="text-danger"></span>
+			</div>
+
+			<!-- 이름 입력 -->
+			<div class="mb-3">
+				<label for="userName" class="form-label">이름 *</label> <input
+					type="text" class="form-control" id="userName" name="userName"
+					required> <span id="nameError" class="text-danger"></span>
+			</div>
+
+			<!-- 성별 선택 -->
+			<div class="mb-3">
+				<label class="form-label">성별 *</label><br>
+				<div class="btn-group w-100">
+					<input type="radio" class="btn-check" name="userGender"
+						value="Male" id="male" required> <label
+						class="btn btn-outline-primary w-50" for="male">남</label> <input
+						type="radio" class="btn-check" name="userGender" value="Female"
+						id="female"> <label class="btn btn-outline-danger w-50"
+						for="female">여</label>
+				</div>
+			</div>
+
+			<!-- 생년월일 입력 -->
+			<div class="mb-3">
+				<label for="userBirthdate" class="form-label">생년월일 *</label> <input
+					type="date" class="form-control" id="userBirthdate"
+					name="userBirthdate" required>
+			</div>
+
+			<!-- 연락처 입력 -->
+			<div class="mb-3">
+				<label for="userContact" class="form-label">연락처 *</label> <input
+					type="text" class="form-control" id="userContact"
+					name="userContact" required> <span id="contactError"
+					class="text-danger"></span>
+			</div>
+
+			<!-- 트레이너 추가 정보 -->
+			<hr>
+			<h4 class="text-center mt-3">트레이너 정보</h4>
+
+			<!-- 전문 분야 입력 -->
+			<div class="mb-3">
+				<label for="specialization" class="form-label">전문 분야 *</label> <input
+					type="text" class="form-control" id="specialization"
+					name="specialization" required>
+			</div>
+
+			<!-- 경력 입력 -->
+			<div class="mb-3">
+				<label for="experience" class="form-label">경력 (년) *</label> <input
+					type="number" class="form-control" id="experience"
+					name="experience" min="0" required>
+			</div>
+
+			<!-- 수업료 입력 -->
+			<div class="mb-3">
+				<label for="fee" class="form-label">수업료 *</label> <input
+					type="number" step="0.01" class="form-control" id="fee" name="fee"
+					min="0" required>
+			</div>
+
+			<!-- 한 줄 소개 (shortIntro) 입력 -->
+			<div class="mb-3">
+				<label for="shortIntro" class="form-label">한 줄 소개 *</label> <input
+					type="text" class="form-control" id="shortIntro" name="shortIntro"
+					maxlength="100" required> <small
+					class="form-text text-muted">예: "10년 경력의 피트니스 전문가입니다!"</small>
+			</div>
+
+			<!-- 자기소개 (bio) 입력 -->
+			<div class="mb-3">
+				<label for="bio" class="form-label">자기소개 *</label>
+				<textarea class="form-control" id="bio" name="bio" rows="4" required></textarea>
+			</div>
+
+			<input type="hidden" name="role" value="Trainer">
+
+			<!-- 가입 버튼 -->
+			<button type="submit" class="btn btn-warning w-100">트레이너 가입</button>
+			<a href="/" class="btn btn-secondary w-100 mt-2">취소</a>
+		</form>
+	</div>
 </body>
 </html>

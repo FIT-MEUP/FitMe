@@ -3,17 +3,19 @@ document.addEventListener('DOMContentLoaded', function () {
     var miniCalendarEl = document.getElementById('mini-calendar');
     var miniCalendarWrapper = document.getElementById('mini-calendar-wrapper');
     var monthPlaceholder = document.getElementById('month-placeholder');
+    
+    // 오른쪽 영역의 요소들
     var ptButton = document.getElementById('pt-button');
+    var deleteButton = document.getElementById('delete-button');
     var ptInfo = document.getElementById('pt-info');
-    var scheduleForm = document.getElementById('schedule-form'); // 일정 선택 폼 영역
+    var scheduleForm = document.getElementById('schedule-form');
     var startDateInput = document.getElementById('start-date');
-    var chatBox = document.getElementById('chat-box'); // 채팅박스 영역
-	
+    var chatBox = document.getElementById('chat-box');
+    
     // 사용자 일정 선택 모드 관련 변수
     var userSelectionMode = false;
     var userCreatedEvents = [];
-
-    // 로컬 시간 문자열 포맷 함수 (ISO 형식, 초까지)
+    
     function formatLocalDateTime(date) {
         var yyyy = date.getFullYear();
         var MM = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var ss = ("0" + date.getSeconds()).slice(-2);
         return yyyy + "-" + MM + "-" + dd + "T" + hh + ":" + mm + ":" + ss;
     }
-
+    
     var miniCalendar = new FullCalendar.Calendar(miniCalendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
@@ -33,17 +35,22 @@ document.addEventListener('DOMContentLoaded', function () {
             mainCalendar.changeView('timeGridWeek', info.dateStr);
         }
     });
-
+    
     var mainCalendar = new FullCalendar.Calendar(mainCalendarEl, {
+        timeZone: 'UTC', // 서버와 DB의 타임존이 UTC라면 그대로 사용
         eventOverlap: true,
         customButtons: {
             logout: {
                 text: '로그아웃',
-                click: function () { alert('로그아웃 버튼 클릭됨'); }
+				click: function () {
+				                window.location.href = '/user/logout?userId=' + userId;
+				            }
             },
             personalInfo: {
                 text: '개인정보',
-                click: function () { alert('개인정보 버튼 클릭됨'); }
+				click: function () {
+				               window.location.href = '/userbodyData';
+				           }
             }
         },
         headerToolbar: {
@@ -58,24 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
         selectMirror: true,
         editable: true,
         dayMaxEvents: true,
-        eventColor: '#3788d8', // 기본 DB 이벤트: 파란색
-        eventOrder: function(a, b) {
-            var aFlag = a.extendedProps.isUserCreated ? 1 : 0;
-            var bFlag = b.extendedProps.isUserCreated ? 1 : 0;
-            return bFlag - aFlag;
-        },
+        eventColor: '#3788d8',
         dateClick: function(info) {
             if (mainCalendar.view.type === 'dayGridMonth') {
                 mainCalendar.changeView('timeGridWeek', info.dateStr);
             }
-            // week/day view에서는 일정 생성은 폼 입력을 통해 진행하므로 아무 동작도 하지 않음.
         },
         select: function(info) {
             mainCalendar.unselect();
         },
         eventClick: function(info) {
-            // 오직 사용자 생성 이벤트만 삭제 (기본 DB 이벤트는 삭제 불가)
-            if ((mainCalendar.view.type === 'timeGridWeek' || mainCalendar.view.type === 'timeGridDay') && info.event.extendedProps.isUserCreated) {
+            // 일정관리 모드에서만 사용자 생성 이벤트 삭제 가능
+            if ((mainCalendar.view.type === 'timeGridWeek' || mainCalendar.view.type === 'timeGridDay') && userSelectionMode && info.event.extendedProps.isUserCreated) {
                 if (confirm('이 이벤트를 삭제하시겠습니까?')) {
                     var eventData = {
                         title: info.event.title,
@@ -134,45 +135,44 @@ document.addEventListener('DOMContentLoaded', function () {
             timeGridDay: { allDaySlot: false, selectable: false }
         },
         events: calendarEvents,
-		datesSet: function(info) {
-		    var viewType = info.view.type;
-		    if (viewType === 'dayGridMonth') {
-		        // 월간 뷰: 미니 캘린더, 일정 선택 버튼, 일정 입력 폼, 채팅박스는 숨기고,
-		        // 잔여 PT(ptInfo)는 보이도록 설정
-		        miniCalendarWrapper.style.display = 'none';
-		        monthPlaceholder.style.display = 'none';
-		        ptButton.style.display = 'none';
-		        ptInfo.style.display = 'block';
-		        scheduleForm.style.display = 'none';
-		        chatBox.style.display = 'none';
-		    } else if (viewType === 'timeGridWeek' || viewType === 'timeGridDay') {
-		        // 주간/일간 뷰: 미니 캘린더와 일정 선택 버튼은 보이도록,
-		        // 일정 입력 폼은 사용자가 일정 선택 모드일 때만 보이고,
-		        // 잔여 PT는 계속 보이도록 설정
-		        miniCalendarWrapper.style.display = 'block';
-		        monthPlaceholder.style.display = 'none';
-		        ptButton.style.display = 'block';
-		        ptInfo.style.display = 'block'; // 잔여 PT 표시
-		        // 일정 입력 폼은 초기엔 숨기고, 버튼 클릭 시 토글 처리
-		        scheduleForm.style.display = userSelectionMode ? 'block' : 'none';
-		        chatBox.style.display = 'none';
-		        if (!userSelectionMode) {
-		            ptButton.textContent = "일정 선택";
-		        }
-		        miniCalendar.updateSize();
-		    }
-		}
+        datesSet: function(info) {
+            var viewType = info.view.type;
+            if (viewType === 'dayGridMonth') {
+                miniCalendarWrapper.style.display = 'none';
+                monthPlaceholder.style.display = 'none';
+                ptButton.style.display = 'none';
+                ptInfo.style.display = 'block';
+                scheduleForm.style.display = 'none';
+                chatBox.style.display = 'none';
+                deleteButton.style.display = 'none';
+            } else if (viewType === 'timeGridWeek' || viewType === 'timeGridDay') {
+                miniCalendarWrapper.style.display = 'block';
+                monthPlaceholder.style.display = 'none';
+                ptButton.style.display = 'block';
+                ptInfo.style.display = 'block';
+                scheduleForm.style.display = userSelectionMode ? 'block' : 'none';
+                chatBox.style.display = 'none';
+                if (!userSelectionMode) {
+                    ptButton.textContent = "일정 선택 및 삭제";
+                    deleteButton.style.display = 'none';
+                } else {
+                    deleteButton.style.display = 'block';
+                }
+                miniCalendar.updateSize();
+            }
+        }
     });
-
+    
     mainCalendar.render();
     miniCalendar.render();
-
+    
     ptButton.addEventListener('click', function() {
         if (!userSelectionMode) {
             userSelectionMode = true;
             ptButton.textContent = "일정 선택 완료";
             mainCalendarEl.classList.add('selection-mode');
             scheduleForm.style.display = 'block';
+            deleteButton.style.display = 'block';
         } else {
             var startStr = startDateInput.value;
             if (!startStr) {
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             var endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
             var newEventData = {
-                 title: userName, // 'New Event' 대신 userName 사용
+                title: userName, // 로그인한 사용자의 이름
                 start: startTime,
                 end: endTime,
                 allDay: false,
@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 userCreatedEvents.forEach(function(item) {
                     sendUserEventToServer(item.data, item.instance);
                 });
-          
             } else {
                 userCreatedEvents.forEach(function(item) {
                     item.instance.remove();
@@ -220,9 +219,10 @@ document.addEventListener('DOMContentLoaded', function () {
             ptButton.textContent = "일정 선택";
             mainCalendarEl.classList.remove('selection-mode');
             scheduleForm.style.display = 'none';
+            deleteButton.style.display = 'none';
         }
     });
-
+    
     function sendUserEventToServer(eventData, eventInstance) {
         $.ajax({
             url: '/calendar',
@@ -232,83 +232,74 @@ document.addEventListener('DOMContentLoaded', function () {
                 start: formatLocalDateTime(eventData.start),
                 end: formatLocalDateTime(eventData.end),
                 allDay: eventData.allDay,
-				userId: userId ,
-				trainerId:trainerId
+                userId: userId,
+                trainerId: trainerId
             },
             dataType: 'text',
-			success: function(response) {
-			    if(response === 'success'){
-			        alert('저장이 완료되었습니다.');
-			    } else if(response === "noRange"){
-			        alert('이용가능한 시간이 아닙니다.');
-			        eventInstance.remove(); // 저장 실패 시 이벤트 삭제
-			    } else if(response === "alreadySchedule"){
-			        alert('이미 다른사람의 예약이 있습니다.');
-			        eventInstance.remove(); // 저장 실패 시 이벤트 삭제
-			    } else if(response === "alreadyHaveSchedule"){
-					alert('이미 예약이 있습니다.');
-					eventInstance.remove(); // 저장 실패 시 이벤트 삭제
-				}
-			},
+            success: function(response) {
+                if(response === 'success'){
+                    alert('저장이 완료되었습니다.');
+					window.location.href = '/firstUserCalendar?userId=' + userId;
+                } else if(response === "noRange"){
+                    alert('이용가능한 시간이 아닙니다.');
+                    eventInstance.remove();
+                } else if(response === "alreadySchedule"){
+                    alert('이미 다른사람의 예약이 있습니다.');
+                    eventInstance.remove();
+                } else if(response === "alreadyHaveSchedule"){
+                    alert('이미 예약이 있습니다.');
+                    eventInstance.remove();
+                }
+            },
             error: function() {
                 eventInstance.remove();
             }
         });
     }
-	
-	
-	// 삭제 버튼 이벤트 리스너 추가 (기존 deleteEventFromServer 관련 코드는 제거)
-	var deleteButton = document.getElementById('delete-button');
-
-	deleteButton.addEventListener('click', function() {
-	    var now = new Date();
-	    // fullCalendar에 등록된 모든 이벤트 중 조건에 맞는 이벤트 필터링
-	    var eventsToDelete = mainCalendar.getEvents().filter(function(event) {
-	        return event.extendedProps.userId &&
-	               Number(event.extendedProps.userId) === Number(userId) &&
-	               event.start >= now;
-	    });
-
-	    if (eventsToDelete.length === 0) {
-	        alert("삭제 가능한 일정이 없습니다.");
-	        return;
-	    }
-
-	    if (confirm("선택한 이벤트를 삭제하시겠습니까?")) {
-	        eventsToDelete.forEach(function(event) {
-				var eventData = {
-				    scheduleId: event.extendedProps.scheduleId,
-				    userId: event.extendedProps.userId,
-				    title: event.title,
-				    start: event.startStr,
-				    end: event.endStr,
-				    allDay: event.allDay
-				};
-	            // AJAX를 통해 삭제 요청 후,
-	            ajaxDeleteEvent(eventData);
-	            // 캘린더에서 해당 이벤트 제거
-	            event.remove();
-	        });
-	    }
-	});
-	
-	
-	
-
-	// 삭제 AJAX 함수 
-	function ajaxDeleteEvent(eventData) {
-	    $.ajax({
-	        url: '/usercalendar/delete',
-	        type: 'GET',
-	        data: eventData,
-	        dataType: 'json',
-	        success: function(response) {
-	            // 삭제가 성공하면 별도의 후처리 없이 콘솔에 메시지를 남기거나 추가 처리를 할 수 있습니다.
-	            console.log("삭제 성공:", response);
-	        },
-	        error: function() {
-	            console.error("삭제 요청 실패");
-	        }
-	    });
-	}
+    
+    // 삭제 버튼 이벤트 리스너 (주간/일간 뷰에서만 활성화됨)
+    deleteButton.addEventListener('click', function() {
+        var now = new Date();
+        var eventsToDelete = mainCalendar.getEvents().filter(function(event) {
+            return event.extendedProps.userId &&
+                   Number(event.extendedProps.userId) === Number(userId) &&
+                   event.start >= now;
+        });
+    
+        if (eventsToDelete.length === 0) {
+            alert("삭제 가능한 일정이 없습니다.");
+            return;
+        }
+    
+        if (confirm("선택한 이벤트를 삭제하시겠습니까?")) {
+            eventsToDelete.forEach(function(event) {
+                var eventData = {
+                    scheduleId: event.extendedProps.scheduleId, // PK 값
+                    userId: event.extendedProps.userId,
+                    title: event.title,
+                    start: event.startStr,
+                    end: event.endStr,
+                    allDay: event.allDay
+                };
+                ajaxDeleteEvent(eventData);
+                event.remove();
+            });
+        }
+    });
+    
+    // 삭제 AJAX 함수 (삭제 URL: /usercalendar/delete)
+    function ajaxDeleteEvent(eventData) {
+        $.ajax({
+            url: '/usercalendar/delete',
+            type: 'GET',
+            data: eventData,
+            dataType: 'json',
+            success: function(response) {
+                console.log("삭제 성공:", response);
+            },
+            error: function() {
+                console.error("삭제 요청 실패");
+            }
+        });
+    }
 });

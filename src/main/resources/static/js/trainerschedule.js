@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var miniCalendarEl = document.getElementById('mini-calendar');
     var miniCalendarWrapper = document.getElementById('mini-calendar-wrapper');
     var monthPlaceholder = document.getElementById('month-placeholder');
-
+	var ptButton=document.getElementById('pt-button');
     var scheduleManagementButton = document.getElementById('schedule-management');
     var resetButton = document.getElementById('reset-button');
     var leftPlaceholder = document.getElementById('left-placeholder');
@@ -11,7 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var editingEnabled = false;
     var pendingCreations = [];
     var pendingDeletions = [];
-
+	
+	var memberManagementButton = document.getElementById('member-management');
+	memberManagementButton.addEventListener('click', function () {
+	    window.location.href = "trainer/memberManage";
+	
 	scheduleManagementButton.addEventListener('click', function () {
 	    editingEnabled = !editingEnabled;
 	    if (editingEnabled) {
@@ -77,15 +81,15 @@ document.addEventListener('DOMContentLoaded', function () {
         customButtons: {
             logout: {
                 text: '로그아웃',
-                click: function () {
-                    alert('로그아웃 버튼 클릭됨');
-                }
+				click: function () {
+								                window.location.href = '/user/logout?userId=' + trainerId;
+								            }
             },
             personalInfo: {
                 text: '개인정보',
-                click: function () {
-                    alert('개인정보 버튼 클릭됨');
-                }
+				click: function () {
+										window.location.href = '/trainer/' + realTrainerId;
+								           }
             }
         },
         headerToolbar: {
@@ -239,4 +243,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+	
+	ptButton.addEventListener('click', function () {
+		    $.ajax({
+		       url: '/ptSessionHistoryChangeAmount',
+		        type: 'GET',
+		        data: { "trainerId": trainerId },
+		        dataType: 'text',
+		        success: function (response) {
+					if(response="success"){
+		            // 성공 후 처리 예시: 페이지를 새로고침하거나, 다른 페이지로 이동
+		            alert('요청이 성공적으로 처리되었습니다.');
+					}else{
+						alert('지금은 PT 시작 10분전이 아닙니다.');
+					}
+		        },
+		        error: function (xhr, status, error) {
+		            console.error("요청 에러:", error);
+		            alert("요청 처리 중 에러가 발생했습니다.");
+		        }
+		    });
+		});
+	
+	
 });

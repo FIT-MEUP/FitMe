@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,28 +25,35 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Table(name="pt_session_history  ")
-public class PTSessionHistoryEntity {
+@Table(name="pt_session_history")
+public class PtSessionHistoryEntity {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "history_id")
-    private Long historyId;
+	 @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    @Column(name = "history_id")
+	    private Long historyId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity userEntity;  // User 엔티티와 관계 설정
+	    // UserEntity와 다대일 관계 설정 (외래키 user_id)
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "user_id", nullable = false)
+	    private UserEntity user;
 
-    @Column(name = "change_type", nullable = false)
-    private String changeType;
-
-    @Column(name = "change_amount", nullable = false)
-    private Integer changeAmount;
-
-    @Column(name = "change_date", nullable = false)
-    private LocalDateTime changeDate = LocalDateTime.now();
-
-    @Column(name = "reason", nullable = false)
-    private String reason;
+	    @Enumerated(EnumType.STRING)
+	    @Column(name = "change_type", nullable = false)
+		    private ChangeType changeType;
+		
+		    @Column(name = "change_amount", nullable = false)
+		    private Long changeAmount;
+		
+		    @Column(name = "change_date", nullable = false)
+		    private LocalDateTime changeDate;
+		
+		    @Column(name = "reason", nullable = false)
+		    private String reason;
+		
+		    public enum ChangeType {
+		        Added,   // PT 등록 등으로 횟수 증가
+		        Deducted // 출석 등으로 횟수 차감
+		    }
 
 }

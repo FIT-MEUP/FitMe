@@ -14,10 +14,12 @@
     <div class="container">
         <!-- 상단 메뉴 -->
         <div class="header">
-            <button class="back-button">로고</button>
+            <!-- 기존 로고 버튼 수정 -->
+				<button class="back-button" onclick="location.href='/user/home'">로고 
+    			<!-- 	<img src="/images/logo.png" alt="로고" style="width: 50px; height: 50px;"> -->
+				</button>
             <h1>마이페이지</h1>
             <div class="header-right">
-                <button class="notification-button">🔔</button>
                 <button class="edit-button" onclick="toggleEditMode()">수정</button>
             </div>
         </div>
@@ -26,22 +28,23 @@
         <div class="main-content">
             <!-- 왼쪽: 캘린더 및 PT 이력 -->
             <div class="sidebar">
-                <div class="date-display" id="date-display">2025.02</div>
+                <div class="date-display" id="date-display"></div>
                 <div class="calendar-navigation">
                     <button class="prev-month-button" onclick="changeMonth(-1)">◀</button>
                     <button class="next-month-button" onclick="changeMonth(1)">▶</button>
                 </div>
                 <table class="calendar" id="calendar"></table>
-                 <p><a th:href="@{/user/ptData}">PT 이력</a></p>
-               <!--  <button class="pt-history-button">PT 이력</button> -->
-              
-               	<p><a th:href="@{/user/userbodyData(userId=${userId})}">신체정보 내역 조회</a></p>
-                <!--  <button class="body-history-button">신체정보 내역 조회</button>-->
+                <div class="menu-buttons">
+  				  <a th:href="@{/user/ptData}" class="button">PT 이력</a>
+   				  <a th:href="@{/user/userbodyData(userId=${userId})}" class="button">신체정보 내역 조회</a>
+				</div>
+
             </div>
 
             <!-- 오른쪽: 사용자 정보 및 그래프 -->
             <div class="content">
-                <h2>최용재 님</h2>
+            <h2 th:text="${userName} + ' 님'">사용자 이름</h2>
+               
                 <table class="user-info">
                     <tr>
                         <th>키</th>
@@ -54,14 +57,17 @@
                     </tr>
                     <tr>
                     <tr id="userInfoRow">
-                        <td id="height">0 cm</td>
-                        <td id="weight">0 kg</td>
-                        <td id="bmi">0</td>
-                        <td id="bodyFat">0%</td>
-                        <td id="muscleMass">0kg</td>
-                        <td id="basalMetabolicRate">0 kcal</td>
-                        <td id="current-date"></td>
-                    </tr>
+
+   					 <td id="height" th:text="${latestData.height} + ' cm'">0 cm</td>
+   					 <td id="weight" th:text="${latestData.weight} + ' kg'">0 kg</td>
+   					 <td id="bmi" th:text="${latestData.bmi}">0</td>
+   					 <td id="fatMass" th:text="${latestData.fatMass} + '%'">0%</td>
+   					 <td id="muscleMass" th:text="${latestData.muscleMass} + 'kg'">0kg</td>
+   					 <td id="basalMetabolicRate" th:text="${latestData.basalMetabolicRate} + ' kcal'">0 kcal</td>
+   					 <td id="current-date" th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
+					</tr>
+	
+
                 </table>
                 <!-- 저장 및 취소 버튼 (수정 모드에서만 표시) -->
                 <div id="editButtons" style="display: none; margin-top: 10px;">

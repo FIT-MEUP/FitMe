@@ -26,6 +26,7 @@ public class TrainerDTO {
     private String specialization;
     private int experience;
     private BigDecimal fee;
+    private String shortIntro; // ✅ 한 줄 소개 추가
     private String bio;
     
     private List<String> photoUrls; // 트레이너 사진 리스트
@@ -44,6 +45,7 @@ public class TrainerDTO {
                 .specialization(trainerEntity.getSpecialization())
                 .experience(trainerEntity.getExperience())
                 .fee(trainerEntity.getFee())
+                .shortIntro(trainerEntity.getShortIntro()) // ✅ 추가
                 .bio(trainerEntity.getBio())
                 .photoUrls(photos)
                 .build();

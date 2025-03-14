@@ -1,10 +1,14 @@
 package fitmeup.service;
 
+import java.util.List;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
 import fitmeup.entity.UserEntity;
-
 import fitmeup.entity.UserEntity.Role;
 import fitmeup.repository.TrainerPhotoRepository;
 import fitmeup.repository.TrainerRepository;
@@ -12,11 +16,6 @@ import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +27,9 @@ public class TrainerService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
-    // ✅ 모든 트레이너 목록 가져오기
+    // ✅ 모든 트레이너 목록 가져오기 (PendingTrainer 제외)
     public List<TrainerEntity> getAllTrainers() {
-    	// 만약 PendingTrainer 는 제외한 Trainer만 나오게 하고 싶다면 아래 주석을 풀자. 
-    	return trainerRepository.findByUser_Role(UserEntity.Role.Trainer);
-//        return trainerRepository.findAll();
+        return trainerRepository.findByUser_Role(Role.Trainer);
     }
 
     // ✅ 특정 트레이너 정보 가져오기
@@ -46,23 +42,39 @@ public class TrainerService {
     public List<TrainerPhotoEntity> getTrainerPhotos(Long trainerId) {
         return trainerPhotoRepository.findByTrainer_TrainerId(trainerId);
     }
-  
-    // ✅ 이메일로 사용자 찾기
-    public UserEntity getUserByEmail(String userEmail) {
-        return userRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자를 찾을 수 없습니다."));
 
+    public TrainerEntity getTrainerByUserEmail(String userEmail) {
+        return trainerRepository.findByUser_UserEmail(userEmail).orElse(null);
     }
 
-    
+    public Long getTrainerIdByUserEmail(String userEmail) {
+        TrainerEntity trainer = getTrainerByUserEmail(userEmail);
+        return (trainer != null) ? trainer.getTrainerId() : null;
+    }
+
+    public TrainerEntity getTrainerByUserId(Long userId) {
+        return trainerRepository.findByUser_UserId(userId).orElse(null);
+    }
+
+    // ✅ 트레이너 정보 저장
+    public void saveTrainer(TrainerEntity trainer) {
+        trainerRepository.save(trainer);
+    }
+
     @Transactional
     public boolean joinProc(TrainerDTO trainerDTO) {
-        // 1. 중복 가입 방지를 위해 이메일 또는 연락처 체크 (필요시)
+
+        // 1. 중복 가입 방지를 위해 이메일, 연락처 체크 (예외 발생 X, false 반환)
         if (userRepository.findByUserEmail(trainerDTO.getUserEmail()).isPresent()) {
             log.error("이미 등록된 이메일: {}", trainerDTO.getUserEmail());
             return false;
         }
-        // 추가로 연락처도 중복 체크할 수 있습니다.
+
+        if (userRepository.findByUserContact(trainerDTO.getUserContact()).isPresent()) {
+            log.error("이미 등록된 전화번호: {}", trainerDTO.getUserContact());
+            return false; // ❌ 예외 발생 X → false 반환
+        }
+
 
         // 2. 비밀번호 암호화
         String encryptedPassword = bCryptPasswordEncoder.encode(trainerDTO.getPassword());
@@ -76,7 +88,7 @@ public class TrainerService {
                 .userContact(trainerDTO.getUserContact())
                 .password(encryptedPassword)
                 .role(Role.PendingTrainer) // 승인 대기 상태로 저장
-                .isOnline(false)  // 기본값
+                .isOnline(false)
                 .build();
 
         // 4. UserEntity 저장
@@ -88,14 +100,13 @@ public class TrainerService {
                 .specialization(trainerDTO.getSpecialization())
                 .experience(trainerDTO.getExperience())
                 .fee(trainerDTO.getFee())
+                .shortIntro(trainerDTO.getShortIntro()) // ✅ 추가
                 .bio(trainerDTO.getBio())
                 .build();
 
         trainer = trainerRepository.save(trainer);
 
-        // 6. 저장 결과 확인
         return trainer.getTrainerId() != null;
-
-
     }
+    
 }

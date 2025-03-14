@@ -1,15 +1,17 @@
 package fitmeup.controller;
 
 
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.math.BigDecimal;
+
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.HealthDataDTO;
@@ -30,12 +32,50 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
+
+	@GetMapping({"/mypage" })
+	public String index(
+			Model model	) {Long userId=1L;
+		model.addAttribute("userId",userId);
+		
+	    // 최신 데이터 가져오기
+	    HealthDataDTO latestData = healthDataService.getLatestHealthData(userId);
+	    if (latestData == null) {
+	        // 데이터가 없으면 기본값 세팅
+	        latestData = new HealthDataDTO();
+	        latestData.setHeight(BigDecimal.ZERO);
+	        latestData.setWeight(BigDecimal.ZERO);
+	        latestData.setMuscleMass(BigDecimal.ZERO);
+	        latestData.setFatMass(BigDecimal.ZERO);
+	        latestData.setBmi(BigDecimal.ZERO);
+	        latestData.setBasalMetabolicRate(BigDecimal.ZERO);
+	    }
+	    
+	    model.addAttribute("latestData", latestData);
+		
+		
+		return "/mypage";
+	}
 	
+
+
+
 
 	@GetMapping("/user/ptData")
 	public String ptData() {
 		return "/user/ptData";
 	}
+	
+	
+//	@Controller  
+//	public class MyPageController {
+//
+//	    @GetMapping("/mypage")  // "/user/mypage"로 요청이 들어오면 실행됨
+//	    public String mypage() {
+//	        return "mypage"; // templates 폴더의 "mypage.html"을 찾아서 반환
+//	    }
+//	}
+
 	
 	
 
@@ -61,11 +101,16 @@ public class MyPageController {
 	 */
 	@ResponseBody
 	@PostMapping("/application/json")
-	public ResponseEntity<String> insertHealthData(@RequestBody HealthDataDTO healthDTO) {
+	public ResponseEntity<String> insertHealthData(@RequestBody HealthDataDTO healthDTO
+//			,@RequestParam(name="date") String date
+			) {
 		log.info(healthDTO.toString());
+//		log.info(date);
 		healthDataService.insert(healthDTO);
 		return ResponseEntity.ok("Health data inserted successfully");
 	}
+
+	
 
 	/*
 	 * @PostMapping("/mypagesave") public ResponseEntity<String>

@@ -1,10 +1,12 @@
 package fitmeup.dto;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import fitmeup.entity.HealthDataEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +30,8 @@ public class HealthDataDTO {
 	    private BigDecimal fatMass;
 	    private BigDecimal bmi;
 	    private BigDecimal basalMetabolicRate;
-	    private LocalDateTime recordDate;
+
+	    private LocalDate recordDate;
 
 	    
 				public static HealthDataDTO toDTO(HealthDataEntity entity) {
@@ -39,8 +42,10 @@ public class HealthDataDTO {
 							.height(entity.getHeight())
 							.weight(entity.getWeight())
 							.muscleMass(entity.getMuscleMass())
+							.fatMass(entity.getFatMass())
 							.bmi(entity.getBmi())
 							.basalMetabolicRate(entity.getBasalMetabolicRate())
+							.recordDate(entity.getRecordDate())
 							.build();
 				}
 	}
