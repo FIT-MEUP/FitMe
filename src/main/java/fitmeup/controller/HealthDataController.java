@@ -2,6 +2,7 @@ package fitmeup.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,6 +85,37 @@ public class HealthDataController {
 		}
 	}
 	
+
+	/**
+	 * 가장 최신데이터 반환 api
+	 * 
+	 * @return
+	 */
 	
+//	@GetMapping("/latestHealthData")
+//	@ResponseBody
+//	public HealthDataDTO getLatestHealthData(@RequestParam(name="userId") Long userId) {
+//	    return healthDataService.getLatestHealthData(userId);
+//	}
+	
+	@GetMapping("/latestHealthData")
+	public ResponseEntity<HealthDataDTO> getLatestHealthData(
+	        Long userId) {
+	    
+	    HealthDataDTO latestData = healthDataService.getLatestHealthData(userId);
+	    
+	    if (latestData != null) {
+	        return ResponseEntity.ok(latestData);
+	    } else {
+	        return ResponseEntity.notFound().build(); // 404 반환 (데이터 없을 경우)
+	    }
+	}
+
+	
+	@GetMapping("/healthDataHistory")
+	@ResponseBody
+	public List<HealthDataDTO> getHealthDataHistory(@RequestParam(name="userId") Long userId) {
+	    return healthDataService.listFindByUserId(userId); // 해당 사용자의 모든 데이터 가져오기
+	}
 
 }

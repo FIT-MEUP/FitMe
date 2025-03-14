@@ -59,3 +59,8 @@ function validateForm() {
     }
     return true;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    // 페이지 로드 시 비밀번호 필드 초기화
+    document.getElementById("password").value = "";
+});

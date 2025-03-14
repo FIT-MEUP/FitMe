@@ -6,11 +6,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import fitmeup.dto.ApproveRequestDTO;
 import fitmeup.dto.TrainerApplicationDTO;
 import fitmeup.entity.TrainerApplicationEntity;
-import fitmeup.entity.TrainerApplicationEntity.Status;
 import fitmeup.entity.TrainerEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerRepository;
 import fitmeup.repository.UserRepository;
@@ -69,5 +68,20 @@ public class TrainerApplicationService {
         }
 		
 	}
+
+	public void createApplication(Long userId, Long trainerId) {
+		Optional<UserEntity> temp = userRepository.findById(userId);
+		Optional<TrainerEntity> temp2 = trainerRepository.findById(trainerId);
+		String name = temp.get().getUserName();
+	    TrainerApplicationDTO trainerApplicationDTO= new TrainerApplicationDTO();
+	    trainerApplicationDTO.setName(name);
+	    //trainerApplicationDTO.setStatus("Pending");
+	    
+	    TrainerApplicationEntity trainerApplicationEntity =
+	    		TrainerApplicationEntity.toEntity(trainerApplicationDTO, temp.get(), temp2.get());
+	    trainerApplicationRepository.save(trainerApplicationEntity);
+	}
+	
+	
 
 }

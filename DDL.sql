@@ -198,7 +198,6 @@ MODIFY COLUMN attendance_status ENUM('Present', 'Absent', 'PT_ Session') NOT NUL
 ALTER TABLE food MODIFY COLUMN meal_id INT NULL;
 ALTER TABLE food ADD COLUMN standard_weight VARCHAR(10);
 
-
 ALTER TABLE user MODIFY role ENUM('User', 'PendingTrainer', 'Trainer', 'Admin') NOT NULL DEFAULT 'User';
 
 ALTER TABLE trainer_schedule 
@@ -210,9 +209,6 @@ ALTER TABLE trainer_schedule
     ALTER TABLE schedule
   ADD COLUMN start_time DATETIME NOT NULL,
   ADD COLUMN end_time DATETIME NOT NULL;
-
   
   ALTER TABLE trainer ADD COLUMN short_intro VARCHAR(255) NOT NULL DEFAULT '소개 없음';
-
-
-
+  ALTER TABLE meal ADD COLUMN meal_type VARCHAR(10) NOT NULL;

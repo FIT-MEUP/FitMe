@@ -45,14 +45,16 @@ public class UserController {
     // 회원가입 처리
     @PostMapping("/joinProc")
     public String joinProcess(@ModelAttribute UserDTO userDTO, RedirectAttributes redirectAttributes) {
-        try {
-            userService.joinProc(userDTO);
-            return "redirect:/user/login";  // 회원가입 성공 시 로그인 페이지로 이동
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());  
-            return "redirect:/user/userJoin"; // ❌ 실패 시 다시 회원가입 페이지로 이동
+        String errorMessage = userService.joinProc(userDTO);
+
+        if (errorMessage != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);  
+            return "redirect:/user/userJoin"; // 실패 시 다시 회원가입 페이지로 이동
         }
+
+        return "redirect:/user/login";  // 성공 시 로그인 페이지로 이동
     }
+    
 
         @GetMapping("/pendingTrainer")
         public String pendingTrainer() {
@@ -92,15 +94,15 @@ public class UserController {
                                    @RequestParam("userEmail") String userEmail,
                                    @RequestParam("userContact") String userContact,
                                    RedirectAttributes redirectAttributes) {
-            boolean success = userService.verifyUserAndGenerateTempPassword(userName, userEmail, userContact);
+        	String tempPassword = userService.verifyUserAndGenerateTempPassword(userName, userEmail, userContact);
 
-            if (!success) {
+            if (tempPassword == null) {
                 redirectAttributes.addFlashAttribute("error", "일치하지 않는 회원정보입니다!");
                 return "redirect:/user/findPassword";  
             }
 
-            // ✅ 성공 메시지 추가
-            redirectAttributes.addFlashAttribute("successMessage", "임시 비밀번호가 이메일로 전송되었습니다. 로그인 후 반드시 변경하세요!");
+            // 임시 비밀번호 생성 후 메시지 전달
+            redirectAttributes.addFlashAttribute("successMessage", "임시 비밀번호가 정상적으로 발급되었습니다. \n[임시 비밀번호: " + tempPassword + "] \n다시 로그인 하신 후 반드시 비밀번호를 변경해주세요.");
             return "redirect:/user/login";  
         }
 
@@ -128,8 +130,15 @@ public class UserController {
             return "redirect:/user/login";  
         }
         
-        @PostMapping("/deleteAccount")
-        public String deleteAccount(@RequestParam("email") String email, 
+        @GetMapping("/deleteAccount")
+        public String deleteAccount() {
+        	
+
+            return "user/deleteAccount";
+        }
+        
+        @PostMapping("/deleteAccountProc")
+        public String deleteAccountProc(@RequestParam("email") String email, 
                                     @RequestParam("password") String password, 
                                     RedirectAttributes redirectAttributes) {
             boolean success = userService.deleteUser(email, password, redirectAttributes);
@@ -140,7 +149,7 @@ public class UserController {
 
             // 탈퇴 성공 시 로그아웃 처리 후 홈으로 이동
             SecurityContextHolder.clearContext();
-            return "redirect:/";
+            return "redirect:/user/logout";
         }
 
 }
