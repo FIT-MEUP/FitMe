@@ -2,7 +2,7 @@ package fitmeup.dto;
 
 import java.time.LocalDateTime;
 
-import fitmeup.entity.PTSessionHistoryEntity;
+import fitmeup.entity.PtSessionHistoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class PtSessionHistoryDTO {
 	    private String reason;             // 변경 사유
 
 	    // Entity → DTO 변환 메서드 (필요시)
-	    public static PtSessionHistoryDTO fromEntity(PTSessionHistoryEntity entity) {
+	    public static PtSessionHistoryDTO fromEntity(PtSessionHistoryEntity entity) {
 	        return PtSessionHistoryDTO.builder()
 	                .historyId(entity.getHistoryId())
 	                .userId(entity.getUser().getUserId())

@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import fitmeup.entity.PTSessionHistoryEntity;
+import fitmeup.entity.PtSessionHistoryEntity;
 
 
 
-public interface PTSessionHistoryRepository extends JpaRepository<PTSessionHistoryEntity, Long> {
-	List<PTSessionHistoryEntity> findByUserUserId(Long userId, Sort by);
+public interface PtSessionHistoryRepository extends JpaRepository<PtSessionHistoryRepository, Long> {
+	List<PtSessionHistoryEntity> findByUserUserId(Long userId, Sort by);
 }

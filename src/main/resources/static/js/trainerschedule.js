@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	var memberManagementButton = document.getElementById('member-management');
 	memberManagementButton.addEventListener('click', function () {
 	    window.location.href = "trainer/memberManage";
-		});
+	
 	scheduleManagementButton.addEventListener('click', function () {
 	    editingEnabled = !editingEnabled;
 	    if (editingEnabled) {

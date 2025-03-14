@@ -9,15 +9,14 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import fitmeup.dto.PtSessionHistoryDTO;
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
-import fitmeup.entity.PTSessionHistoryEntity;
+import fitmeup.entity.PtSessionHistoryEntity;
 import fitmeup.entity.ScheduleEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
-import fitmeup.repository.PTSessionHistoryRepository;
+import fitmeup.repository.PtSessionHistoryRepository;
 import fitmeup.repository.ScheduleRepository;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerRepository;
@@ -36,7 +35,7 @@ public class ScheduleService {
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final UserRepository userRepository;
 	private final TrainerRepository trainerRepository;
-	private final PTSessionHistoryRepository ptSessionHistoryRepository;
+	private final PtSessionHistoryRepository ptSessionHistoryRepository;
 	
 	//trainerSchedule Read
 	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
@@ -145,17 +144,15 @@ public class ScheduleService {
 			 return temp.get().getUser().getUserId(); 
 		 }
 		 
-		 public PTSessionHistoryEntity selectfirstByUserId(Long userId) {
-			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
-			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+		 public PtSessionHistoryEntity selectfirstByUserId(Long userId) {
+			 List<PtSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
+			 PtSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
 			 return latestHistory;
 		 }
 		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
 		 //pt시작 버튼을 누르면 없어지는 형태
-		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
-		 //pt시작 버튼을 누르면 없어지는 형태
 		 public String minusChangeAmount(Long userId) {
-			    // Trainer의 userId로 schedule 목록을 가져옵니다.
+			// Trainer의 userId로 schedule 목록을 가져옵니다.
 			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(userId);
 			    log.info("Retrieved schedules: {}", scheduleList.size());
 
@@ -163,62 +160,20 @@ public class ScheduleService {
 			    LocalDateTime now = LocalDateTime.now();
 			    LocalDateTime tenMinutesLater = now.plusMinutes(10);
 			  
+			    // scheduleList에서 startTime이 [now, tenMinutesLater) 범위에 있는지 확인
 			    log.info("현재 시각: {}", now);
 			    log.info("10분 후 시각: {}", tenMinutesLater);
-
-			    // scheduleList에서 startTime이 [now, tenMinutesLater) 범위에 있는 스케줄 찾기
-			    Optional<ScheduleEntity> matchingSchedule = scheduleList.stream()
-			            .filter(schedule -> {
+			    boolean exists = scheduleList.stream()
+			            .anyMatch(schedule -> {
+			            	 
 			                LocalDateTime startTime = schedule.getStartTime();
-			                log.info("schedule startTime: {}", startTime);
-			                return (!startTime.isBefore(now)) && startTime.isBefore(tenMinutesLater);
-			            })
-			            .findFirst();
-
-			    if (matchingSchedule.isPresent()) {
-			        // 매칭된 스케줄의 UserEntity에서 userId 추출 (여기서 userId는 스케줄에 등록된 회원의 id)
-			        Long matchedUserId = matchingSchedule.get().getUser().getUserId();
-			        log.info("매칭된 스케줄의 userId: {}", matchedUserId);
-
-			        // 해당 userId의 PT 세션 내역을 최신 순으로 조회 (changeDate 기준 내림차순)
-			        List<PTSessionHistoryEntity> historyList = ptSessionHistoryRepository.findByUserUserId(matchedUserId, Sort.by("changeDate").descending());
-			        PTSessionHistoryEntity latestHistory = historyList.get(0);  // 내역이 항상 있다고 가정
-
-			        // 만약 최신 내역의 changeAmount가 0이면 더 이상 차감할 PT 세션이 없으므로 "noMore" 반환
-			        if (latestHistory.getChangeAmount() == 0) {
-			            log.info("PT 세션 남은 횟수가 0입니다.");
-			            return "noMore";
-			        }
-
-			        // 최신 내역의 changeDate가 현재 시각 기준 ±10분 범위 내에 있는지 확인
-			        LocalDateTime tenMinutesBefore = now.minusMinutes(10);
-			        LocalDateTime tenMinutesAfter = now.plusMinutes(10);
-			        log.info("Latest history changeDate: {}", latestHistory.getChangeDate());
-			        log.info("10분 전 시각: {}", tenMinutesBefore);
-			        log.info("10분 후 시각: {}", tenMinutesAfter);
-
-			        if (latestHistory.getChangeDate().isAfter(tenMinutesBefore) && latestHistory.getChangeDate().isBefore(tenMinutesAfter)) {
-			            log.info("이미 출석을 하였습니다. Latest history: {}", latestHistory);
-			            return "already";
-			        }
-
-			        // 최신 내역의 changeDate가 범위 밖인 경우, PT 세션 내역을 차감 처리
-			        PtSessionHistoryDTO ptSessionHistoryDTO = new PtSessionHistoryDTO();
-			        ptSessionHistoryDTO.setUserId(matchedUserId);
-			        ptSessionHistoryDTO.setChangeType("Deducted");
-			        Long newChangeAmount = latestHistory.getChangeAmount() - 1;
-			        ptSessionHistoryDTO.setChangeAmount(newChangeAmount);
-			        ptSessionHistoryDTO.setReason("PT 출석으로 인한 감소");
-			        // changeDate는 toEntity()에서 null이면 현재 시간으로 기본 설정됩니다.
-			        PTSessionHistoryEntity ptSessionHistoryEntity = PTSessionHistoryEntity.toEntity(ptSessionHistoryDTO);
-			        ptSessionHistoryRepository.save(ptSessionHistoryEntity);
-			        log.info("PT 세션 차감 처리 완료. 새로운 changeAmount: {}", newChangeAmount);
-			        log.info("historyList: {}", historyList);
-			        return "success";
-			    } else {
-			        log.info("조건에 맞는 스케줄이 없습니다.");
-			        return "false";
-			    }
-			}
+			                log.info("schedule startTime: {}", schedule.getStartTime());
+			                return ( !startTime.isBefore(now) ) && startTime.isBefore(tenMinutesLater);
+			            });
+			   
+			    log.info(exists ? "success" : "false");
+			    return exists ? "success" : "false";
+			
+		 }	
 
 }
