@@ -57,6 +57,7 @@
                     </tr>
                     <tr>
                     <tr id="userInfoRow">
+
    					 <td id="height" th:text="${latestData.height} + ' cm'">0 cm</td>
    					 <td id="weight" th:text="${latestData.weight} + ' kg'">0 kg</td>
    					 <td id="bmi" th:text="${latestData.bmi}">0</td>
@@ -66,6 +67,7 @@
    					 <td id="current-date" th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
 					</tr>
 	
+
                 </table>
                 <!-- 저장 및 취소 버튼 (수정 모드에서만 표시) -->
                 <div id="editButtons" style="display: none; margin-top: 10px;">

@@ -85,6 +85,7 @@ public class HealthDataController {
 		}
 	}
 	
+
 	/**
 	 * 가장 최신데이터 반환 api
 	 * 
@@ -116,9 +117,5 @@ public class HealthDataController {
 	public List<HealthDataDTO> getHealthDataHistory(@RequestParam(name="userId") Long userId) {
 	    return healthDataService.listFindByUserId(userId); // 해당 사용자의 모든 데이터 가져오기
 	}
-
-
-	
-	
 
 }

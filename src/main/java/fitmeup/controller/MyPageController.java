@@ -1,7 +1,9 @@
 package fitmeup.controller;
 
 
+
 import java.math.BigDecimal;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,6 +32,7 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
+
 	@GetMapping({"/mypage" })
 	public String index(
 			Model model	) {Long userId=1L;
@@ -54,6 +57,7 @@ public class MyPageController {
 		return "/mypage";
 	}
 	
+
 
 
 

@@ -19,6 +19,11 @@
 </head>
 
 <body>
+
+    <input type="hidden" id="loggedInUserId" th:value="${loggedInUserId}">
+    <input type="hidden" id="isTrainer" th:value="${isTrainer}">
+
+
     <nav class="navbar navbar-light bg-light p-3">
         <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
         <h3 class="text-center flex-grow-1">

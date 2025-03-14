@@ -5,6 +5,7 @@ let isEditMode = false;
 
 // 수정 모드 토글 함수
 function toggleEditMode() {
+
 	const userInfoRow = document.getElementById("userInfoRow");
 	const editButtons = document.getElementById("editButtons");
 
@@ -49,35 +50,40 @@ function toggleEditMode() {
 		           <td><input type="number" step="0.1" id="editFatMass" value="${fatMass}">%</td>
 		           <td><input type="number" step="0.1" id="editMuscleMass" value="${muscleMass}">kg</td> 
 		           <td><input type="number" id="editBmr" value="${basalMetabolicRate}"> kcal</td>
+
             <td>
                 <select id="editYear">${yearOptions}</select>
                 <select id="editMonth" onchange="updateDays()">${monthOptions}</select>
                 <select id="editDay">${dayOptions}</select>
             </td>
         `;
+
 	} else {
 		cancelEdit();
 	}
 }
 
+
+
 // 월 변경 시 일 수 업데이트 함수
 function updateDays() {
-	const year = document.getElementById("editYear").value;
-	const month = document.getElementById("editMonth").value;
-	const daySelect = document.getElementById("editDay");
-
-	const daysInMonth = new Date(year, month, 0).getDate();
-
-	let dayOptions = "";
-	for (let i = 1; i <= daysInMonth; i++) {
-		dayOptions += `<option value="${i}">${i}일</option>`;
-	}
-
-	daySelect.innerHTML = dayOptions;
+    const year = document.getElementById("editYear").value;
+    const month = document.getElementById("editMonth").value;
+    const daySelect = document.getElementById("editDay");
+    
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    let dayOptions = "";
+    for (let i = 1; i <= daysInMonth; i++) {
+        dayOptions += `<option value="${i}">${i}일</option>`;
+    }
+    
+    daySelect.innerHTML = dayOptions;
 }
 
 // 저장 버튼 클릭 시 동작
 function saveChanges() {
+
 	const height = document.getElementById("editHeight").value;
 	const weight = document.getElementById("editWeight").value;
 	const bmi = document.getElementById("editBmi").value;
@@ -96,6 +102,7 @@ function saveChanges() {
 
 	const userInfoRow = document.getElementById("userInfoRow");
 	userInfoRow.innerHTML = `
+
         <td id="height">${height} cm</td>
         <td id="weight">${weight} kg</td>
         <td id="bmi">${bmi}</td>
@@ -104,6 +111,7 @@ function saveChanges() {
         <td id="basalMetabolicRate">${basalMetabolicRate} kcal</td>
         <td id="current-date">${year}.${month}.${day}</td>
     `;
+
 
 	isEditMode = false;
 	document.getElementById("editButtons").style.display = "none";
@@ -136,11 +144,13 @@ function saveChanges() {
 			console.error("에러 내용:", error);
 		}
 	});
+
 }
 
 // 취소 버튼 클릭 시 동작
 function cancelEdit() {
 	location.reload();
+
 }
 
 //////////////////////////////////////////////////////////////여기부터 달력/////////////////////////////////////////////////////////
@@ -267,6 +277,8 @@ function showGraph(type) {
 	});
 }
 
+
+
 // 그래프 선택 함수
 /*function showGraph(type) {
 	const graphContainer = document.getElementById("graph-container");
@@ -368,6 +380,7 @@ function updateGraph(data, type) {
 	});
 
 	console.log("✅ 그래프 업데이트 완료!");
+
 }
 
 

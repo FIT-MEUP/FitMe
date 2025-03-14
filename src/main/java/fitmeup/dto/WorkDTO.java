@@ -40,4 +40,6 @@ public class WorkDTO {
 //                .scheduleId(entity.getSchedule() != null ? entity.getSchedule().getScheduleId() : null)
                 .build();
     }
+    
+
 }

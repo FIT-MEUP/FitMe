@@ -40,6 +40,7 @@ public class HealthDataService {
 	 * 등록한 신체 데이터 조회 (역순)
 	 * @return
 	 */
+
 	
 	  public List<HealthDataDTO> selectAll() { List<HealthDataEntity> temp =
 	  healthRepository.findAll(Sort.by(Sort.Direction.DESC, "recordDate"));
@@ -96,6 +97,7 @@ public class HealthDataService {
 	    }
 	    
 	    return null; // 데이터 없으면 null 반환
+
 	}
 	
 

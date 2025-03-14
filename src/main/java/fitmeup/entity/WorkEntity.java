@@ -2,6 +2,7 @@ package fitmeup.entity;
 
 import java.time.LocalDate;
 
+import fitmeup.dto.WorkDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -56,4 +57,15 @@ public class WorkEntity {
 //    @ManyToOne(fetch = FetchType.LAZY) // 스케줄과 연결 (NULL 가능)
 //    @JoinColumn(name = "schedule_id", nullable = true)
 //    private ScheduleEntity schedule;
+    
+    
+    
+    public void updateFromDTO(WorkDTO dto) {
+        this.part = dto.getPart();
+        this.exercise = dto.getExercise();
+        this.sets = dto.getSets();
+        this.reps = dto.getReps();
+        this.weight = dto.getWeight();
+        this.workoutDate = dto.getWorkoutDate();
+    }
 }
