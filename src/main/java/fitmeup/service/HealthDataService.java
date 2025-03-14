@@ -87,6 +87,17 @@ public class HealthDataService {
 	    healthRepository.deleteById(dataId);
 	}
 	
+	public HealthDataDTO getLatestHealthData(Long userId) {
+	    List<HealthDataEntity> dataList = healthRepository.findByUserId(
+	        userId, Sort.by(Sort.Direction.DESC, "recordDate"));
+	    
+	    if (!dataList.isEmpty()) {
+	        return HealthDataDTO.toDTO(dataList.get(0)); // 가장 최신 데이터 반환
+	    }
+	    
+	    return null; // 데이터 없으면 null 반환
+	}
+	
 
 
 	

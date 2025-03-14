@@ -1,6 +1,8 @@
 package fitmeup.controller;
 
 
+import java.math.BigDecimal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,17 +30,32 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
-	@GetMapping({ "/mypage" })
+	@GetMapping({"/mypage" })
 	public String index(
-			Model model
-			//,Long userId
-			) {
-		Long userId=1L;
+			Model model	) {Long userId=1L;
 		model.addAttribute("userId",userId);
+		
+	    // 최신 데이터 가져오기
+	    HealthDataDTO latestData = healthDataService.getLatestHealthData(userId);
+	    if (latestData == null) {
+	        // 데이터가 없으면 기본값 세팅
+	        latestData = new HealthDataDTO();
+	        latestData.setHeight(BigDecimal.ZERO);
+	        latestData.setWeight(BigDecimal.ZERO);
+	        latestData.setMuscleMass(BigDecimal.ZERO);
+	        latestData.setFatMass(BigDecimal.ZERO);
+	        latestData.setBmi(BigDecimal.ZERO);
+	        latestData.setBasalMetabolicRate(BigDecimal.ZERO);
+	    }
+	    
+	    model.addAttribute("latestData", latestData);
 		
 		
 		return "/mypage";
 	}
+	
+
+
 
 	@GetMapping("/user/ptData")
 	public String ptData() {
