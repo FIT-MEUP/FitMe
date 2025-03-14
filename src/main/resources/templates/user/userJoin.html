@@ -23,13 +23,14 @@
 	<div class="container mt-5">
 		<h2 class="text-center">회원가입</h2>
 
-		<!-- 📌 에러 메시지 표시 -->
-			<script th:if="${errorMessage}">
-				alert("[회원가입 실패] " + "[[${errorMessage}]]");
-			</script>
+		<!-- 📌 에러 메시지 화면에 표시 -->
+        <div th:if="${errorMessage}" class="alert alert-danger text-center" role="alert">
+            <strong th:text="${errorMessage}"></strong>
+        </div>
+
 
 		<form th:action="@{/user/joinProc}" method="post"
-			onsubmit="return validateForm()">
+			 onsubmit="return validateForm()" autocomplete="off">
 			<div class="mb-3">
 				<label for="userEmail" class="form-label">이메일 *</label> <input
 					type="email" class="form-control" id="userEmail" name="userEmail"

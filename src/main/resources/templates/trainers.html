@@ -36,6 +36,7 @@
                         </li>
                     </th:block>
 
+
                     <!-- 인증한 사용자  -->
                     <th:block sec:authorize="isAuthenticated()">
                         <div x-data="{ open: false, isOpen: false }" class="relative inline-block text-left">
@@ -44,7 +45,7 @@
                                 <!-- 버튼 -->
                                 <button @click="open = !open" 
                                     class="px-5 py-3 rounded-lg hover:bg-opacity-40 transition">
-                                    <span class="text-2xl" th:text="${#authentication.name}"></span>
+                                    <span class="text-2xl" th:text="${#authentication.principal.displayName}"></span>
                                 </button>
                             
                                 <!-- 프로필 이미지 (클릭 시 버튼과 동일한 효과) -->
@@ -95,6 +96,7 @@
             </div>
         </div>
     </header>
+
 
     <!-- 광고 배너 -->
     <section class="flex justify-center items-center bg-gray-800 p-6 shadow-lg rounded-lg mt-6">
