@@ -36,9 +36,7 @@ public class UserService {
         return userRepository.existsById(userId); // 불필요한 반전(!) 제거
     }
 
-    /**
-     * 회원 가입 처리 (중복 검사 추가)
-     */
+ 
     /**
      * 회원 가입 처리 (중복 검사 추가)
      */

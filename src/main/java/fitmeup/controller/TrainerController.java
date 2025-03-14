@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.TrainerDTO;
+import fitmeup.dto.UserDTO;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
@@ -72,7 +73,7 @@ public class TrainerController {
                 // 트레이너인 경우, 버튼은 보이지 않도록 처리할 수 있음
             } else {
                 // 일반 사용자인 경우, UserEntity를 통해 이메일 조회
-                UserEntity user = userService.getUserById(loginUserId);
+                UserDTO user = userService.getUserById(loginUserId);
                 if (user != null) {
                     String userEmail = user.getUserEmail();
                     // 현재 페이지의 트레이너에 대해 이미 신청한 경우
@@ -192,7 +193,7 @@ public class TrainerController {
 	    
 	    // 로그인된 사용자 ID와 이메일 가져오기
 	    Long userId = loginUserDetails.getUserId();
-	    UserEntity user = userService.getUserById(userId);
+	    UserDTO user = userService.getUserById(userId);
 	    if (user == null) {
 	        redirectAttributes.addFlashAttribute("error", "사용자를 찾을 수 없습니다.");
 	        return "redirect:/user/login";

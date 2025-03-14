@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
-import fitmeup.entity.PtSessionHistoryEntity;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.ScheduleEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
-import fitmeup.repository.PtSessionHistoryRepository;
+import fitmeup.repository.PTSessionHistoryRepository;
 import fitmeup.repository.ScheduleRepository;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerRepository;
@@ -35,7 +35,7 @@ public class ScheduleService {
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final UserRepository userRepository;
 	private final TrainerRepository trainerRepository;
-	private final PtSessionHistoryRepository ptSessionHistoryRepository;
+	private final PTSessionHistoryRepository ptSessionHistoryRepository;
 	
 	//trainerSchedule Read
 	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
@@ -144,9 +144,9 @@ public class ScheduleService {
 			 return temp.get().getUser().getUserId(); 
 		 }
 		 
-		 public PtSessionHistoryEntity selectfirstByUserId(Long userId) {
-			 List<PtSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
-			 PtSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+		 public PTSessionHistoryEntity selectfirstByUserId(Long userId) {
+			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
+			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
 			 return latestHistory;
 		 }
 		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
