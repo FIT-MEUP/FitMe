@@ -22,4 +22,12 @@ public interface TrainerApplicationRepository extends JpaRepository<TrainerAppli
   Optional<TrainerApplicationEntity> findByUserUserId(Long userId);
     List<TrainerApplicationEntity> findByTrainerTrainerId(Long trainerNum);
 
+    // 일반 사용자가 상담 신청한 내역이 존재하는지 확인
+    boolean existsByUserUserEmail(String userEmail);
+    
+    // 특정 사용자가 특정 트레이너에 대해 신청한 내역 조회
+    Optional<TrainerApplicationEntity> findByUserUserEmailAndTrainerTrainerId(String userEmail, Long trainerId);
+    
+    // 특정 사용자가 특정 트레이너에 대해 신청한 내역 삭제 (신청 취소 기능 구현 시)
+    void deleteByUserUserEmailAndTrainerTrainerId(String userEmail, Long trainerId);
 }

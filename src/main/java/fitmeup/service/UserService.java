@@ -83,15 +83,7 @@ public class UserService {
     public String findUserEmail(String userName, String userContact) {
         return userRepository.findEmailByUserNameAndUserContact(userName, userContact)
                 .orElse("존재하지 않는 회원정보입니다.");
-    }
-    
-
-    public String realUserEmail(Long userId) {	// 0312 수정 김준우
-    	Optional<UserEntity> temp = userRepository.findById(userId);
-    	log.info(temp.toString());
-    	return temp.get().getUserEmail();
-    }
-    	
+    } 	
 
     /**
      * 비밀번호 찾기 - 콘솔에 임시 비밀번호 출력
@@ -203,4 +195,9 @@ public class UserService {
 
         return true;
     }
+    
+    public UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
 }
