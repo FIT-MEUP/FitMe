@@ -2,6 +2,7 @@ package fitmeup.entity;
 
 import java.time.LocalDateTime;
 
+import fitmeup.dto.PTSessionHistoryDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,11 +15,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -54,6 +57,17 @@ public class PTSessionHistoryEntity {
 		    public enum ChangeType {
 		        Added,   // PT 등록 등으로 횟수 증가
 		        Deducted // 출석 등으로 횟수 차감
+		    }
+		    
+		    public static PTSessionHistoryEntity toEntity(PTSessionHistoryDTO dto) {
+		        return PTSessionHistoryEntity.builder()
+		                .historyId(dto.getHistoryId())
+		                .user(UserEntity.builder().userId(dto.getUserId()).build()) // userId만으로 프록시 생성
+		                .changeType(PTSessionHistoryEntity.ChangeType.valueOf(dto.getChangeType()))
+		                .changeAmount(dto.getChangeAmount())
+		                .changeDate(dto.getChangeDate() != null ? dto.getChangeDate() : LocalDateTime.now())
+		                .reason(dto.getReason())
+		                .build();
 		    }
 
 }

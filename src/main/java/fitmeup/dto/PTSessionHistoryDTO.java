@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PtSessionHistoryDTO {
+public class PTSessionHistoryDTO {
 	   private Long historyId;
 	    private Long userId;               // UserEntity의 userId 참조
 	    private String changeType;         // "Added" 또는 "Deducted"
@@ -25,8 +25,8 @@ public class PtSessionHistoryDTO {
 	    private String reason;             // 변경 사유
 
 	    // Entity → DTO 변환 메서드 (필요시)
-	    public static PtSessionHistoryDTO fromEntity(PTSessionHistoryEntity entity) {
-	        return PtSessionHistoryDTO.builder()
+	    public static PTSessionHistoryDTO fromEntity(PTSessionHistoryEntity entity) {
+	        return PTSessionHistoryDTO.builder()
 	                .historyId(entity.getHistoryId())
 	                .userId(entity.getUser().getUserId())
 	                .changeType(entity.getChangeType().name())
