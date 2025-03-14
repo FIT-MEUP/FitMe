@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
-import fitmeup.entity.PtSessionHistoryEntity;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +65,7 @@ private final ScheduleService scheduleService;
         model.addAttribute("userName", userName);
 	    
       //userId를 통해 ptSessionHistory에서 가장 최근거를 가져오는 메소드
-        PtSessionHistoryEntity temp = scheduleService.selectfirstByUserId(userId);
+        PTSessionHistoryEntity temp = scheduleService.selectfirstByUserId(userId);
         if(temp!=null) {
         Long changeAmount=temp.getChangeAmount();
         		model.addAttribute("changeAmount",changeAmount);
