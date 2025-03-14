@@ -26,7 +26,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name="pt_session_history")
-public class PtSessionHistoryEntity {
+public class PTSessionHistoryEntity {
     
 	 @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
