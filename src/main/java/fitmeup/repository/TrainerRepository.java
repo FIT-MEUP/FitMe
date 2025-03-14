@@ -15,6 +15,10 @@ import fitmeup.entity.UserEntity;
 public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
 
 
+    List<TrainerEntity> findByTrainerId(Long trainerId);
+
+
+
     // ✅ 특정 역할(Role)을 가진 트레이너 목록 가져오기
     List<TrainerEntity> findByUser_Role(UserEntity.Role role);
     Optional<TrainerEntity> findById(Long trainerId);    

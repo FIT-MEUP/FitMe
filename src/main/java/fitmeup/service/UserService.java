@@ -1,7 +1,11 @@
 package fitmeup.service;
 
 import java.util.Optional;
+
+import org.apache.catalina.User;
+
 import java.util.UUID;
+
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -200,9 +204,17 @@ public class UserService {
 
         return true;
     }
-    
-    public UserEntity getUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+
+
+    // 로그인한 사용자의 정보를 DB에서 조회하여 UserDTO로 반환하는 메서드
+    public UserDTO getUserById(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return UserDTO.builder()
+            .userId(user.getUserId())
+            .userName(user.getUserName())
+            // 필요한 경우 다른 필드도 매핑
+            .build();
     }
 
 }

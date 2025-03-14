@@ -1,0 +1,104 @@
+<!-- chat.html -->
+<div th:fragment="chatFragment">
+  <!-- hidden 데이터 영역: currentUser와 targetUser 정보를 담음 -->
+  <div id="chatData" style="display:none;"
+       th:attr="data-current-user-id=${currentUser.userId},
+                data-current-user-name=${currentUser.userName},
+                data-target-user-id=${targetUser.userId},
+                data-target-user-name=${targetUser.userName}">
+  </div>
+
+  <!-- 대화 내용 표시 영역 -->
+  <div id="conversationArea" class="conversation">
+    <th:block th:if="${conversation != null and !#lists.isEmpty(conversation)}">
+      <div th:each="msg : ${conversation}">
+        <div th:class="${msg.senderId == currentUser.userId} ? 'message sender' : 'message receiver'">
+          <strong th:text="${msg.senderId == currentUser.userId ? currentUser.userName : targetUser.userName}">Sender</strong>:
+          <span th:text="${msg.content}">메시지 내용</span>
+        </div>
+      </div>
+    </th:block>
+    <th:block th:if="${conversation == null or #lists.isEmpty(conversation)}">
+      <p>대화 내용을 보려면 회원을 선택하세요.</p>
+    </th:block>
+  </div>
+
+  <!-- 채팅 입력창 -->
+  <div class="input-container">
+    <input type="text" id="newMessage" placeholder="메시지를 입력하세요">
+    <button type="button" id="sendBtn">전송</button>
+  </div>
+</div>
+
+<script>
+  function initChat() {
+    // 채팅 메시지 추가 함수
+    window.updateChatWindow = function(chat) {
+      const conversationArea = document.getElementById("conversationArea");
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message");
+      // senderName 결정: senderId가 currentUser.userId이면 현재 사용자, 아니면 대상 회원의 이름 사용
+      let senderName = (chat.senderId === window.currentUser.userId)
+          ? window.currentUser.userName
+          : window.targetUser.userName;
+      if(chat.fileUrl && chat.fileType){
+        let filePreview = "";
+        switch(chat.fileType){
+          case "image":
+            filePreview = `<img src="${chat.fileUrl}" alt="이미지" style="max-width:200px;">`;
+            break;
+          default:
+            filePreview = `<a href="${chat.fileUrl}" download>${chat.originalFileName || "파일"}</a>`;
+        }
+        messageDiv.innerHTML = `<strong>${senderName}</strong>: ${filePreview}`;
+      } else {
+        messageDiv.innerHTML = `<strong>${senderName}</strong>: <span>${chat.content}</span>`;
+      }
+      conversationArea.appendChild(messageDiv);
+      conversationArea.scrollTop = conversationArea.scrollHeight;
+    };
+
+    // 전송 버튼 이벤트 바인딩
+    var sendBtn = document.getElementById("sendBtn");
+    if (sendBtn) {
+      sendBtn.addEventListener("click", function() {
+        if (typeof sendChatMessage === "function") {
+          sendChatMessage();
+        } else {
+          console.log("sendChatMessage 함수가 정의되어 있지 않습니다.");
+        }
+      });
+    }
+  }
+  // initChat()는 외부(memberManage.js)에서 프래그먼트 로드 후 호출됩니다.
+</script>
+<!-- 스타일 -->
+<style>
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 1500px;  /* 전체 채팅창 높이 (원하는 값으로 조정 가능) */
+    border: 1px solid #ddd;
+    background: #fff;
+  }
+  .conversation {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  .input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+  .input-area input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    font-size: 1rem;
+  }
+  .input-area button {
+    padding: 8px 16px;
+    margin-left: 10px;
+    font-size: 1rem;
+  }
+</style>
