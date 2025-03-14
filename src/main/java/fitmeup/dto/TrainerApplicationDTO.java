@@ -15,7 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor	
 @AllArgsConstructor
 @Builder
 public class TrainerApplicationDTO {

@@ -130,8 +130,15 @@ public class UserController {
             return "redirect:/user/login";  
         }
         
-        @PostMapping("/deleteAccount")
-        public String deleteAccount(@RequestParam("email") String email, 
+        @GetMapping("/deleteAccount")
+        public String deleteAccount() {
+        	
+
+            return "user/deleteAccount";
+        }
+        
+        @PostMapping("/deleteAccountProc")
+        public String deleteAccountProc(@RequestParam("email") String email, 
                                     @RequestParam("password") String password, 
                                     RedirectAttributes redirectAttributes) {
             boolean success = userService.deleteUser(email, password, redirectAttributes);
@@ -142,7 +149,7 @@ public class UserController {
 
             // 탈퇴 성공 시 로그아웃 처리 후 홈으로 이동
             SecurityContextHolder.clearContext();
-            return "redirect:/";
+            return "redirect:/user/logout";
         }
 
 }
