@@ -77,7 +77,7 @@ private final ScheduleService scheduleService;
         }
         
         
-		return "userschedule";
+		return "schedule/userschedule";
 	
 	
 	}
