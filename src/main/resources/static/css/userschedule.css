@@ -117,3 +117,31 @@ body {
 .selection-mode .fc-event:not(.user-created-event) {
     pointer-events: none !important;
 }
+
+
+
+/* 플로팅 채팅창 컨테이너 (오른쪽 아래에 고정, 초기 숨김) */
+#floatingChatContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    max-height: 600px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+}
+/* "채팅 열기" 버튼 스타일 */
+#openChatBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 380px;
+    z-index: 10000;
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}

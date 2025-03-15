@@ -35,37 +35,21 @@ public class MemberManageController {
     private final TrainerApplicationService trainerApplicationService;
     private final UserService userService;
 
-    @GetMapping("trainer/memberManage")
-    public String memberManagePage(
-                                    @AuthenticationPrincipal LoginUserDetails loginUser,
-                                    Model model) {
-        // findbyId로 대충 특정했다고 가정하고
-        if (loginUser.getRoles() == "Trainer") {
+    @GetMapping("/trainer/memberManage")
+    public String memberManagePage(@AuthenticationPrincipal LoginUserDetails loginUser, Model model) {
+        // loginUser.getRoles()가 문자열이라면 equals()로 비교합니다.
+        if ("Trainer".equals(loginUser.getRoles())) {
             Long trainerNum = loginUser.getUserId();
-            //loginuser에서 받은 userId값이 trainerNum으로 들어가서 자동적으로 해당 트레이너가 갖고 있는 유저들을 출력해줌
-            log.info("====================={}", trainerNum);
             List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Approved);
             List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Pending);
-//            for(String role : roleNames) {
-//            	log.info("====================={}",role);
-//            }
-            log.info("=====================ApprovedList:{}", ApprovedList);
-            log.info("=====================PendingList:{}", PendingList);
-
-
-            // html에 foreach 돌려서 하면 될듯?
             model.addAttribute("ApprovedList", ApprovedList);
             model.addAttribute("PendingList", PendingList);
-            model.addAttribute("loginUserId", trainerNum);
-
-            return "manage/memberManage";
-
-        } else{
+            return "manage/memberManage"; // Thymeleaf 템플릿 뷰 이름 (확장자 제외)
+        } else {
             return "redirect:/";
-
         }
-
     }
+
     // 신청 승인 API
     @PostMapping("/trainer/approve")
     @ResponseBody

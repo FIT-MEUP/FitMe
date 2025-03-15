@@ -67,6 +67,7 @@ $(document).ready(function () {
       type: "GET",
       success: function (htmlFragment) {
         $("#chatFragmentContainer").html(htmlFragment);
+        $("#chatFragmentContainer").show();
         if (typeof initChat === "function") {
           initChat();
         }
@@ -111,8 +112,9 @@ $(document).ready(function () {
       content: message
     };
     if (window.stompClient && window.stompClient.connected) {
-      window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-      updateChatWindow(chatMessage);
+      window.stompClient.send("/app/chat.sendMessage", {},
+          JSON.stringify(chatMessage));
+      // updateChatWindow(chatMessage); // 서버 응답을 통해 UI 업데이트되도록 함
     } else {
       console.error("WS 연결이 되어있지 않습니다.");
     }
