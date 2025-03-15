@@ -2,6 +2,7 @@ package fitmeup.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,11 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.TrainerDTO;
-import fitmeup.dto.UserDTO;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
-import fitmeup.entity.UserEntity;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
@@ -47,7 +46,7 @@ public class TrainerController {
 
     @GetMapping("/trainer/{trainerId}")
     public String trainerDetail(@PathVariable("trainerId") Long trainerId, Model model,
-                                   @AuthenticationPrincipal UserDetails userDetails) {
+                                @AuthenticationPrincipal UserDetails userDetails) {
         TrainerEntity trainer = trainerService.getTrainerById(trainerId);
         List<TrainerPhotoEntity> photos = trainerService.getTrainerPhotos(trainerId);
 
@@ -60,36 +59,34 @@ public class TrainerController {
         boolean isTrainer = false;
         boolean appliedToThis = false;
         boolean appliedToAny = false;
+        Long loggedInTrainerId = null;
 
         if (loggedIn) {
             Long loginUserId = Long.parseLong(userDetails.getUsername());
             log.info("로그인한 사용자 ID: {}", loginUserId);
 
-            // 먼저, 로그인한 사용자의 트레이너 정보 조회
             TrainerEntity loggedInTrainer = trainerService.getTrainerByUserId(loginUserId);
+            
             if (loggedInTrainer != null) {
-                // 로그인한 사용자가 트레이너인 경우
-                isTrainer = loggedInTrainer.getTrainerId().equals(trainerId);
-                // 트레이너인 경우, 버튼은 보이지 않도록 처리할 수 있음
+                isTrainer = true; // 트레이너 계정이면 true
+                loggedInTrainerId = loggedInTrainer.getTrainerId();
             } else {
-                // 일반 사용자인 경우, UserEntity를 통해 이메일 조회
-                UserDTO user = userService.getUserById(loginUserId);
-                if (user != null) {
-                    String userEmail = user.getUserEmail();
-                    // 현재 페이지의 트레이너에 대해 이미 신청한 경우
-                    appliedToThis = consultationService.isAlreadyApplied(userEmail, trainerId);
-                    // 일반 사용자가 이미 어느 트레이너에 신청했는지 확인 (전체 신청 내역 존재 여부)
-                    appliedToAny = trainerApplicationRepository.existsByUserUserEmail(userEmail);
+                // ✅ "Pending" 상태인 경우만 true, "Rejected" 상태는 false
+                Optional<TrainerApplicationEntity> applicationOpt = trainerApplicationService.getApplicationByUserIdAndTrainerId(loginUserId, trainerId);
+                
+                if (applicationOpt.isPresent()) {
+                    TrainerApplicationEntity application = applicationOpt.get();
+                    appliedToThis = (application.getStatus() == TrainerApplicationEntity.Status.Pending);
                 }
+                // ✅ 다른 트레이너에게 신청한 기록이 있는지 확인 (Rejected는 제외)
+                appliedToAny = trainerApplicationRepository.existsByUserUserIdAndStatusIn(
+                    loginUserId, List.of(TrainerApplicationEntity.Status.Pending, TrainerApplicationEntity.Status.Approved)
+                );
             }
         }
 
-        log.info("현재 페이지의 트레이너 ID: {}", trainer.getTrainerId());
-        log.info("isTrainer: {}", isTrainer);
-        log.info("appliedToThis: {}", appliedToThis);
-        log.info("appliedToAny: {}", appliedToAny);
-
         model.addAttribute("isTrainer", isTrainer);
+        model.addAttribute("loggedInTrainerId", loggedInTrainerId);
         model.addAttribute("appliedToThis", appliedToThis);
         model.addAttribute("appliedToAny", appliedToAny);
 
@@ -185,41 +182,83 @@ public class TrainerController {
 	        @AuthenticationPrincipal LoginUserDetails loginUserDetails,
 	        @RequestParam("trainerId") Long trainerId,
 	        RedirectAttributes redirectAttributes) {
-	    
-	    // 로그인 확인: 로그인하지 않았다면 로그인 페이지로 리다이렉트
+
+	    log.info("💡 상담 신청 요청: 로그인 사용자={}, 트레이너={}", loginUserDetails, trainerId);
+
 	    if (loginUserDetails == null) {
+	        log.warn("❌ 로그인하지 않은 사용자가 상담 신청 시도!");
 	        return "redirect:/user/login";
 	    }
-	    
-	    // 로그인된 사용자 ID와 이메일 가져오기
+
 	    Long userId = loginUserDetails.getUserId();
-	    UserDTO user = userService.getUserById(userId);
-	    if (user == null) {
-	        redirectAttributes.addFlashAttribute("error", "사용자를 찾을 수 없습니다.");
-	        return "redirect:/user/login";
-	    }
-	    String userEmail = user.getUserEmail();
-	    
-	    // TrainerService를 통해 TrainerEntity 조회
-	    TrainerEntity trainer = trainerService.getTrainerById(trainerId);
-	    
-	    if (trainer == null) {
-	        redirectAttributes.addFlashAttribute("error", "트레이너를 찾을 수 없습니다.");
-	        return "redirect:/";
-	    }
-	    
-	    // 이미 신청한 상태인지 확인 (로그인된 사용자의 이메일 사용)
-	    if (trainerApplicationService.isAlreadyApplied(userEmail, trainerId)) {
-	        redirectAttributes.addFlashAttribute("message", "이미 상담 신청하셨습니다.");
+	    if (userId == null) {
+	        log.error("❌ 로그인 정보에서 userId를 가져올 수 없음!");
+	        redirectAttributes.addFlashAttribute("error", "사용자 정보가 올바르지 않습니다.");
 	        return "redirect:/trainer/" + trainerId;
 	    }
-	    
-	    // 방문 상담 신청 생성 및 저장
-	    trainerApplicationService.createApplication(userId, trainerId);
-	    
-	    redirectAttributes.addFlashAttribute("message", "방문 상담 신청이 완료되었습니다.");
+
+	    log.info("✅ 로그인한 사용자 ID: {}", userId);
+
+	    TrainerEntity trainer = trainerService.getTrainerById(trainerId);
+	    if (trainer == null) {
+	        log.error("❌ 트레이너 ID {} 정보 없음!", trainerId);
+	        redirectAttributes.addFlashAttribute("error", "트레이너 정보를 찾을 수 없습니다.");
+	        return "redirect:/trainers";
+	    }
+
+	    log.info("✅ 트레이너 정보 확인 완료: {}", trainer.getTrainerId());
+
+	    // ✅ 기존 신청이 있는지 확인
+	    Optional<TrainerApplicationEntity> applicationOpt = trainerApplicationService.getApplicationByUserIdAndTrainerId(userId, trainerId);
+
+	    if (applicationOpt.isPresent()) {
+	        TrainerApplicationEntity existingApplication = applicationOpt.get();
+
+	        if (existingApplication.getStatus() == TrainerApplicationEntity.Status.Pending) {
+	            log.warn("⚠️ 사용자 ID {}가 이미 트레이너 ID {}에 상담 신청함!", userId, trainerId);
+	            redirectAttributes.addFlashAttribute("message", "이미 상담 신청한 트레이너입니다.");
+	            return "redirect:/trainer/" + trainerId;
+	        } else if (existingApplication.getStatus() == TrainerApplicationEntity.Status.Rejected) {
+	            log.info("🔄 기존 신청이 거절됨 (Rejected), 새로운 신청으로 업데이트");
+	            existingApplication.setStatus(TrainerApplicationEntity.Status.Pending);
+	            trainerApplicationService.saveApplication(existingApplication);
+	            redirectAttributes.addFlashAttribute("message", "상담 신청이 다시 접수되었습니다.");
+	            return "redirect:/trainer/" + trainerId;
+	        }
+	    }
+
+	    try {
+	        trainerApplicationService.createApplication(userId, trainerId);
+	        log.info("✅ 상담 신청 완료: userId={}, trainerId={}", userId, trainerId);
+	        redirectAttributes.addFlashAttribute("message", "방문 상담 신청이 완료되었습니다.");
+	    } catch (Exception e) {
+	        log.error("🔥 상담 신청 중 오류 발생: {}", e.getMessage(), e);
+	        redirectAttributes.addFlashAttribute("error", "상담 신청 중 오류가 발생했습니다.");
+	    }
+
 	    return "redirect:/trainer/" + trainerId;
 	}
 
+	@PostMapping("/trainer/consultation/cancel")
+	public String cancelConsultation(
+	        @AuthenticationPrincipal LoginUserDetails loginUserDetails,
+	        @RequestParam("trainerId") Long trainerId,
+	        RedirectAttributes redirectAttributes) {
+
+	    if (loginUserDetails == null) {
+	        return "redirect:/user/login";
+	    }
+
+	    Long userId = loginUserDetails.getUserId();
+	    boolean canceled = trainerApplicationService.cancelApplication(userId, trainerId);
+
+	    if (canceled) {
+	        redirectAttributes.addFlashAttribute("message", "상담 신청이 취소되었습니다.");
+	    } else {
+	        redirectAttributes.addFlashAttribute("error", "상담 신청을 취소할 수 없습니다.");
+	    }
+
+	    return "redirect:/trainer/" + trainerId;
+	}
 
 }
