@@ -142,4 +142,20 @@ public class ChatService {
             .time(chat.getSentAt())
             .build());
   }
+
+  public int getUnreadCountFromTrainer(Long userId) {
+    // 현재 사용자와 관련된 모든 메시지 조회 (발신자 또는 수신자)
+    List<ChatEntity> chatEntities = chatRepository.findBySenderOrReceiver(userId);
+    int count = 0;
+    for (ChatEntity chat : chatEntities) {
+      // 수신자가 현재 사용자이고, 메시지가 읽히지 않았으며, 보낸 사람이 트레이너인지 확인
+      if (chat.getReceiver().getUserId().equals(userId)
+          && !Boolean.TRUE.equals(chat.getIsRead())
+          && chat.getSender().getRole() == UserEntity.Role.Trainer) {
+        count++;
+      }
+    }
+    return count;
+  }
+
 }

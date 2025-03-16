@@ -1,5 +1,23 @@
 // memberManage.js
 $(document).ready(function () {
+
+
+  // 디버깅: 서버에서 전달한 chatUserMapJson 데이터를 읽어서 콘솔에 출력
+  var debugData = $("#debugChatUserMap").text();
+  if (debugData) {
+    try {
+      var chatUserMapData = JSON.parse(debugData);
+      console.log("Debug: chatUserMap from server:", chatUserMapData);
+    } catch (e) {
+      console.error("Debug: chatUserMap JSON 파싱 실패:", e);
+    }
+  } else {
+    console.warn("Debug: chatUserMap 데이터가 없습니다.");
+  }
+
+
+
+
   // "수락" 버튼 클릭 시
   $(".approve-btn").click(function () {
     let applicationId = $(this).data("id");
@@ -42,6 +60,10 @@ $(document).ready(function () {
   // 관리 회원 목록 클릭 시
   $(".select-btn").click(function () {
     let applicationId = $(this).data("id");
+    let userId = $(this).data("user-id");
+
+    updateUnreadCountToZero(userId);
+
     console.log("선택한 applicationId:", applicationId);
 
     // 회원 정보 조회 (선택된 신청서의 정보를 출력)
@@ -152,6 +174,11 @@ $(document).ready(function () {
       let val = parseInt(unreadSpan.text()) || 0;
       unreadSpan.text(val + 1);
     }
+  }
+
+  function updateUnreadCountToZero(userId) {
+    const sel = `.select-btn[data-user-id="${userId}"] .unread-count`;
+    $(sel).text('');
   }
 
   function updateChatWindow(chat) {

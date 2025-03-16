@@ -1,5 +1,6 @@
 package fitmeup.controller;
 
+import fitmeup.service.ChatService;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.UserService;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class ScheduleController {
 
 private final ScheduleService scheduleService;
 	private final TrainerApplicationService trainerApplicationService;
+	private final ChatService chatService;
 
 
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
@@ -36,6 +38,11 @@ private final ScheduleService scheduleService;
 //			 ,@RequestParam(name = "userId", defaultValue = "5") Long userId
 			 ,@AuthenticationPrincipal LoginUserDetails loginUser
 			) {
+		if (loginUser == null) {
+			// 인증되지 않은 사용자라면 로그인 페이지로 리다이렉트
+			return "redirect:/login";
+		}
+
 		Long userId= loginUser.getUserId();
 //		 Long trainerId=scheduleService.findTrainerId(4L);
 		//정상 작동 5->2 4->1
@@ -54,6 +61,10 @@ private final ScheduleService scheduleService;
 		// 유저인 경우: 해당 유저가 신청한 신청서의 applicationId (메서드 구현은 아래 참고)
 		Long applicationId = trainerApplicationService.findApplicationIdByUserId(userId);
 		model.addAttribute("applicationId", applicationId);
+
+		// 로그인한 사용자가 할당받은 트레이너의 unread 메시지 개수 계산 (서비스 메서드 구현 필요)
+		int trainerUnreadCount = chatService.getUnreadCountFromTrainer(loginUser.getUserId());
+		model.addAttribute("trainerUnreadCount", trainerUnreadCount);
 
 
 

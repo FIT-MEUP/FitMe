@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,6 +63,11 @@ public class ChatController {
       targetUser = chatService.getTrainerUserDTOByApplicationId(applicationId);
     }
 
+    // targetUser가 null이면 오류 발생
+    if (targetUser == null) {
+      throw new RuntimeException("targetUser is null for applicationId: " + applicationId);
+    }
+
     // 대화 내역 조회: 대상 회원의 userId와 현재 사용자의 userId를 기준으로 조회
     List<ChatMessage> conversation = chatService.getConversation(targetUser.getUserId(), currentUser.getUserId());
     model.addAttribute("conversation", conversation);
@@ -101,7 +107,23 @@ public class ChatController {
     ChatMessage savedChat = chatService.saveMessage(chatMessage);
     messageTemplate.convertAndSend("/queue/chat/" + savedChat.getReceiverId(), savedChat);
     messageTemplate.convertAndSend("/queue/chat/" + savedChat.getSenderId(), savedChat);
+
+    // ChatController.java (sendMessage 메서드 내부, unreadCount 갱신 로직 추가 예시)
+    int unreadCount = chatService.getUnreadCountFromTrainer(savedChat.getReceiverId());
+    messageTemplate.convertAndSend("/queue/notifications/" + savedChat.getReceiverId(), unreadCount);
   }
+
+  @GetMapping("/chat/unreadCount")
+  @ResponseBody
+  public int getUnreadCount(@AuthenticationPrincipal LoginUserDetails loginUser) {
+    if (loginUser == null) {
+      return 0;
+    }
+    return chatService.getUnreadCountFromTrainer(loginUser.getUserId());
+  }
+
+
+
 
 
   /**

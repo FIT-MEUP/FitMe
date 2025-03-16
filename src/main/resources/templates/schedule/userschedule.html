@@ -100,6 +100,13 @@ console.log("Merged calendarEvents:", calendarEvents);
   <!-- "채팅 열기" 버튼 (chat.png 이미지 사용, 오른쪽 하단 고정) -->
   <button id="openChatBtn" style="position:fixed; right:20px; bottom:20px; background:none; border:none;">
     <img src="/images/chat.png" alt="채팅 열기" style="width:40px;">
+    <!-- 배지: 기본적으로 숨김 -->
+    <span id="trainerUnreadBadge"
+          style="position:absolute; top:0; right:0; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px; display:none;">
+    0
+  </span>
+    <!-- 서버에서 전달된 unread count 값을 담은 숨김 엘리먼트 -->
+    <div id="trainerUnreadCount" th:text="${trainerUnreadCount}" style="display:none;"></div>
   </button>
 </body>
 </html>
