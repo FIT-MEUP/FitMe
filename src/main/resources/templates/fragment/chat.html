@@ -2,11 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>채팅 (아이콘 클릭으로 파일선택)</title>
-
-  <!-- fontawesome cdn (fa-circle-plus) 예시 -->
-  <!-- 필요하다면 아래 CDN 또는 로컬 폰트어썸 파일 -->
-  <!-- <script src="https://kit.fontawesome.com/xxxxx.js" crossorigin="anonymous"></script> -->
+  <title>채팅 - 파일 업로드</title>
 
   <style>
     /* 채팅 영역 스타일 */
@@ -33,11 +29,11 @@
     /* 입력창 컨테이너 */
     .input-container {
       margin-top: 10px;
-      position: relative;  /* 아이콘을 절대 배치하기 위해 position:relative */
+      position: relative; /* 이미지 버튼을 절대 배치하기 위해 */
     }
     /* 텍스트 입력창 */
     .input-container input[type="text"] {
-      width: calc(100% - 70px); /* 버튼+아이콘 공간 확보 */
+      width: calc(100% - 70px); /* 전송버튼 + 이미지버튼 공간 확보 */
       padding: 8px;
       box-sizing: border-box;
     }
@@ -46,14 +42,14 @@
       padding: 8px 12px;
       margin-left: 5px;
     }
-    /* 아이콘을 input 내부 오른쪽에 겹쳐 보이도록 */
-    .file-icon {
+    /* 이미지 버튼 (plus.png) 위치: input 내부 오른쪽에 겹쳐 보이도록 */
+    .file-button {
       position: absolute;
       top: 8px;
       right: 10px;
-      font-size: 1.2rem;
       cursor: pointer;
-      color: #555;  /* 원하는 색 */
+      width: 20px;   /* 원하는 크기로 조정 */
+      height: 20px;  /* 원하는 크기로 조정 */
     }
     /* 숨겨진 파일 입력 */
     #fileInput {
@@ -67,7 +63,7 @@
 <!-- chat.html 프래그먼트 시작 -->
 <div th:fragment="chatFragment">
 
-  <!-- (A) 숨김 div: 현재 사용자, 대상 사용자 정보를 담음 -->
+  <!-- (A) 숨김 div: 현재 사용자, 대상 사용자 정보 보관 -->
   <div id="chatData" style="display:none;"
        th:attr="data-current-user-id=${currentUser.userId},
                 data-current-user-name=${currentUser.userName},
@@ -79,14 +75,18 @@
   <div id="conversationArea" class="conversation">
     <th:block th:if="${conversation != null and !#lists.isEmpty(conversation)}">
       <div th:each="msg : ${conversation}">
-        <!-- Thymeleaf 2.x 호환: eq 사용, 삼항연산자 괄호감싸기 -->
+        <!-- msg.senderId == currentUserId → 'message sender', 아니면 'message receiver' -->
         <div th:class="${(msg.senderId eq currentUser.userId) ? 'message sender' : 'message receiver'}">
+
           <strong th:text="${(msg.senderId eq currentUser.userId) ? currentUser.userName : targetUser.userName}">
             Sender
           </strong>:
-          <!-- 파일 메시지 vs 텍스트 -->
+
+          <!-- (B-1) 파일 메시지인지 체크 -->
           <th:block th:if="${msg.fileUrl != null}">
             <th:block th:switch="${msg.fileType}">
+
+              <!-- 이미지 파일 -->
               <th:block th:case="'image'">
                 <img th:src="${msg.fileUrl}" alt="이미지" style="max-width:200px;" />
                 <br/>
@@ -94,26 +94,32 @@
                   [[${msg.originalFileName}]]
                 </a>
               </th:block>
+
+              <!-- 비디오 파일 -->
               <th:block th:case="'video'">
                 <video controls width="300">
                   <source th:src="${msg.fileUrl}" type="video/mp4" />
-                  브라우저가 video를 지원하지 않음
+                  영상 재생 불가
                 </video>
                 <br/>
                 <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
                   [[${msg.originalFileName}]]
                 </a>
               </th:block>
+
+              <!-- 오디오 파일 -->
               <th:block th:case="'audio'">
                 <audio controls>
                   <source th:src="${msg.fileUrl}" type="audio/mpeg" />
-                  브라우저가 audio를 지원하지 않음
+                  오디오 재생 불가
                 </audio>
                 <br/>
                 <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
                   [[${msg.originalFileName}]]
                 </a>
               </th:block>
+
+              <!-- 기타 문서 -->
               <th:block th:case="*">
                 <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
                   [[${msg.originalFileName}]]
@@ -121,30 +127,34 @@
               </th:block>
             </th:block>
           </th:block>
-          <!-- 텍스트 메시지 -->
+
+          <!-- (B-2) 텍스트 메시지 -->
           <th:block th:if="${msg.fileUrl} == null">
             <span th:text="${msg.content}">메시지</span>
           </th:block>
         </div>
       </div>
     </th:block>
+
     <th:block th:if="${conversation == null or #lists.isEmpty(conversation)}">
       <p>대화 내용을 보려면 상대방을 선택하세요.</p>
     </th:block>
   </div>
 
-  <!-- (C) 채팅 입력창 (input + 전송버튼 + 아이콘 + 숨김 file input) -->
+  <!-- (C) 채팅 입력창 -->
   <div class="input-container">
-    <!-- 텍스트 입력 -->
-    <input type="text" id="newMessage" placeholder="메시지를 입력하세요" />
-    <!-- 전송 버튼 -->
+    <!-- 텍스트 메시지 입력 -->
+    <input type="text" id="newMessage" placeholder="메시지를 입력하세요"/>
     <button type="button" id="sendBtn">전송</button>
 
-    <!-- 아이콘 (fa-circle-plus), input 내부 오른쪽에 배치 -->
-    <i class="fa-solid fa-circle-plus file-icon" id="fileSelectIcon"></i>
-    <!-- 숨겨진 파일 입력 -->
-    <input type="file" id="fileInput"
-           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt" />
+    <!-- (C-1) plus.png 이미지 버튼 (클릭 시 파일 업로드) -->
+    <img src="/images/plus.png"
+         id="fileSelectIcon"
+         class="file-button"
+         alt="파일 첨부 버튼"/>
+
+    <!-- (C-2) 숨김 파일 입력 (accept 속성 없이 모든 파일 가능) -->
+    <input type="file" id="fileInput" style="display:none;"/>
   </div>
 
 </div>
@@ -152,12 +162,13 @@
 
 <script>
   function initChat() {
-    // 메시지 표시 함수
+    // STOMP 메시지를 받았을 때 화면에 표시
     window.updateChatWindow = function(chat) {
       const conversationArea = document.getElementById("conversationArea");
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
+      // sender vs receiver
       if (chat.senderId === window.currentUser.userId) {
         messageDiv.classList.add("sender");
       } else {
@@ -168,6 +179,7 @@
           ? window.currentUser.userName
           : window.targetUser.userName;
 
+      // 파일 메시지?
       if (chat.fileUrl && chat.fileType) {
         let filePreview = "";
         switch (chat.fileType) {
@@ -177,15 +189,15 @@
           case "video":
             filePreview = `
               <video controls width="300">
-                <source src="${chat.fileUrl}" type="video/mp4" />
-                비디오를 지원하지 않는 브라우저
+                <source src="${chat.fileUrl}" type="video/mp4"/>
+                영상 재생 불가
               </video>`;
             break;
           case "audio":
             filePreview = `
               <audio controls>
-                <source src="${chat.fileUrl}" type="audio/mpeg" />
-                오디오를 지원하지 않는 브라우저
+                <source src="${chat.fileUrl}" type="audio/mpeg"/>
+                오디오 재생 불가
               </audio>`;
             break;
           default:
@@ -195,7 +207,7 @@
         }
         messageDiv.innerHTML = `<strong>${senderName}</strong>: ${filePreview}`;
       } else {
-        // 일반 텍스트
+        // 텍스트 메시지
         messageDiv.innerHTML = `<strong>${senderName}</strong>: <span>${chat.content}</span>`;
       }
 

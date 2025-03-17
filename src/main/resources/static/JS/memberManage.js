@@ -18,7 +18,7 @@ $(document).ready(function () {
           console.log("알림으로 받은 unreadMap:", unreadMap);
           $(".memberList li").each(function () {
             var userId = $(this).find(".select-btn").data("user-id");
-            // 현재 대화중인 유저와 다르면 unread count 업데이트
+            // 현재 대화중인 유저와 다르면 unread count를 업데이트
             if (!window.targetUser || window.targetUser.userId != userId) {
               var unreadCount = unreadMap[userId] || 0;
               if (unreadCount > 0) {
@@ -121,7 +121,7 @@ $(document).ready(function () {
           initChat();
         }
 
-        // hidden div #chatData에서 currentUser, targetUser 읽어 전역에 저장
+        // hidden div #chatData에서 currentUser, targetUser 정보 읽음
         var chatData = $("#chatData");
         if(chatData.length) {
           window.currentUser = {
@@ -132,11 +132,11 @@ $(document).ready(function () {
             userId: parseInt(chatData.data("target-user-id")),
             userName: chatData.data("target-user-name")
           };
-          console.log("로그인 사용자:", window.currentUser);
+          console.log("로그인(트레이너):", window.currentUser);
           console.log("대상 회원:", window.targetUser);
         }
 
-        // 채팅용 웹소캣 연결
+        // 채팅용 웹소켓 연결
         if (!window.stompClient || !window.stompClient.connected) {
           connectChat();
         } else {
@@ -155,7 +155,7 @@ $(document).ready(function () {
 
 
   //------------------------------------------------------
-  // (4) sendBtn 클릭 -> 메시지 전송
+  // (4) sendBtn 클릭 -> 텍스트 메시지 전송
   //------------------------------------------------------
   $(document).on("click", "#sendBtn", function () {
     window.sendChatMessage();
@@ -172,7 +172,11 @@ $(document).ready(function () {
       content: message
     };
     if (window.stompClient && window.stompClient.connected) {
+      // STOMP 전송
       window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+
+      // (★1) 트레이너도 "local UI" 즉시 반영
+      updateChatWindow(chatMessage);
     } else {
       console.error("WS 연결이 안 되어있습니다.");
     }
@@ -191,7 +195,9 @@ $(document).ready(function () {
       $("#sendBtn").prop("disabled", false);
       window.stompClient.subscribe(`/queue/chat/${window.currentUser.userId}`, function (response) {
         const chat = JSON.parse(response.body);
-        // 현재 열려있는 대화인지
+
+        // (★2) 서버 echo에 대한 조건문 (수신 vs 발신)
+        // 내가 발신한 메시지도 여기를 통해 들어올 수 있음
         if (
             (chat.senderId === window.targetUser.userId && chat.receiverId === window.currentUser.userId) ||
             (chat.senderId === window.currentUser.userId && chat.receiverId === window.targetUser.userId)
@@ -199,7 +205,7 @@ $(document).ready(function () {
           updateChatWindow(chat);
           console.log("채팅 메시지 수신:", chat);
         } else {
-          // 현재 대화중이 아니면 unread 배지 증가
+          // 현재 대화중이 아니면 unread 배지
           updateUnreadCount(chat.senderId);
         }
       });
@@ -210,18 +216,46 @@ $(document).ready(function () {
 
 
   //------------------------------------------------------
-  // (6) 채팅창 UI 업데이트 함수 (텍스트 메시지 기준)
+  // (6) 채팅창 UI 업데이트 함수 (파일/텍스트 공용)
   //------------------------------------------------------
   function updateChatWindow(chat) {
     const conversationArea = $("#conversationArea");
     const messageDiv = $("<div>").addClass("message");
+
     let senderName = (chat.senderId === window.currentUser.userId)
         ? window.currentUser.userName
         : window.targetUser.userName;
 
-    // 파일/텍스트 여부(간단 처리: text만)
-    // 상세 파일처리는 chat.html의 updateChatWindow() or shared code에서
-    messageDiv.html(`<strong>${senderName}</strong>: <span>${chat.content}</span>`);
+    // 파일 vs 텍스트 메시지
+    if (chat.fileUrl && chat.fileType) {
+      let filePreview = "";
+      switch (chat.fileType) {
+        case "image":
+          filePreview = `<img src="${chat.fileUrl}" alt="이미지" style="max-width:200px;">`;
+          break;
+        case "video":
+          filePreview = `
+            <video controls width="300">
+              <source src="${chat.fileUrl}" type="video/mp4"/>
+              영상 불가
+            </video>`;
+          break;
+        case "audio":
+          filePreview = `
+            <audio controls>
+              <source src="${chat.fileUrl}" type="audio/mpeg"/>
+              오디오 불가
+            </audio>`;
+          break;
+        default:
+          const docName = chat.originalFileName || "파일";
+          filePreview = `<a href="${chat.fileUrl}" download="${docName}">${docName}</a>`;
+          break;
+      }
+      messageDiv.html(`<strong>${senderName}</strong>: ${filePreview}`);
+    } else {
+      messageDiv.html(`<strong>${senderName}</strong>: <span>${chat.content}</span>`);
+    }
 
     conversationArea.append(messageDiv);
     conversationArea.scrollTop(conversationArea.prop("scrollHeight"));
@@ -262,19 +296,18 @@ $(document).ready(function () {
 
 
   //------------------------------------------------------
-  // (9) 파일 업로드 (fa-circle-plus 아이콘 + fileInput)
+  // (9) 파일 업로드 (plus.png + #fileInput)
   //------------------------------------------------------
   // 아이콘 클릭 => 숨겨진 파일 input 열기
   $(document).on("click", "#fileSelectIcon", function() {
     $("#fileInput").click();
   });
 
-  // 파일 선택(change)이 일어났을 때 업로드
+  // 파일 선택 -> 업로드
   $(document).on("change", "#fileInput", function(e) {
     const file = e.target.files[0];
     if (!file) return;
     uploadChatFile(file);
-    // 선택 후 input.value 비워 다시 선택 가능하도록
     e.target.value = "";
   });
 
@@ -288,7 +321,7 @@ $(document).ready(function () {
     })
     .then(resp => resp.json())
     .then(result => {
-      // 파일 업로드 성공 => STOMP로 파일 메시지 전송
+      // 업로드 성공 => STOMP로 파일 메시지 전송
       const chatMessage = {
         senderId: window.currentUser.userId,
         receiverId: window.targetUser.userId,
@@ -300,6 +333,7 @@ $(document).ready(function () {
       };
       if (window.stompClient && window.stompClient.connected) {
         window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+
       } else {
         console.error("WS 연결이 안 되어있습니다.");
       }
