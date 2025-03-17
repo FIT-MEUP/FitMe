@@ -1,142 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>트레이너 회원가입</title>
+    <meta charset="UTF-8">
+    <title>트레이너 회원가입 | Fit Me</title>
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
-<!-- jQuery -->
-<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-<script defer th:src="@{/js/trainerJoin.js}"></script>
-
-<!-- Bootstrap JS -->
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Bootstrap 포함 -->
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-<!-- 내 CSS -->
-<link rel="stylesheet" th:href="@{/css/join.css}">
-
-<meta name="errorMessage" th:if="${errorMessage}"
-	th:content="${errorMessage}">
-
+    <style>
+        .font-title { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; }
+        .font-body { font-family: 'Montserrat', sans-serif; font-weight: 400; }
+        .bg-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+        .fade-in { animation: fadeIn 0.7s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-	<script>
-        // 서버에서 전달된 에러 메시지가 있으면 alert 표시
+
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
+
+   <!-- ✅ 에러 메시지 alert -->
+   <meta name="errorMessage" th:if="${errorMessage}" th:content="${errorMessage}">
+   <script>
         document.addEventListener("DOMContentLoaded", function () {
             const errorMessage = document.querySelector("meta[name='errorMessage']")?.content;
             if (errorMessage) {
                 alert(errorMessage);
             }
         });
+
+        // ✅ 유효성 검사 함수
+        function validateForm() {
+            let isValid = true;
+
+            // 비밀번호 검사 (6자 이상 + 특수문자 포함)
+            const password = document.getElementById("password").value;
+            const passwordError = document.getElementById("passwordError");
+            const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
+            if (!passwordRegex.test(password)) {
+                passwordError.textContent = "비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.";
+                isValid = false;
+            } else {
+                passwordError.textContent = "";
+            }
+
+            // 이름 검사 (한글만 가능)
+            const userName = document.getElementById("userName").value;
+            const nameError = document.getElementById("nameError");
+            const nameRegex = /^[가-힣]+$/;
+            if (!nameRegex.test(userName)) {
+                nameError.textContent = "이름은 한글만 입력할 수 있습니다.";
+                isValid = false;
+            } else {
+                nameError.textContent = "";
+            }
+
+            return isValid;
+        }
     </script>
-    
-	<div class="container mt-5">
-		<h2 class="text-center">트레이너 회원가입</h2>
 
+    <div class="relative z-10 flex flex-col w-full max-w-md fade-in">
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit:me Logo" class="w-36">
+            </a>
+        </header>
 
+        <section class="bg-overlay p-8 py-10 shadow-lg rounded-lg w-full text-center">
+            <h1 class="text-4xl font-title text-white tracking-widest">트레이너 가입</h1>
+            <p class="text-gray-300 mt-1 font-body">전문가로서 등록하세요.</p>
 
-		<form th:action="@{/trainer/joinProc}" method="post"
-			onsubmit="return validateForm()">
-			<!-- 이메일 입력 -->
-			<div class="mb-3">
-				<label for="userEmail" class="form-label">이메일 *</label> <input
-					type="email" class="form-control" id="userEmail" name="userEmail"
-					required>
-			</div>
+            <form th:action="@{/trainer/joinProc}" method="post" class="mt-6 space-y-4" onsubmit="return validateForm()">
+                <input type="email" name="userEmail" placeholder="이메일 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                
+                <!-- ✅ 비밀번호 유효성 검사 -->
+                <input type="password" id="password" name="password" placeholder="비밀번호 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="passwordError" class="text-red-400 text-sm"></p>
 
-			<!-- 비밀번호 입력 -->
-			<div class="mb-3">
-				<label for="password" class="form-label">비밀번호 *</label> <input
-					type="password" class="form-control" id="password" name="password"
-					required> <span id="passwordError" class="text-danger"></span>
-			</div>
+                <!-- ✅ 이름 유효성 검사 -->
+                <input type="text" id="userName" name="userName" placeholder="이름 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="nameError" class="text-red-400 text-sm"></p>
 
-			<!-- 이름 입력 -->
-			<div class="mb-3">
-				<label for="userName" class="form-label">이름 *</label> <input
-					type="text" class="form-control" id="userName" name="userName"
-					required> <span id="nameError" class="text-danger"></span>
-			</div>
+                <!-- ✅ 성별 선택 -->
+                <select name="userGender" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                    <option value="Male">남성</option>
+                    <option value="Female">여성</option>
+                </select>
 
-			<!-- 성별 선택 -->
-			<div class="mb-3">
-				<label class="form-label">성별 *</label><br>
-				<div class="btn-group w-100">
-					<input type="radio" class="btn-check" name="userGender"
-						value="Male" id="male" required> <label
-						class="btn btn-outline-primary w-50" for="male">남</label> <input
-						type="radio" class="btn-check" name="userGender" value="Female"
-						id="female"> <label class="btn btn-outline-danger w-50"
-						for="female">여</label>
-				</div>
-			</div>
+                <input type="date" name="userBirthdate" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="text" name="userContact" placeholder="연락처 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
 
-			<!-- 생년월일 입력 -->
-			<div class="mb-3">
-				<label for="userBirthdate" class="form-label">생년월일 *</label> <input
-					type="date" class="form-control" id="userBirthdate"
-					name="userBirthdate" required>
-			</div>
+                <input type="text" name="specialization" placeholder="전문 분야 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="number" name="experience" placeholder="경력 (년) *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="number" step="0.01" name="fee" placeholder="수업료 (₩) *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="text" name="shortIntro" placeholder="한 줄 소개 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <textarea name="bio" placeholder="자기소개 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white"></textarea>
 
-			<!-- 연락처 입력 -->
-			<div class="mb-3">
-				<label for="userContact" class="form-label">연락처 *</label> <input
-					type="text" class="form-control" id="userContact"
-					name="userContact" required> <span id="contactError"
-					class="text-danger"></span>
-			</div>
-
-			<!-- 트레이너 추가 정보 -->
-			<hr>
-			<h4 class="text-center mt-3">트레이너 정보</h4>
-
-			<!-- 전문 분야 입력 -->
-			<div class="mb-3">
-				<label for="specialization" class="form-label">전문 분야 *</label> <input
-					type="text" class="form-control" id="specialization"
-					name="specialization" required>
-			</div>
-
-			<!-- 경력 입력 -->
-			<div class="mb-3">
-				<label for="experience" class="form-label">경력 (년) *</label> <input
-					type="number" class="form-control" id="experience"
-					name="experience" min="0" required>
-			</div>
-
-			<!-- 수업료 입력 -->
-			<div class="mb-3">
-				<label for="fee" class="form-label">수업료 *</label> <input
-					type="number" step="0.01" class="form-control" id="fee" name="fee"
-					min="0" required>
-			</div>
-
-			<!-- 한 줄 소개 (shortIntro) 입력 -->
-			<div class="mb-3">
-				<label for="shortIntro" class="form-label">한 줄 소개 *</label> <input
-					type="text" class="form-control" id="shortIntro" name="shortIntro"
-					maxlength="100" required> <small
-					class="form-text text-muted">예: "10년 경력의 피트니스 전문가입니다!"</small>
-			</div>
-
-			<!-- 자기소개 (bio) 입력 -->
-			<div class="mb-3">
-				<label for="bio" class="form-label">자기소개 *</label>
-				<textarea class="form-control" id="bio" name="bio" rows="4" required></textarea>
-			</div>
-
-			<input type="hidden" name="role" value="Trainer">
-
-			<!-- 가입 버튼 -->
-			<button type="submit" class="btn btn-warning w-100">트레이너 가입</button>
-			<a href="/" class="btn btn-secondary w-100 mt-2">취소</a>
-		</form>
-	</div>
+                <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-title uppercase">
+                    가입하기
+                </button>
+            </form>
+        </section>
+    </div>
 </body>
 </html>

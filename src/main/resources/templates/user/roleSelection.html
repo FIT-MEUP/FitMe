@@ -2,28 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입 선택</title>
+    <title>회원가입 선택 | Fit Me</title>
     
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ✅ Google Fonts (강렬한 스포츠 스타일 폰트 적용) -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🏋️‍♂️ 강렬한 타이틀 스타일 */
+        .font-title { font-family: 'Oswald', sans-serif !important; font-weight: 600; text-transform: uppercase; }
+
+        /* 📌 설명 문구 & 본문 */
+        .font-body { font-family: 'Montserrat', sans-serif !important; font-weight: 400; }
+
+        /* 🎨 블러 배경 */
+        .bg-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        /* ✨ 버튼 호버 애니메이션 */
+        .btn-hover:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* ✨ 페이드 인 애니메이션 */
+        .fade-in {
+            animation: fadeIn 0.7s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-200 flex justify-center items-center min-h-screen">
-    <div class="flex flex-col w-full max-w-md">
-        <section class="flex flex-col text-center bg-gray-800 p-8 py-10 shadow-lg rounded-lg w-full gap-2">
-            <p class="text-white text-4xl font-bold"> Fit:me </p>
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
+
+    <div class="relative z-10 flex flex-col w-full max-w-md fade-in">
+        <!-- 🔥 로고 -->
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit:me Logo" class="w-36">
+            </a>
+        </header>
+
+        <!-- ✅ 회원가입 선택 카드 -->
+        <section class="flex flex-col text-center bg-overlay p-8 py-10 shadow-lg rounded-lg w-full">
+            <h1 class="text-4xl font-title text-white tracking-widest">Fit:me</h1>
+            <p class="text-gray-300 mt-1 font-body">원하는 회원 유형을 선택하세요</p>
+
             <div class="mt-6 flex justify-center gap-6">
-                <a href="#" th:href="@{/user/userJoin(role='User')}" class="btn btn-primary btn-lg">
-                    <button class="bg-blue-600 text-white text-lg px-6 py-3 rounded-lg hover:bg-opacity-40 transition">
+                <a th:href="@{/user/userJoin(role='User')}" class="btn-hover">
+                    <button class="bg-blue-600 text-white text-lg px-6 py-3 rounded-lg hover:bg-blue-700 transition font-title uppercase">
                         회원
                     </button>
                 </a>
-                <a href="#" th:href="@{/trainerJoin}" class="btn btn-warning btn-lg">
-                    <button class="bg-red-500 text-white text-lg px-6 py-3 rounded-lg hover:bg-red-700 transition">
+                <a th:href="@{/trainerJoin}" class="btn-hover">
+                    <button class="bg-red-500 text-white text-lg px-6 py-3 rounded-lg hover:bg-red-700 transition font-title uppercase">
                         트레이너
                     </button>
                 </a>
             </div>
         </section>
     </div>
-    
+
 </body>
 </html>

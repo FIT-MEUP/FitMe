@@ -22,6 +22,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         log.info("로그인 성공");
+        
+     // ✅ 세션 유지 확인
+        request.getSession().setAttribute("userEmail", authentication.getName());
 
         // 사용자 권한 리스트를 생성 (ROLE_ 접두어가 붙어있거나 안 붙어있을 수 있으므로 둘 다 처리)
         List<String> roleNames = new ArrayList<>();

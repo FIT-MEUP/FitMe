@@ -25,47 +25,48 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((auth) -> auth
+        http.authorizeHttpRequests(auth -> auth
             .requestMatchers(
-
-                "/**",
-                "/user/**",
-                "/trainer/**",
-                "/trainers",
-                "/api/**",
-                "/images/**",
-                "/js/**",
-                "/css/**").permitAll()
-            // 관리자 접근: hasAuthority("Admin")로 변경 (DB에 Admin 권한은 "Admin" 문자열로 저장)
+                "/", "/user/**", "/trainer/**", "/trainers","/trainerJoin",
+                "/api/**", "/images/**", "/js/**", "/css/**"
+            ).permitAll()
             .requestMatchers("/admin/**").hasAuthority("Admin")
-            // 마이페이지 접근: ADMIN 또는 USER 권한 필요
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
             .requestMatchers("/user/deleteAccount").authenticated()
-            .anyRequest().authenticated());
-        
-        
-        // 로그인 설정: 이메일 로그인으로 변경 (usernameParameter -> "userEmail")
-        http.formLogin((auth) -> auth
+            .anyRequest().authenticated()
+        );
+
+        // ✅ 로그인 설정 (세션 유지)
+        http.formLogin(auth -> auth
             .loginPage("/user/login")
             .loginProcessingUrl("/user/loginProc")
             .usernameParameter("userEmail")
             .passwordParameter("password")
-            .successHandler(loginSuccessHandler)
-            .failureHandler(loginFailureHandler)
-            .permitAll());
-        
+            .successHandler(loginSuccessHandler)  
+            .failureHandler(loginFailureHandler)  
+            .permitAll()
+        );
+
+        // ✅ remember-me 설정 추가 (자동 로그인 기능)
+        http.rememberMe(auth -> auth
+            .key("uniqueAndSecret")
+            .tokenValiditySeconds(86400)  // 1일 동안 유지
+        );
+
         // 로그아웃 설정
-        http.logout((auth) -> auth
+        http.logout(auth -> auth
             .logoutUrl("/user/logout")
-            .logoutSuccessUrl("/")
+            .logoutSuccessHandler(logoutHandler)
             .invalidateHttpSession(true)
-            .clearAuthentication(true));
-        
-        http.csrf((auth) -> auth.disable());
-        
+            .clearAuthentication(true)
+            .deleteCookies("JSESSIONID", "remember-me")
+        );
+
+        http.csrf(auth -> auth.disable());
+
         return http.build();
     }
-    
+
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
