@@ -64,7 +64,7 @@ public class TrainerScheduleController {
 		   
 		   
 		   
-		   return "trainerschedule";
+		   return "schedule/trainerschedule";
 		}
 	
 	
