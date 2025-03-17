@@ -82,15 +82,9 @@ public class TrainerApplicationService {
                 .orElseThrow(() -> new RuntimeException("Application not found with ID: " + applicationId));
     }
 
-    public void createApplication(Long userId, Long trainerId) {
-        // 🔍 이미 신청한 기록이 있는지 확인
-        if (trainerApplicationRepository.existsByUserUserIdAndTrainerTrainerId(userId, trainerId)) {
-            log.warn("⚠️ 이미 상담 신청한 사용자입니다. userId={}, trainerId={}", userId, trainerId);
-            throw new RuntimeException("이미 상담 신청한 내역이 있습니다.");
-        }
+  
 
-
-  public String selectOne(Long applicationId) {
+ /* public String selectOne(Long applicationId) {
 
     Optional<TrainerApplicationEntity> applicationOptional = trainerApplicationRepository.findById(applicationId);
 
@@ -101,6 +95,7 @@ public class TrainerApplicationService {
       throw new RuntimeException("Application not found with ID: " + applicationId);
     }
   }
+  */
 
 
   public void createApplication(Long userId, Long trainerId) {
@@ -202,11 +197,7 @@ public class TrainerApplicationService {
     }
 
 
-    TrainerApplicationEntity trainerApplicationEntity =
-        TrainerApplicationEntity.toEntity(trainerApplicationDTO, temp.get(), temp2.get());
-    trainerApplicationRepository.save(trainerApplicationEntity);
-  }
-
+  
   public Long findApplicationIdByUserId(Long userId) {
     return trainerApplicationRepository.findByUserUserId(userId).get().getApplicationId();
   }
