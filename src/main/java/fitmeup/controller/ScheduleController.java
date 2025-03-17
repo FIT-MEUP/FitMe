@@ -1,5 +1,8 @@
 package fitmeup.controller;
 
+import fitmeup.service.ChatService;
+import fitmeup.service.TrainerApplicationService;
+import fitmeup.service.UserService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,37 +28,53 @@ import lombok.extern.slf4j.Slf4j;
 public class ScheduleController {
 
 private final ScheduleService scheduleService;
+	private final TrainerApplicationService trainerApplicationService;
+	private final ChatService chatService;
 
-	
-	
+
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
 	@GetMapping({"/firstUserCalendar"})
 	public String index(Model model
 //			 ,@RequestParam(name = "userId", defaultValue = "5") Long userId
 			 ,@AuthenticationPrincipal LoginUserDetails loginUser
 			) {
+		if (loginUser == null) {
+			// 인증되지 않은 사용자라면 로그인 페이지로 리다이렉트
+			return "redirect:/login";
+		}
+
 		Long userId= loginUser.getUserId();
 //		 Long trainerId=scheduleService.findTrainerId(4L);
 		//정상 작동 5->2 4->1
-		  Long apptrainerId=scheduleService.findTrainerId(userId);
+		  Long apptrainerId=scheduleService.findTrainerId(userId);		// trainerId
 		
 		  //UserEntity의 UserId를 넣어야함 즉 trainerId가 2인 유저가 UserId가 3이어야 하니깐 그걸 넣어야함
 		  //즉 trainerId를 통해 UserId를 찾는 작업을 해야함
-		  Long trainerId= scheduleService.findTrainerUserId(apptrainerId);
+		  Long trainerId= scheduleService.findTrainerUserId(apptrainerId);		// trainer의 userId
 	    List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
 	    
 	    model.addAttribute("list", list);
 	
 //	    model.addAttribute("userId",4);
 	    model.addAttribute("userId",userId);
-	    
-	    
+
+		// 유저인 경우: 해당 유저가 신청한 신청서의 applicationId (메서드 구현은 아래 참고)
+		Long applicationId = trainerApplicationService.findApplicationIdByUserId(userId);
+		model.addAttribute("applicationId", applicationId);
+
+		// 로그인한 사용자가 할당받은 트레이너의 unread 메시지 개수 계산 (서비스 메서드 구현 필요)
+		int trainerUnreadCount = chatService.getUnreadCountFromTrainer(loginUser.getUserId());
+		model.addAttribute("trainerUnreadCount", trainerUnreadCount);
+
+
+
 	    List<ScheduleDTO> userlist = scheduleService.selectAll(apptrainerId);
 	
 	    
 	    
 	   
-	    model.addAttribute("trainerId",trainerId);
+	    model.addAttribute("trainerId",trainerId);		//trainer의 userId
+
 	    model.addAttribute("userlist",userlist);
 	   
 	    log.info(trainerId.toString());
@@ -64,7 +83,11 @@ private final ScheduleService scheduleService;
 	 // 현재 로그인한 사용자의 userName을 추가합니다.
         String userName = scheduleService.findUserName(userId);
         model.addAttribute("userName", userName);
-	    
+
+		// 할당된 트레이너의 이름을 조회하는 메서드 (해당 메서드를 scheduleService에 구현)
+		String trainerName =scheduleService.findUserName(trainerId);
+		model.addAttribute("trainerName", trainerName);
+
       //userId를 통해 ptSessionHistory에서 가장 최근거를 가져오는 메소드
         PTSessionHistoryEntity temp = scheduleService.selectfirstByUserId(userId);
         if(temp!=null) {
@@ -78,7 +101,7 @@ private final ScheduleService scheduleService;
         
         
 		return "schedule/userschedule";
-	
+
 	
 	}
 	

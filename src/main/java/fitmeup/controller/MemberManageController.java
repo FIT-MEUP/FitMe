@@ -1,9 +1,16 @@
 package fitmeup.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fitmeup.dto.ChatUserDTO;
 import fitmeup.dto.UserDTO;
+import fitmeup.service.ChatUserService;
 import fitmeup.service.UserService;
 import java.util.List;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -34,38 +41,44 @@ public class MemberManageController {
     private final MealService mealService;
     private final TrainerApplicationService trainerApplicationService;
     private final UserService userService;
+    private final ChatUserService chatUserService;
 
-    @GetMapping("trainer/memberManage")
-    public String memberManagePage(
-                                    @AuthenticationPrincipal LoginUserDetails loginUser,
-                                    Model model) {
-        // findbyId로 대충 특정했다고 가정하고
-        if (loginUser.getRoles() == "Trainer") {
+    @GetMapping("/trainer/memberManage")
+    public String memberManagePage(@AuthenticationPrincipal LoginUserDetails loginUser, Model model) {
+        // loginUser.getRoles()가 문자열이라면 equals()로 비교합니다.
+        if ("Trainer".equals(loginUser.getRoles())) {
             Long trainerNum = loginUser.getUserId();
-            //loginuser에서 받은 userId값이 trainerNum으로 들어가서 자동적으로 해당 트레이너가 갖고 있는 유저들을 출력해줌
-            log.info("====================={}", trainerNum);
             List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Approved);
             List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Pending);
-//            for(String role : roleNames) {
-//            	log.info("====================={}",role);
-//            }
-            log.info("=====================ApprovedList:{}", ApprovedList);
-            log.info("=====================PendingList:{}", PendingList);
-
-
-            // html에 foreach 돌려서 하면 될듯?
             model.addAttribute("ApprovedList", ApprovedList);
             model.addAttribute("PendingList", PendingList);
-            model.addAttribute("loginUserId", trainerNum);
 
-            return "manage/memberManage";
+            // ChatUserService에서 채팅 대상 유저 정보 조회 (ChatUserDTO: userId, unreadCount, online)
+            List<ChatUserDTO> chatUserList = chatUserService.getChatUserList();
 
-        } else{
+            // userId를 키로 하는 Map 생성 (채팅 대상의 unreadCount 등 빠르게 조회하기 위함)
+            Map<Long, ChatUserDTO> chatUserMap = chatUserList.stream()
+                .collect(Collectors.toMap(ChatUserDTO::getUserId, Function.identity(), (oldValue, newValue) -> oldValue));
+
+            model.addAttribute("ChatUserMap", chatUserMap);
+
+            // JSON 문자열 변환 처리 (예외를 catch하여 처리)
+            String chatUserMapJson = "";
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                chatUserMapJson = objectMapper.writeValueAsString(chatUserMap);
+            } catch (JsonProcessingException e) {
+                // 필요에 따라 로깅 후, 기본값 사용
+                e.printStackTrace();
+            }
+            model.addAttribute("chatUserMapJson", chatUserMapJson);
+
+            return "manage/memberManage"; // Thymeleaf 템플릿 뷰 이름 (확장자 제외)
+        } else {
             return "redirect:/";
-
         }
-
     }
+
     // 신청 승인 API
     @PostMapping("/trainer/approve")
     @ResponseBody

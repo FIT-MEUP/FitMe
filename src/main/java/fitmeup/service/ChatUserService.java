@@ -7,6 +7,7 @@ import fitmeup.entity.UserEntity;
 import fitmeup.repository.ChatRepository;
 import fitmeup.repository.UserRepository;
 import fitmeup.dto.LoginUserDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatUserService {
 
   private final ChatRepository chatRepository;
@@ -45,6 +47,11 @@ public class ChatUserService {
 
     // 각 메시지에 대해 읽지 않은 메시지 수를 계산합니다 (현재 사용자가 수신자인 경우).
     for (ChatEntity chat : chatEntities) {
+      // 로그 찍기: 각 메시지의 sender, receiver, isRead 상태
+      System.out.println("Chat Message - Sender: " + chat.getSender().getUserId() +
+          ", Receiver: " + chat.getReceiver().getUserId() +
+          ", isRead: " + chat.getIsRead());
+
       Long otherUserId = chat.getSender().getUserId().equals(currentUser.getUserId())
           ? chat.getReceiver().getUserId()
           : chat.getSender().getUserId();
@@ -53,6 +60,9 @@ public class ChatUserService {
         unreadCountMap.put(otherUserId, unreadCountMap.getOrDefault(otherUserId, 0) + 1);
       }
     }
+
+    // 로그 찍기: unreadCountMap 최종 내용
+    System.out.println("UnreadCountMap: " + unreadCountMap);
 
     // 사용자별로 ChatUserDTO를 생성 (온라인 상태 포함)
     List<ChatUserDTO> contactedUsers = new ArrayList<>();
@@ -80,6 +90,8 @@ public class ChatUserService {
     List<ChatUserDTO> result = new ArrayList<>();
     result.addAll(contactedUsers);
     result.addAll(notContactedUsers);
+
+    System.out.println("Final ChatUserDTO list: " + result);
 
     return result;
   }

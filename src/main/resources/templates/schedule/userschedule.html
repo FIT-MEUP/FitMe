@@ -9,7 +9,13 @@
   <link rel="stylesheet" href="../../static/css/usercalendar.css" th:href="@{/css/userschedule.css}">
   <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <script src="../../static/js/userschedule.js" th:src="@{/js/userschedule.js}"></script>
-  
+
+
+  <script src="../../static/JS/userChat.js" th:src="@{/JS/userChat.js}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+
   <script th:inline="javascript">
 var calendarEventsFromList = [
   /*[# th:each="event, iterStat : ${list}" ]*/
@@ -41,11 +47,13 @@ var calendarEvents = calendarEventsFromList.concat(calendarEventsUserList);
 console.log("Merged calendarEvents:", calendarEvents);
 </script>
 
-<script th:inline="javascript">
+  <!-- 모델에서 전달된 값 -->
+  <script th:inline="javascript">
     var trainerId = [[${trainerId}]];
     var userId = [[${userId}]];
     var userName = '[[${userName}]]';
-</script>
+    var trainerName = '[[${trainerName}]]';
+  </script>
 </head>
 <body>
   <div id="page-container">
@@ -76,5 +84,34 @@ console.log("Merged calendarEvents:", calendarEvents);
       <div id="chat-box" style="display:none;">여기에 채팅 내용이 표시됩니다.</div>
     </div>
   </div>
+
+  <!-- Hidden div for chat data: currentUser (로그인한 유저)와 targetUser (할당된 트레이너) -->
+  <div id="chatData" style="display:none;"
+       th:attr="data-current-user-id=${userId},
+              data-current-user-name=${userName},
+              data-target-user-id=${trainerId},
+              data-target-user-name=${trainerName},
+              data-application-id=${applicationId}">
+  </div>
+
+  <!-- 플로팅 채팅창 컨테이너 (기본적으로 숨김) -->
+  <div id="floatingChatContainer" style="display:none; position:fixed; right:20px; bottom:80px; width:300px; z-index:9999; background:white; border:1px solid #ccc; box-shadow:0 0 10px rgba(0,0,0,0.3);"></div>
+
+  <!-- "채팅 열기" 버튼 (chat.png 이미지 사용, 오른쪽 하단 고정) -->
+  <button id="openChatBtn" style="position:fixed; right:20px; bottom:20px; background:none; border:none;">
+    <img src="/images/chat.png" alt="채팅 열기" style="width:40px;">
+    <!-- 배지: 기본적으로 숨김 -->
+    <span id="trainerUnreadBadge"
+          style="position:absolute; top:0; right:0; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px; display:none;">
+    0
+  </span>
+    <!-- 서버에서 전달된 unread count 값을 담은 숨김 엘리먼트 -->
+    <div id="trainerUnreadCount" th:text="${trainerUnreadCount}" style="display:none;"></div>
+  </button>
+</body>
+</html>
+
+
+
 </body>
 </html>
