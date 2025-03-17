@@ -26,7 +26,7 @@ import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.scit.aaa.entity.PtSessionHistoryEntity;
+
 
 @Service
 @RequiredArgsConstructor
@@ -180,8 +180,8 @@ public class ScheduleService {
 			        log.info("매칭된 스케줄의 userId: {}", matchedUserId);
 
 			        // 해당 userId의 PT 세션 내역을 최신 순으로 조회 (changeDate 기준 내림차순)
-			        List<PtSessionHistoryEntity> historyList = ptSessionHistoryRepository.findByUserUserId(matchedUserId, Sort.by("changeDate").descending());
-			        PtSessionHistoryEntity latestHistory = historyList.get(0);  // 내역이 항상 있다고 가정
+			        List<PTSessionHistoryEntity> historyList = ptSessionHistoryRepository.findByUserUserId(matchedUserId, Sort.by("changeDate").descending());
+			        PTSessionHistoryEntity latestHistory = historyList.get(0);  // 내역이 항상 있다고 가정
 
 			        // 만약 최신 내역의 changeAmount가 0이면 더 이상 차감할 PT 세션이 없으므로 "noMore" 반환
 			        if (latestHistory.getChangeAmount() == 0) {

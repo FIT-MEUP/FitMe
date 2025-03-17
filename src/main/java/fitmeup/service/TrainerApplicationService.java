@@ -137,54 +137,10 @@ public class TrainerApplicationService {
 		
 	}
 
-	public void createApplication(Long userId, Long trainerId) {
-		Optional<UserEntity> temp = userRepository.findById(userId);
-		Optional<TrainerEntity> temp2 = trainerRepository.findById(trainerId);
-		String name = temp.get().getUserName();
-	    TrainerApplicationDTO trainerApplicationDTO= new TrainerApplicationDTO();
-	    trainerApplicationDTO.setName(name);
-	    //trainerApplicationDTO.setStatus("Pending");
-	    
-	    TrainerApplicationEntity trainerApplicationEntity =
-	    		TrainerApplicationEntity.toEntity(trainerApplicationDTO, temp.get(), temp2.get());
-	    trainerApplicationRepository.save(trainerApplicationEntity);
-	}
+
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	// 박노은 / 0315 : 특정 트레이너가 특정 회원을 승인했는지 확인  
@@ -207,7 +163,7 @@ public class TrainerApplicationService {
 	    }
 
 
-    }
+    
     
     // 🔍 특정 사용자와 트레이너 간의 상담 신청 가져오기 (Pending, Rejected 모두 포함)
     public Optional<TrainerApplicationEntity> getApplicationByUserIdAndTrainerId(Long userId, Long trainerId) {
