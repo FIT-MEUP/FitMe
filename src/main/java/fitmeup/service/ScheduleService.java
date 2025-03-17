@@ -27,7 +27,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -151,12 +150,21 @@ public class ScheduleService {
 			 
 			 return temp.get().getUser().getUserId(); 
 		 }
+		 public PTSessionHistoryEntity selectfirstByUserDTO(PTSessionHistoryDTO dto) {
+			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(dto.getUserId(), Sort.by("changeDate").descending());
+			 if(historyList.isEmpty()) {
+				 ptSessionHistoryRepository.save(PTSessionHistoryEntity.toEntity(dto));
+			 }
+			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+			 return latestHistory;
+		 }
 		 
 		 public PTSessionHistoryEntity selectfirstByUserId(Long userId) {
 			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
 			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
 			 return latestHistory;
 		 }
+		 
 		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
 		 //pt시작 버튼을 누르면 없어지는 형태
 		 public String minusChangeAmount(Long userId) {

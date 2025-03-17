@@ -16,8 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,9 +24,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.ApproveRequestDTO;
 import fitmeup.dto.LoginUserDetails;
+import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.dto.TrainerApplicationDTO;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.TrainerApplicationEntity;
+import fitmeup.service.AnnouncementService;
 import fitmeup.service.MealService;
+import fitmeup.service.PTSessionHistoryService;
+import fitmeup.service.ScheduleService;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
 import lombok.RequiredArgsConstructor;
@@ -41,17 +45,33 @@ public class MemberManageController {
     private final MealService mealService;
     private final TrainerApplicationService trainerApplicationService;
     private final UserService userService;
+    private final ScheduleService scheduleService;
+    private final AnnouncementService announcementService;
+    private final PTSessionHistoryService ptSessionHistoryService;
+    
+    
     private final ChatUserService chatUserService;
 
-    @GetMapping("/trainer/memberManage")
-    public String memberManagePage(@AuthenticationPrincipal LoginUserDetails loginUser, Model model) {
-        // loginUser.getRoles()가 문자열이라면 equals()로 비교합니다.
-        if ("Trainer".equals(loginUser.getRoles())) {
+    @GetMapping("trainer/memberManage")
+    public String memberManagePage(
+                                    @AuthenticationPrincipal LoginUserDetails loginUser,
+                                    Model model) {
+        // findbyId로 대충 특정했다고 가정하고
+        if("Trainer".equals(loginUser.getRoles())){
             Long trainerNum = loginUser.getUserId();
             List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Approved);
             List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Pending);
+//            for(String role : roleNames) {
+//            	log.info("====================={}",role);
+//            }
+            log.info("=====================ApprovedList:{}", ApprovedList);
+            log.info("=====================PendingList:{}", PendingList);
+
+           
+            // html에 foreach 돌려서 하면 될듯?
             model.addAttribute("ApprovedList", ApprovedList);
             model.addAttribute("PendingList", PendingList);
+            model.addAttribute("AnnouncementContent",  announcementService.sendAnnouncement(trainerNum));
 
             // ChatUserService에서 채팅 대상 유저 정보 조회 (ChatUserDTO: userId, unreadCount, online)
             List<ChatUserDTO> chatUserList = chatUserService.getChatUserList();
@@ -96,14 +116,49 @@ public class MemberManageController {
         return ResponseEntity.ok("Application rejected successfully.");
     }
 
-    // 회원 선택 API
-    @GetMapping("/trainer/select")
+    // 회원 PT 선택 API
+    @GetMapping("/trainer/selectPT")
     @ResponseBody
-    public String selectApplication(@RequestParam(name="applicationId") Long applicationId) {
-    	String name = trainerApplicationService.selectOne(applicationId);
+    public PTSessionHistoryDTO selectApplication(@RequestParam(name="applicationId") Long applicationId, Model model) {
+        PTSessionHistoryDTO dto = new PTSessionHistoryDTO();
+        
+        dto.setUserId(applicationId);
+        dto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
+        dto.setChangeAmount(0L);
+        dto.setReason("새로운 PT계약 생성");
 
-        return name;
+        
+        return PTSessionHistoryDTO.fromEntity(scheduleService.selectfirstByUserDTO(dto)); 
     }
+    
+    // 회원 PT 업데이트 API
+    @PostMapping("/trainer/updatePT")
+    @ResponseBody
+    public boolean updateApplication(@RequestBody  PTSessionHistoryDTO ptSessionHistoryDTO) {
+    	PTSessionHistoryDTO PTdto = new PTSessionHistoryDTO();
+    	PTdto.setUserId(ptSessionHistoryDTO.getUserId());
+    	PTdto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
+    	PTdto.setChangeAmount(ptSessionHistoryDTO.getChangeAmount());
+        PTdto.setReason(ptSessionHistoryDTO.getReason());
+        
+        
+        ptSessionHistoryService.savePT(PTdto);
+        
+        return true; 
+    }
+    
+    // 트레이너 공지사항 API
+    @PostMapping("/trainer/saveAnnouncement")
+    public boolean saveTrainerAnnouncement(@RequestBody String announcement,@AuthenticationPrincipal LoginUserDetails loginUser) {
+    	log.info("=====================anoun{}",announcement);
+        announcementService.saveAnnouncement(announcement, loginUser.getUserId());
+        
+        return true;
+        
+    }
+    
+    
+    
 
 //    // 로그인한 사용자의 정보를 데이터베이스에서 조회하여 UserDTO로 반환하는 엔드포인트
 //    @PostMapping("/trainer/selectLoginUser")

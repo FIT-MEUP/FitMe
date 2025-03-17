@@ -68,7 +68,7 @@
                 <h2 class="text-3xl font-semibold text-white">공지사항</h2>
                 <div class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
                     <!-- 공지사항 내용 -->
-                    <p id="noticeText" class="text-gray-600 mt-2">트레이너 공지 사항 내용</p>
+                    <p id="noticeText" class="text-gray-600 mt-2" th:text="${AnnouncementContent}">트레이너 공지 사항 내용</p>
             
                     <!-- 공지사항 수정 입력창 (초기에는 숨김) -->
                     <textarea id="editNotice" class="w-full p-2 border rounded mt-2 hidden"></textarea>
@@ -99,31 +99,6 @@
                     <p>해당 이용자의 오늘의 운동</p>
                     <p class="text-blue-500 font-semibold mt-2">클릭하면 이용자 운동 게시판 이동</p>
                 </div>
-                <!-- <div id="pt-status" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <p class="text-lg font-semibold text-blue-500">이번 달 PT 현황</p>
-                </div>
-                <div class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <table class="w-full border border-gray-300">
-                        <thead>
-
-                            <tr class="bg-gray-800 text-white">
-
-                                <th class="p-2">일</th><th class="p-2">월</th><th class="p-2">화</th>
-                                <th class="p-2">수</th><th class="p-2">목</th><th class="p-2">금</th><th class="p-2">토</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-t border-gray-300">
-                                <td class="p-2 text-gray-400">26</td><td class="p-2 text-gray-400">27</td><td class="p-2 text-gray-400">28</td>
-                                <td class="p-2 text-gray-400">29</td><td class="p-2 text-gray-400">30</td><td class="p-2">1</td><td class="p-2">2</td>
-                            </tr>
-                            <tr class="border-t border-gray-300">
-                                <td class="p-2">3</td><td class="p-2">4</td><td class="p-2 bg-green-500 text-white font-semibold">5</td>
-                                <td class="p-2">6</td><td class="p-2">7</td><td class="p-2">8</td><td class="p-2">9</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div> -->
             </div>
         </main>
 

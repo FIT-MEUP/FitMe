@@ -41,6 +41,67 @@ $(document).ready(function () {
   connectTrainerNotificationWebSocket();
 
 
+  const noticeText = $("#noticeText");
+  const editNotice = $("#editNotice");
+  const editBtn = $("#editBtn");
+  const saveBtn = $("#saveBtn");
+  const cancelBtn = $("#cancelBtn");
+
+
+
+  // 수정 버튼 클릭 시
+  editBtn.click(function () {
+      editNotice.val(noticeText.text());
+      noticeText.addClass("hidden");
+      editNotice.removeClass("hidden");
+      editBtn.addClass("hidden");
+      saveBtn.removeClass("hidden");
+      cancelBtn.removeClass("hidden");
+  });
+
+  // 취소 버튼 클릭 시
+  cancelBtn.click(function () {
+      noticeText.removeClass("hidden");
+      editNotice.addClass("hidden");
+      editBtn.removeClass("hidden");
+      saveBtn.addClass("hidden");
+      cancelBtn.addClass("hidden");
+  });
+
+  // 완료(저장) 버튼 클릭 시
+  saveBtn.click(function () {
+      const updatedNotice = editNotice.val().trim();
+      if (updatedNotice === "") {
+          alert("공지사항 내용을 입력해주세요.");
+          return;
+      }
+
+      // 서버로 데이터 전송
+      $.ajax({
+          url: "/trainer/saveAnnouncement",
+          type: "POST",
+          contentType: "application/json",
+          data: updatedNotice,
+          success: function (data) {
+              console.log('data: ' + data);
+              if (data) {
+                  noticeText.text(updatedNotice);
+                  noticeText.removeClass("hidden");
+                  editNotice.addClass("hidden");
+                  editBtn.removeClass("hidden");
+                  saveBtn.addClass("hidden");
+                  cancelBtn.addClass("hidden");
+              } else {
+                  alert("공지사항 업데이트에 실패했습니다.");
+              }
+          },
+          error: function () {
+              alert("서버 오류가 발생했습니다.");
+          }
+      });
+  });
+
+  
   // "수락" 버튼 클릭 시
   $(".approve-btn").click(function () {
     let applicationId = $(this).data("id");
@@ -91,12 +152,11 @@ $(document).ready(function () {
 
     // 회원 정보 조회 (선택된 신청서의 정보를 출력)
     $.ajax({
-      url: `/trainer/select?applicationId=${applicationId}`,
+      url: `/trainer/selectPT?applicationId=${applicationId}`,
       type: "GET",
       success: function (response) {
-        alert("회원 정보 불러오기 성공");
         console.log(response);
-        showUserInfo(response);
+        showUserInfo(response,applicationId);
       },
       error: function (xhr) {
         alert("회원 정보 조회 중 오류가 발생했습니다.");
@@ -231,10 +291,75 @@ $(document).ready(function () {
   }
 });
 
-function showUserInfo(response) {
+
+// 보여질 정보들
+function showUserInfo(response, applicationId) {
   const $userInfoDiv = $("#userInfo");
-  console.log(response);
+
   $userInfoDiv.html(`
-    <h3 class="text-2xl font-semibold text-left px-2 py-1 text-black"> ${response}</h3>
+      <table class="w-full border border-gray-300">
+          <tr>
+              <th class="border px-4 py-2 text-left">남은 PT</th>
+              <td class="border px-4 py-2 text-center" id="ptAmount">${response.changeAmount}</td>
+              <td class="border px-4 py-2 text-center">
+                  <button id="PTeditBtn" class="bg-blue-500 text-white px-4 py-2 rounded" onclick="editPT(${response.changeAmount}, ${applicationId})">수정</button>
+              </td>
+          </tr>
+      </table>
   `);
+}
+
+function editPT(currentAmount, applicationId) {
+  const $ptAmount = $("#ptAmount");
+  const $PTeditBtn = $("#PTeditBtn");
+  console.log("선택한 applicationId3:", applicationId);
+
+  // 수정 모드로 변경
+  $ptAmount.html(`
+      <input type="number" id="newPTAmount" class="border px-2 py-1 w-20" value="${currentAmount}">
+      <input type="text" id="reason" class="border px-2 py-1 w-40" placeholder="변경 사유 입력">
+  `);
+  
+  $PTeditBtn.replaceWith(`
+      <button id="PTsaveBtn" class="bg-green-500 text-white px-4 py-2 rounded" onclick="savePT(${applicationId})">확인</button>
+      <button id="PTcancelBtn" class="bg-red-500 text-white px-4 py-2 rounded" onclick="cancelEdit(${currentAmount})">취소</button>
+  `);
+}
+
+function savePT(applicationId) {
+  const newPTAmount = $("#newPTAmount").val();
+  const reason = $("#reason").val();
+
+  if (!reason.trim()) {
+      alert("변경 사유를 입력해주세요.");
+      return;
+  }
+
+  $.ajax({
+      url: `/trainer/updatePT`,
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ userId: applicationId, changeAmount: newPTAmount, reason: reason }),
+      success: function(response) {
+          if (response) {
+            alert("PT 변경에 성공했습니다.");
+          } else {
+              alert("PT 변경에 실패했습니다.");
+          }
+      },
+      error: function() {
+          alert("서버 오류가 발생했습니다.");
+      }
+  });
+}
+
+function cancelEdit(originalAmount) {
+  const $ptAmount = $("#ptAmount");
+
+  // 기존 PT 개수로 복원
+  $ptAmount.html(originalAmount);
+
+  // 버튼 복원
+  $("#PTsaveBtn").replaceWith(`<button id="PTeditBtn" class="bg-blue-500 text-white px-4 py-2 rounded" onclick="editPT(${originalAmount})">수정</button>`);
+  $("#PTcancelBtn").remove();
 }
