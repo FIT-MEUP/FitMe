@@ -1,9 +1,8 @@
 package fitmeup.controller;
 
-
-
 import java.math.BigDecimal;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.HealthDataDTO;
+import fitmeup.dto.PTSessionHistoryDTO;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.service.HealthDataService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,7 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
-
-	@GetMapping({"/mypage" })
+	@GetMapping({ "/mypage","","/" })
 	public String index(
 			Model model	) {Long userId=1L;
 		model.addAttribute("userId",userId);
@@ -59,43 +59,6 @@ public class MyPageController {
 	
 
 
-
-
-	@GetMapping("/user/ptData")
-	public String ptData() {
-		return "/user/ptData";
-	}
-	
-	
-//	@Controller  
-//	public class MyPageController {
-//
-//	    @GetMapping("/mypage")  // "/user/mypage"로 요청이 들어오면 실행됨
-//	    public String mypage() {
-//	        return "mypage"; // templates 폴더의 "mypage.html"을 찾아서 반환
-//	    }
-//	}
-
-	
-	
-
-//	@GetMapping({"/userbodyData"})
-//  public String userbodyData(
-//		
-//		 Model model) {
-//		
-//		 // ✅ HealthDataService를 통해 데이터 조회
-//      List<HealthDataDTO> list = healthDataService.getAllHealthData(1L);
-//		Long userId=1L;
-//		model.addAttribute("userId",userId);
-//	//List<HealthDataDTO> list = HealthDataEntity.selectAll(loginUser.getUserId());
-//	
-//	model.addAttribute("list", list);
-//	return "/data/userbodyData";
-//   
-//     // return "/mypage";
-//  }
-
 	/**
 	 * 사용자 건강 데이터 저장 (JSON 요청)
 	 */
@@ -109,14 +72,17 @@ public class MyPageController {
 		healthDataService.insert(healthDTO);
 		return ResponseEntity.ok("Health data inserted successfully");
 	}
-
+	
+	@GetMapping("/user/ptData")
+	public String userPtData(
+			@RequestParam(name="userId")Long userId
+			,Model model) {
+		log.info("userId ===============",userId);
+	
+		return"/user/ptData";
+		
+	}
 	
 
-	/*
-	 * @PostMapping("/mypagesave") public ResponseEntity<String>
-	 * insertHealthData(@RequestBody HealthDataDTO healthDTO) {
-	 * HealthDataService.insert(healthDTO); return
-	 * ResponseEntity.ok("Health data inserted successfully"); }
-	 */
 
 }

@@ -35,7 +35,6 @@ public class HealthDataController {
 	  public String userbodyData(@RequestParam(name="userId") Long userId ,Model model ) {
 	  List <HealthDataDTO> list=healthDataService.listFindByUserId(userId);
 	 
-	  
 	  model.addAttribute("list",list); // model.addAttribute("userId",userId);
 	
 	 
@@ -85,18 +84,11 @@ public class HealthDataController {
 		}
 	}
 	
-
 	/**
 	 * 가장 최신데이터 반환 api
 	 * 
 	 * @return
 	 */
-	
-//	@GetMapping("/latestHealthData")
-//	@ResponseBody
-//	public HealthDataDTO getLatestHealthData(@RequestParam(name="userId") Long userId) {
-//	    return healthDataService.getLatestHealthData(userId);
-//	}
 	
 	@GetMapping("/latestHealthData")
 	public ResponseEntity<HealthDataDTO> getLatestHealthData(
@@ -117,5 +109,9 @@ public class HealthDataController {
 	public List<HealthDataDTO> getHealthDataHistory(@RequestParam(name="userId") Long userId) {
 	    return healthDataService.listFindByUserId(userId); // 해당 사용자의 모든 데이터 가져오기
 	}
+
+
+	
+	
 
 }

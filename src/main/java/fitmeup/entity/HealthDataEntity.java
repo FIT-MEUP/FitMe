@@ -35,14 +35,12 @@ public class HealthDataEntity {
 	@Column(name= "data_id")
     private Long dataId; //
 	
-//	@OneToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private UserEntity user; // 트레이너는 User와 연결됨
+	@OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user; // 트레이너는 User와 연결됨
 //	@Column(name="user_id")
 //    private Long userId; // 트레이너는 User와 연결됨
-	
-	@Column(name="user_id")
-	private Long userId;
+
 	
 	@Column(nullable = false, name="weight", precision = 5, scale = 2)
     private BigDecimal weight;
@@ -75,8 +73,8 @@ public class HealthDataEntity {
 	public static HealthDataEntity toEntity(HealthDataDTO healthDTO) {
 		HealthDataEntity entity = HealthDataEntity.builder()
 				.dataId(healthDTO.getDataId())
-//				.user(user)
-				.userId(healthDTO.getUserId())
+				.user(UserEntity.builder().userId(healthDTO.getUserId()).build())
+				//.userId(healthDTO.getUserId())
 				.height(healthDTO.getHeight())
 				.weight(healthDTO.getWeight())
 				.muscleMass(healthDTO.getMuscleMass())
