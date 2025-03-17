@@ -13,7 +13,6 @@
 
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
-    <script src="/js/meals.js"></script> <!-- ✅ JavaScript 파일 불러오기 -->
     <script src="/js/mealcomment.js"></script>
 
 </head>
@@ -24,18 +23,35 @@
         <h3 class="text-center flex-grow-1">식단 게시판</h3>
     </nav>
 
+    <input type="hidden" id="loggedInUserId" th:value="${userId}">
+    <input type="hidden" id="role" th:value="${role}"> <!--  역할 값 추가 -->
+
+    <div class="col-md-12">
+        <!-- 드롭다운 -->
+        <div class="d-flex justify-content-end mb-3" th:if="${role == 'Trainer'}">
+            <div class="trainer-dropdown-container">
+                <label for="trainerMemberSelect" class="mb-1">회원 선택:</label>
+                <select id="trainerMemberSelect" class="form-select">
+                    <option value="" th:selected="${userId == null}">회원 선택</option>
+                    <option th:each="member : ${trainerMembers}" th:value="${member.userId}"
+                        th:text="${member.userName}" th:selected="${userId == member.userId}"></option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
     <div class="container mt-3">
+
         <div class="row">
             <div class="col-md-3">
-                <h5>날짜 선택</h5>
                 <div id="calendar"></div>
             </div>
-
             <div class="col-md-9">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>🍽️ 식단 기록</h5>
+                    <h5>식단 기록</h5>
                     <button id="addMealButton" class="btn btn-success" data-bs-toggle="modal"
-                        data-bs-target="#mealModal">+ 추가</button>
+                        data-bs-target="#mealModal" th:if="${role != 'Trainer'}">+ 추가</button>
                 </div>
                 <!-- 식단이 없는 경우 -->
                 <th:block th:if="${meals == null or #lists.isEmpty(meals)}">
@@ -61,224 +77,245 @@
                                     <p class="card-text">단백질: <span th:text="${meal.totalProtein}"></span> g</p>
                                     <p class="card-text">지방: <span th:text="${meal.totalFat}"></span> g</p>
 
-                                    <!-- ✅ 수정 버튼 추가 -->
-                                    <button class="btn btn-warning edit-meal-btn" th:data-mealid="${meal.mealId}"
-                                        th:data-mealdate="${meal.mealDate}" th:data-mealtype="${meal.mealType}"
-                                        th:data-totalcalories="${meal.totalCalories}"
-                                        th:data-totalcarbs="${meal.totalCarbs}"
-                                        th:data-totalprotein="${meal.totalProtein}" th:data-totalfat="${meal.totalFat}"
-                                        data-bs-toggle="modal" data-bs-target="#editMealModal">
-                                        수정
-                                    </button>
+                                    <!-- ✅ 포함된 음식 목록 표시 -->
+                                    <h6></h6>
+                                    <ul>
+                                        <li th:each="food : ${meal.foodList}" th:text="${food.foodName}"></li>
+                                    </ul>
 
-                                    <!-- 삭제 버튼  -->
-                                    <form method="post" action="/meals/delete">
-                                        <input type="hidden" name="mealId" th:value="${meal.mealId}">
-                                        <input type="hidden" name="mealDate" th:value="${meal.mealDate}"> <!-- ✅ 추가 -->
-                                        <button type="submit" class="btn btn-danger">삭제</button>
-                                    </form>
+
+                                    <!-- ✅ 수정 버튼 추가 -->
+                                    <th:block th:if="${userId == meal.userId}">
+                                        <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+                                            <!-- 수정 버튼 -->
+                                            <button class="btn btn-outline-warning btn-sm flex-grow-1 edit-meal-btn"
+                                                th:data-mealid="${meal.mealId}" th:data-mealdate="${meal.mealDate}"
+                                                th:data-mealtype="${meal.mealType}"
+                                                th:data-totalcalories="${meal.totalCalories}"
+                                                th:data-totalcarbs="${meal.totalCarbs}"
+                                                th:data-totalprotein="${meal.totalProtein}"
+                                                th:data-totalfat="${meal.totalFat}" data-bs-toggle="modal"
+                                                data-bs-target="#editMealModal">
+                                                수정
+                                            </button>
+                                            <!-- 삭제 버튼 -->
+                                            <form method="post" action="/meals/delete" class="flex-grow-1 m-0">
+                                                <input type="hidden" name="mealId" th:value="${meal.mealId}">
+                                                <input type="hidden" name="mealDate" th:value="${meal.mealDate}">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                                    삭제</button>
+                                            </form>
+                                        </div>
+                                    </th:block>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </th:block>
             </div>
+
         </div>
-    </div>
 
-    <!-- ✅ 식단 추가 모달 -->
-    <div class="modal fade" id="mealModal" tabindex="-1" aria-labelledby="mealModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">새 식단 추가</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" action="/meals" enctype="multipart/form-data">
-                        <input type="hidden" name="userId" th:value="${userId}">
-                        <input type="hidden" id="selectedMealDate" name="mealDate" th:value="${selectedDate}" required>
+        <!-- ✅ 식단 추가 모달 -->
+        <div class="modal fade" id="mealModal" tabindex="-1" aria-labelledby="mealModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">새 식단 추가</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="/meals" enctype="multipart/form-data">
+                            <input type="hidden" name="userId" th:value="${userId}">
+                            <input type="hidden" id="selectedMealDate" name="mealDate" th:value="${selectedDate}"
+                                required>
 
-                        <label for="mealType">식사 유형</label>
-                        <select id="mealType" name="mealType" class="form-control mt-2" required>
-                            <option value="" disabled selected>식사 유형</option>
-                            <option value="아침">아침</option>
-                            <option value="점심">점심</option>
-                            <option value="저녁">저녁</option>
-                        </select>
-                        <input type="number" id="mealCalories" name="totalCalories" class="form-control mt-2"
-                            placeholder="총 칼로리 (kcal)" step="any" required>
-                        <input type="number" id="mealCarbs" name="totalCarbs" class="form-control mt-2"
-                            placeholder="탄수화물 (g)" step="any" required>
-                        <input type="number" id="mealProtein" name="totalProtein" class="form-control mt-2"
-                            placeholder="단백질 (g)" step="any" required>
-                        <input type="number" id="mealFat" name="totalFat" class="form-control mt-2" placeholder="지방 (g)"
-                            step="any" required>
+                            <label for="mealType">식사 유형</label>
+                            <select id="mealType" name="mealType" class="form-control mt-2" required>
+                                <option value="" disabled selected>식사 유형</option>
+                                <option value="아침">아침</option>
+                                <option value="점심">점심</option>
+                                <option value="저녁">저녁</option>
+                            </select>
+                            <input type="number" id="mealCalories" name="totalCalories" class="form-control mt-2"
+                                placeholder="총 칼로리 (kcal)" step="any" required>
+                            <input type="number" id="mealCarbs" name="totalCarbs" class="form-control mt-2"
+                                placeholder="탄수화물 (g)" step="any" required>
+                            <input type="number" id="mealProtein" name="totalProtein" class="form-control mt-2"
+                                placeholder="단백질 (g)" step="any" required>
+                            <input type="number" id="mealFat" name="totalFat" class="form-control mt-2"
+                                placeholder="지방 (g)" step="any" required>
 
-                        <h6 class="mt-3">추가된 음식 목록</h6>
-                        <ul id="selectedFoodsList" class="list-group mt-2"></ul>
+                            <h6 class="mt-3">추가된 음식 목록</h6>
+                            <ul id="selectedFoodsList" class="list-group mt-2"></ul>
 
-                        <!--음식 추가 버튼 -->
-                        <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
-                            data-bs-target="#foodModal">음식 추가</button>
+                            <!--음식 추가 버튼 -->
+                            <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
+                                data-bs-target="#foodModal">음식 추가</button>
 
-                        <!-- ✅ 파일 업로드 필드 추가 -->
-                        <label>식단 사진 업로드</label>
-                        <input type="file" name="file" class="form-control mt-2">
+                            <!-- ✅ 파일 업로드 필드 추가 -->
+                            <label>식단 사진 업로드</label>
+                            <input type="file" name="file" class="form-control mt-2">
 
-                        <button type="submit" class="btn btn-primary mt-3 w-100">저장</button>
-                    </form>
+                            <button type="submit" class="btn btn-primary mt-3 w-100">저장</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!--식단 수정 모달 -->
-    <div class="modal fade" id="editMealModal" tabindex="-1" aria-labelledby="editMealModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">식단 수정</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editMealForm" method="post" action="/meals/update" enctype="multipart/form-data">
-                        <input type="hidden" id="editMealId" name="mealId">
-                        <input type="hidden" id="editMealDate" name="mealDate">
+        <!--식단 수정 모달 -->
+        <div class="modal fade" id="editMealModal" tabindex="-1" aria-labelledby="editMealModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">식단 수정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editMealForm" method="post" action="/meals/update" enctype="multipart/form-data">
+                            <input type="hidden" id="editMealId" name="mealId">
+                            <input type="hidden" id="editMealDate" name="mealDate">
 
-                        <label for="editMealType">식사 유형</label>
-                        <select id="editMealType" name="mealType" class="form-control mt-2" required>
-                            <option value="아침">아침</option>
-                            <option value="점심">점심</option>
-                            <option value="저녁">저녁</option>
-                        </select>
+                            <label for="editMealType">식사 유형</label>
+                            <select id="editMealType" name="mealType" class="form-control mt-2" required>
+                                <option value="아침">아침</option>
+                                <option value="점심">점심</option>
+                                <option value="저녁">저녁</option>
+                            </select>
 
-                        <input type="number" id="editMealCalories" name="totalCalories" class="form-control mt-2"
-                            placeholder="총 칼로리 (kcal)" step="any" required>
-                        <input type="number" id="editMealCarbs" name="totalCarbs" class="form-control mt-2"
-                            placeholder="탄수화물 (g)" step="any" required>
-                        <input type="number" id="editMealProtein" name="totalProtein" class="form-control mt-2"
-                            placeholder="단백질 (g)" step="any" required>
-                        <input type="number" id="editMealFat" name="totalFat" class="form-control mt-2"
-                            placeholder="지방 (g)" step="any" required>
+                            <input type="number" id="editMealCalories" name="totalCalories" class="form-control mt-2"
+                                placeholder="총 칼로리 (kcal)" step="any" required>
+                            <input type="number" id="editMealCarbs" name="totalCarbs" class="form-control mt-2"
+                                placeholder="탄수화물 (g)" step="any" required>
+                            <input type="number" id="editMealProtein" name="totalProtein" class="form-control mt-2"
+                                placeholder="단백질 (g)" step="any" required>
+                            <input type="number" id="editMealFat" name="totalFat" class="form-control mt-2"
+                                placeholder="지방 (g)" step="any" required>
 
-                        <h6 class="mt-3">추가된 음식 목록</h6>
-                        <ul id="editSelectedFoodsList" class="list-group mt-2"></ul>
+                            <h6 class="mt-3">추가된 음식 목록</h6>
+                            <ul id="editSelectedFoodsList" class="list-group mt-2"></ul>
 
-                        <!--음식 추가 버튼 -->
-                        <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
-                            data-bs-target="#editFoodModal">음식 추가</button>
+                            <!--음식 추가 버튼 -->
+                            <button type="button" class="btn btn-secondary w-100 mt-2" data-bs-toggle="modal"
+                                data-bs-target="#editFoodModal">음식 추가</button>
 
-                        <!-- ✅ 파일 업로드 필드 추가 -->
-                        <label>식단 사진 업로드</label>
-                        <input type="file" name="file" class="form-control mt-2">
+                            <!-- ✅ 파일 업로드 필드 추가 -->
+                            <label>식단 사진 업로드</label>
+                            <input type="file" name="file" class="form-control mt-2">
 
-                        <button type="submit" class="btn btn-primary mt-3 w-100">수정 완료</button>
-                    </form>
-                </div>
+                            <button type="submit" class="btn btn-primary mt-3 w-100">수정 완료</button>
+                        </form>
+                    </div>
 
 
-            </div>
-        </div>
-    </div>
-    <!--음식추가 수정 모달-->
-    <div class="modal fade" id="editFoodModal" tabindex="-1" aria-labelledby="editFoodModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">음식 검색</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" id="editFoodSearch" class="form-control mt-2" placeholder="음식 이름 검색">
-                    <button type="button" class="btn btn-primary mt-2" id="searchEditFoodButton">검색</button>
-                    <div id="editFoodResults" class="mt-2"></div>
-
-                    <h6 class="mt-3">음식 영양소</h6>
-                    <input type="text" id="editSelectedFoodName" class="form-control" placeholder="음식" readonly>
-                    <input type="text" id="editStandardWeight" class="form-control mt-2" placeholder="표준중량: -" readonly>
-                    <input type="number" id="editUserWeight" class="form-control mt-2" placeholder="먹은 g 수 입력" min="1">
-
-                    <h6 class="mt-3"> 자동 계산된 영양소</h6>
-                    <input type="text" id="editFoodCalories" class="form-control mt-2" placeholder="총 칼로리" readonly>
-                    <input type="text" id="editFoodCarbs" class="form-control mt-2" placeholder="탄수화물" readonly>
-                    <input type="text" id="editFoodProtein" class="form-control mt-2" placeholder="단백질" readonly>
-                    <input type="text" id="editFoodFat" class="form-control mt-2" placeholder="지방" readonly>
-
-                    <button type="button" class="btn btn-secondary mt-2" id="enableEditManualEntry">
-                        직접 입력
-                    </button>
-                    <button type="button" class="btn btn-primary w-100 mt-2" id="addEditFoodButton">추가</button>
                 </div>
             </div>
         </div>
-    </div>
+        <!--음식추가 수정 모달-->
+        <div class="modal fade" id="editFoodModal" tabindex="-1" aria-labelledby="editFoodModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">음식 검색</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="editFoodSearch" class="form-control mt-2" placeholder="음식 이름 검색">
+                        <button type="button" class="btn btn-primary mt-2" id="searchEditFoodButton">검색</button>
+                        <div id="editFoodResults" class="mt-2"></div>
 
+                        <h6 class="mt-3">음식 영양소</h6>
+                        <input type="text" id="editSelectedFoodName" class="form-control" placeholder="음식" readonly>
+                        <input type="text" id="editStandardWeight" class="form-control mt-2" placeholder="표준중량: -"
+                            readonly>
+                        <input type="number" id="editUserWeight" class="form-control mt-2" placeholder="먹은 g 수 입력"
+                            min="1">
 
+                        <h6 class="mt-3"> 자동 계산된 영양소</h6>
+                        <input type="text" id="editFoodCalories" class="form-control mt-2" placeholder="총 칼로리" readonly>
+                        <input type="text" id="editFoodCarbs" class="form-control mt-2" placeholder="탄수화물" readonly>
+                        <input type="text" id="editFoodProtein" class="form-control mt-2" placeholder="단백질" readonly>
+                        <input type="text" id="editFoodFat" class="form-control mt-2" placeholder="지방" readonly>
 
-    <!-- ✅ 음식 추가 모달 -->
-    <div class="modal fade" id="foodModal" tabindex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">음식 검색</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- 음식 검색 입력 필드 -->
-                    <input type="text" id="foodSearch" class="form-control mt-2" placeholder="음식 이름 검색">
-                    <button type="button" class="btn btn-primary mt-2" id="searchFoodButton">검색</button>
-                    <div id="foodResults" class="mt-2"></div>
-
-                    <!-- ✅ 선택한 음식 정보 -->
-                    <h6 class="mt-3">음식 영양소</h6>
-                    <input type="text" id="selectedFoodName" class="form-control" placeholder="음식" readonly>
-                    <input type="text" id="standardWeight" class="form-control mt-2" placeholder="표준중량: -" readonly>
-                    <input type="number" id="userWeight" class="form-control mt-2" placeholder="먹은 g 수 입력" min="1">
-
-                    <h6 class="mt-3"> 자동 계산된 영양소</h6>
-                    <label>총 칼로리</label>
-                    <input type="text" id="foodCalories" class="form-control mt-2" placeholder="총 칼로리" readonly>
-
-                    <label>탄수화물</label>
-                    <input type="text" id="foodCarbs" class="form-control mt-2" placeholder="탄수화물" readonly>
-
-                    <label>단백질</label>
-                    <input type="text" id="foodProtein" class="form-control mt-2" placeholder="단백질" readonly>
-
-                    <label>지방</label>
-                    <input type="text" id="foodFat" class="form-control mt-2" placeholder="지방" readonly>
-
-                    <!--  직접 입력 버튼 추가 -->
-                    <button type="button" class="btn btn-secondary mt-2" id="enableManualEntry">
-                        직접 입력
-                    </button>
-
-                    <!-- 음식 추가 버튼 -->
-                    <button type="button" class="btn btn-primary w-100 mt-2" id="addFoodButton">추가</button>
+                        <button type="button" class="btn btn-secondary mt-2" id="enableEditManualEntry">
+                            직접 입력
+                        </button>
+                        <button type="button" class="btn btn-primary w-100 mt-2" id="addEditFoodButton">추가</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- 댓글 섹션 추가 -->
-    <div class="comment-section mt-4" th:if="${meals != null and not #lists.isEmpty(meals)}">
-        <h4>댓글</h4>
-        <ul id="mealCommentList"></ul> <!-- 댓글 목록 -->
-
-        <!-- 댓글 입력 폼 -->
-        <form id="mealCommentForm" onsubmit="submitMealCommentForm(event)">
-            <textarea id="mealCommentInput" class="form-control" placeholder="댓글을 입력하세요..."></textarea>
-            <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
-        </form>
-    </div>
-
-    <!-- 등록된 식단이 없을 때 메시지 표시 -->
-    <th:block th:if="${meals == null or #lists.isEmpty(meals)}">
-        <p class="text-muted"></p>
-    </th:block>
 
 
-    <script src="/js/mealEdit.js"></script>
+
+        <!-- ✅ 음식 추가 모달 -->
+        <div class="modal fade" id="foodModal" tabindex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">음식 검색</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 음식 검색 입력 필드 -->
+                        <input type="text" id="foodSearch" class="form-control mt-2" placeholder="음식 이름 검색">
+                        <button type="button" class="btn btn-primary mt-2" id="searchFoodButton">검색</button>
+                        <div id="foodResults" class="mt-2"></div>
+
+                        <!-- ✅ 선택한 음식 정보 -->
+                        <h6 class="mt-3">음식 영양소</h6>
+                        <input type="text" id="selectedFoodName" class="form-control" placeholder="음식" readonly>
+                        <input type="text" id="standardWeight" class="form-control mt-2" placeholder="표준중량: -" readonly>
+                        <input type="number" id="userWeight" class="form-control mt-2" placeholder="먹은 g 수 입력" min="1">
+
+                        <h6 class="mt-3"> 자동 계산된 영양소</h6>
+                        <label>총 칼로리</label>
+                        <input type="text" id="foodCalories" class="form-control mt-2" placeholder="총 칼로리" readonly>
+
+                        <label>탄수화물</label>
+                        <input type="text" id="foodCarbs" class="form-control mt-2" placeholder="탄수화물" readonly>
+
+                        <label>단백질</label>
+                        <input type="text" id="foodProtein" class="form-control mt-2" placeholder="단백질" readonly>
+
+                        <label>지방</label>
+                        <input type="text" id="foodFat" class="form-control mt-2" placeholder="지방" readonly>
+
+                        <!--  직접 입력 버튼 추가 -->
+                        <button type="button" class="btn btn-secondary mt-2" id="enableManualEntry">
+                            직접 입력
+                        </button>
+
+                        <!-- 음식 추가 버튼 -->
+                        <button type="button" class="btn btn-primary w-100 mt-2" id="addFoodButton">추가</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 댓글 섹션 추가 -->
+        <div class="comment-section mt-4" th:if="${meals != null and not #lists.isEmpty(meals)}">
+            <h4>댓글</h4>
+            <ul id="mealCommentList">
+            </ul> <!-- 댓글 목록 -->
+
+            <!-- 댓글 입력 폼 -->
+            <form id="mealCommentForm" onsubmit="submitMealCommentForm(event)">
+                <textarea id="mealCommentInput" class="form-control" placeholder="댓글을 입력하세요..."></textarea>
+                <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
+            </form>
+        </div>
+
+        <!-- 등록된 식단이 없을 때 메시지 표시 -->
+        <th:block th:if="${meals == null or #lists.isEmpty(meals)}">
+            <p class="text-muted"></p>
+        </th:block>
+
+        <script src="/js/meals.js"></script> <!-- ✅ JavaScript 파일 불러오기 -->
+        <script src="/js/mealEdit.js"></script>
 </body>
 
 </html>

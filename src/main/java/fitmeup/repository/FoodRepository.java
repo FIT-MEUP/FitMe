@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import fitmeup.entity.FoodEntity;
 import fitmeup.entity.MealEntity;
 
+@Repository
 public interface FoodRepository extends JpaRepository<FoodEntity, Long> {
 	
     // 특정 식단(Meal)과 연결된 음식 조회

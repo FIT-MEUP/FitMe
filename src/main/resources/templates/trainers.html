@@ -1,141 +1,127 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<meta charset="UTF-8">
-<title>트레이너 목록</title>
+    <meta charset="UTF-8">
+    <title>트레이너 목록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
+    <!-- ✅ Google Fonts (스포티하고 강렬한 폰트 적용) -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        /* 🏋️‍♂️ 강한 타이틀 스타일 (강제 적용) */
+        .font-title { font-family: 'Oswald', sans-serif !important; font-weight: 600; text-transform: uppercase; }
 
+        /* 📌 네비게이션 & 주요 버튼 */
+        .font-nav { font-family: 'Oswald', sans-serif !important; font-weight: 400; text-transform: uppercase; }
+
+        /* 💎 설명 문구 & 본문 */
+        .font-body { font-family: 'Montserrat', sans-serif !important; font-weight: 400; }
+
+        /* 🎥 YouTube 영상 컨테이너 */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 75vh;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-200">
-    <!-- 헤더 -->
-    <header class="relative grid grid-cols-3 items-center bg-gray-800 text-white p-6 shadow-lg h-28">
-        <!-- 왼쪽 빈 공간 (로고 가운데 정렬용) -->
-        <div></div>
+<body class="bg-gray-900 text-white">
 
-        <!-- 로고 (가운데 정렬) -->
-        <a class="flex justify-center">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" 
-                 alt="Logo" class="w-[250px] object-contain">
-        </a>
+    <!-- ✅ 네비게이션 바 (고정된 상단) -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+        <div class="flex justify-between items-center px-6 py-4">
+            <!-- 로고 -->
+            <a href="/" class="text-3xl font-title">
+                <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+            </a>
 
-        <!-- 우측 버튼 -->
-        <div class="flex justify-end items-center gap-6">
-            <div id="user">
-                <ul class="flex gap-4">
-                    <!-- 인증하지 않은 사용자 -->
-                    <th:block sec:authorize="isAnonymous()">
-                        <li>
-                            <a th:href="@{/user/login}">
-                                <button class="bg-blue-600 px-5 py-3 rounded-lg hover:bg-opacity-40 transition">
-                                    로그인
-                                </button>
-                            </a>
-                        </li>
-                    </th:block>
+            <!-- 네비게이션 메뉴 -->
+            <nav class="hidden md:flex gap-6 text-lg font-nav">
+                <a href="/" class="text-white hover:text-gray-300">홈</a>
+                <a href="/trainers" class="text-white hover:text-gray-300">트레이너 찾기</a>
+                <a href="/programs" class="text-white hover:text-gray-300">프로그램</a>
+                <a href="/contact" class="text-white hover:text-gray-300">문의</a>
+            </nav>
 
+            <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
+        <div class="flex gap-6">
+            <th:block sec:authorize="isAnonymous()"> 
+                <a th:href="@{/user/login}" class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+                    로그인
+                </a>
+            </th:block>
 
-                    <!-- 인증한 사용자  -->
-                    <th:block sec:authorize="isAuthenticated()">
-                        <div x-data="{ open: false, isOpen: false }" class="relative inline-block text-left">
-                            <!-- 메인 버튼 -->
-                            <section class="flex items-center space-x-1">
-                                <!-- 버튼 -->
-                                <button @click="open = !open" 
-                                    class="px-5 py-3 rounded-lg hover:bg-opacity-40 transition">
-                                    <span class="text-2xl" th:text="${#authentication.principal.displayName}"></span>
-                                </button>
-                            
-                                <!-- 프로필 이미지 (클릭 시 버튼과 동일한 효과) -->
-                                <img src="../../static/images/user.png" th:src="@{/images/user.png}" 
-                                    alt="Profile" class="w-10 h-10 rounded-full cursor-pointer bg-white" 
-                                    @click="open = !open">
-                            </section>
-                    
-                            <!-- 드롭다운 메뉴 -->
-                            <div x-show="open" @click.away="open = false" 
-                                x-transition:enter="transition ease-out duration-200 transform opacity-0 scale-95"
-                                x-transition:enter-start="opacity-0 scale-95"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-150 transform opacity-100 scale-100"
-                                x-transition:leave-start="opacity-100 scale-100"
-                                x-transition:leave-end="opacity-0 scale-95"
-                                class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200">
-                                
-                                <ul class="py-2">
-                                    <li>
-                                        <a th:href="@{#}" class="block px-4 py-2 text-black hover:bg-gray-100">
-                                            시작하기
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a th:href="@{/user/changePassword}" class="block px-4 py-2 text-black hover:bg-gray-100">
-                                            비밀번호 변경
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a th:href="@{/user/deleteAccount}" class="block px-4 py-2 text-black hover:bg-gray-100">
-                                            회원탈퇴
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a th:href="@{/user/logout}" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
-                                            로그아웃
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                         
-                        </div>
-                    </div>
-                </th:block>
-                    
-                </ul>
-            </div>
+            <th:block sec:authorize="isAuthenticated()">
+                 <li><a th:href="@{/user/logout}">[[${#authentication.principal.displayName}]]님, 로그아웃</a></li>
+                <a th:href="@{/user/deleteAccount}" class="bg-red-600 px-5 py-2 rounded-lg hover:bg-red-700 transition font-nav">
+                    회원 탈퇴
+                </a>
+                <a th:href="@{/user/logout}" class="bg-gray-600 px-5 py-2 rounded-lg hover:bg-gray-700 transition font-nav">
+                    로그아웃
+                </a>
+            </th:block>
         </div>
+    </div>
     </header>
 
-
-    <!-- 광고 배너 -->
-    <section class="flex justify-center items-center bg-gray-800 p-6 shadow-lg rounded-lg mt-6">
-        <a href="https://www.advertisement-url.com" target="_blank">
-            <img src="/images/ad-banner.jpg" alt="광고 배너" class="max-w-full h-auto rounded-lg shadow-md">
-        </a>
+    <!-- 🏋️ 메인 컨텐츠 문구 -->
+    <section class="flex flex-col items-center text-center mt-28">
+        <h1 class="text-6xl font-title text-white drop-shadow-lg tracking-widest"> FIND YOUR TRAINER </h1>
+        <p class="mt-4 text-2xl text-gray-300 font-body">당신의 목표를 함께 만들어갈 최고의 트레이너를 만나보세요.</p>
     </section>
 
-    <!-- 운동 동기부여 명언 영역 -->
-    <section class="flex justify-center items-center mt-6">
-        <div id="motivational-quote-section" class="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-5xl text-center">
-            <p id="motivational-quote" class="text-white">명언 로딩 중...</p>
+    <!-- 🎥 YouTube 배경 영상 -->
+    <div class="video-container mt-10">
+        <iframe 
+            src="https://www.youtube.com/embed/vTF4p4ki28M?autoplay=1&mute=1&loop=1&playlist=vTF4p4ki28M&controls=0&showinfo=0&modestbranding=1"
+            frameborder="0" allow="autoplay; fullscreen"></iframe>
+    </div>
+
+    <!-- 🏋️ 트레이너 목록 -->
+    <main class="relative z-10 flex flex-col items-center text-center mt-16">
+        <h2 class="text-4xl font-title text-white mb-6 tracking-widest">TRAINER LIST</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 w-full max-w-6xl mx-auto">
+            <div class="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg text-gray-900 font-body" th:each="trainer : ${trainers}">
+                <!-- 트레이너 대표 이미지 -->
+                <img th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
+                    alt="Trainer Image" class="w-full h-56 object-cover">
+                
+                <div class="p-6 text-center">
+                    <h5 class="text-2xl font-title" th:text="${trainer.user.userName}">트레이너 이름</h5>
+                    <p class="text-gray-700 mt-2 font-body" th:text="${trainer.specialization}">전문 분야</p>
+                    <a th:href="@{/trainer/{id}(id=${trainer.trainerId})}"
+                        class="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-nav">
+                        자세히 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ✅ 명언 API -->
+    <section class="relative z-10 flex justify-center items-center mt-10">
+        <div class="bg-gray-900 bg-opacity-80 p-6 rounded-lg w-full max-w-4xl text-center">
+            <p id="motivational-quote" class="text-xl text-white font-body">명언 로딩 중...</p>
         </div>
     </section>
 
-    <!-- 트레이너 목록 -->
-    <div class="flex flex-col items-center gap-6 w-full max-w-5xl mx-auto py-6">
-        <section class="flex flex-col items-center p-8 shadow-lg rounded-lg w-full bg-gray-800">
-            <h1 class="text-3xl font-bold text-white mb-6">트레이너 목록</h1>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                <div class="shadow-md rounded-lg overflow-hidden bg-white" th:each="trainer : ${trainers}">
-                    <!-- 대표 이미지 (첫 번째 사진) or 기본 이미지 -->
-                    <img th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}" alt="Trainer Image" class="w-full h-48 object-cover">
-                    
-                    <div class="p-5 text-center bg-blue-100">
-                        <h5 class="text-xl font-semibold text-gray-900" th:text="${trainer.user.userName}">트레이너 이름</h5>
-                        <p class="text-gray-700" th:text="${trainer.specialization}">전문 분야</p>
-                        <a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" 
-                           class="inline-block mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
-                            자세히 보기
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- 명언 API 호출 스크립트 -->
+    <!-- 🎯 명언 API 스크립트 -->
     <script>
         function loadMotivationalQuote() {
             fetch('/api/quote')
@@ -148,9 +134,8 @@
                     document.getElementById("motivational-quote").innerText = "명언을 불러오는 중 오류 발생.";
                 });
         }
-        
-        // 페이지 로드 시 자동으로 명언 로딩
         window.onload = loadMotivationalQuote;
     </script>
+
 </body>
 </html>

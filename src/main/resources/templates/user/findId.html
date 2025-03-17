@@ -2,43 +2,87 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>아이디 찾기</title>
+    <title>아이디 찾기 | Fit Gym</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ✅ Google Fonts (스포티하고 강렬한 폰트 적용) -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🏋️‍♂️ 강한 타이틀 스타일 */
+        .font-title { font-family: 'Oswald', sans-serif !important; font-weight: 600; text-transform: uppercase; }
+
+        /* 📌 네비게이션 & 주요 버튼 */
+        .font-nav { font-family: 'Oswald', sans-serif !important; font-weight: 400; text-transform: uppercase; }
+
+        /* 💎 설명 문구 & 본문 */
+        .font-body { font-family: 'Montserrat', sans-serif !important; font-weight: 400; }
+
+        /* 🔥 배경 스타일 */
+        .bg-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        /* ✨ 애니메이션 효과 */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-200 flex justify-center items-center min-h-screen">
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
 
-    <div class="flex flex-col w-full max-w-md py-8">
-        
+    <!-- 🎬 YouTube 영상 배경 -->
+    <div class="absolute inset-0 w-full h-full overflow-hidden">
+        <iframe 
+            src="https://www.youtube.com/embed/pcw_t_E7JGA?autoplay=1&mute=1&loop=1&playlist=pcw_t_E7JGA&controls=0&showinfo=0&modestbranding=1"
+            class="absolute inset-0 w-full h-full"
+            frameborder="0" allow="autoplay; fullscreen"></iframe>
+    </div>
 
-        <!-- 아이디 찾기 섹션 -->
-        <div class="flex flex-col text-center bg-gray-800 shadow-lg rounded-lg w-full p-6 mt-6">
+    <!-- 🔥 어두운 오버레이 -->
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+
+    <div class="relative z-10 flex flex-col w-full max-w-md py-8 fade-in">
+        <!-- 🏋️‍♂️ 네비게이션 -->
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Gym Logo" class="w-36">
+            </a>
+        </header>
+
+        <!-- ✅ 아이디 찾기 카드 -->
+        <div class="bg-overlay p-6 rounded-lg shadow-lg w-full text-center">
             
-            <section class="mb-4">
-                <p class="text-white text-3xl font-bold">아이디 찾기</p>
-                <p class="text-gray-400 mt-1">가입 당시 입력한 이름과 연락처를 입력하세요.</p>
-            </section>
+            <h2 class="text-3xl font-title text-white">아이디 찾기</h2>
+            <p class="text-gray-300 mt-1 font-body">가입 당시 입력한 이름과 연락처를 입력하세요.</p>
 
             <!-- 아이디 찾기 폼 -->
-            <form th:action="@{/user/findId}" method="post" class="w-full space-y-4">
+            <form th:action="@{/user/findId}" method="post" class="w-full space-y-4 mt-6">
                 
-                <div class="flex flex-col">
-                    <label for="userName" class="text-white font-medium mb-1">이름</label>
+                <div class="text-left">
+                    <label for="userName" class="text-white font-body">이름</label>
                     <input type="text" id="userName" name="userName" required
-                        class="w-full p-3 rounded-lg border border-gray-600 bg-white text-white focus:ring-2 focus:ring-red-500 focus:outline-none"
+                        class="w-full p-3 mt-1 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none"
                         placeholder="이름을 입력하세요">
                 </div>
 
-                <div class="flex flex-col">
-                    <label for="userContact" class="text-white font-medium mb-1">연락처</label>
+                <div class="text-left">
+                    <label for="userContact" class="text-white font-body">연락처</label>
                     <input type="text" id="userContact" name="userContact" required
-                        class="w-full p-3 rounded-lg border border-gray-600 bg-white text-white focus:ring-2 focus:ring-red-500 focus:outline-none"
+                        class="w-full p-3 mt-1 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none"
                         placeholder="010-1234-5678">
                 </div>
 
                 <button type="submit" 
-                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-bold">
+                    class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-nav uppercase">
                     아이디 찾기
                 </button>
             </form>
@@ -46,23 +90,22 @@
             <!-- 결과 메시지 -->
             <div class="mt-4">
                 <!-- 아이디(이메일) 찾기 성공 -->
-                <p th:if="${email}" class="text-green-400 text-sm">
+                <p th:if="${email}" class="text-green-400 text-sm font-body">
                     가입하신 이메일은 <strong th:text="${email}"></strong> 입니다.
                 </p>
 
                 <!-- 존재하지 않는 회원 -->
-                <p th:if="${error}" class="text-red-400 text-sm">
+                <p th:if="${error}" class="text-red-400 text-sm font-body">
                     <strong th:text="${error}"></strong>
                 </p>
             </div>
 
-            <!-- 로그인 페이지 이동 버튼 -->
+            <!-- ✅ 로그인 페이지 이동 버튼 -->
             <a th:href="@{/user/login}" 
-                class="w-full mt-4 text-center bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition">
+                class="block mt-4 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition font-nav uppercase">
                 로그인 페이지로 이동
             </a>
         </div>
-
     </div>
 
 </body>
