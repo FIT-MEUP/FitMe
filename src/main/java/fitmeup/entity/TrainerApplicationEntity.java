@@ -47,9 +47,10 @@ public class TrainerApplicationEntity {
                 .applicationId(dto.getApplicationId())
                 .user(user)
                 .trainer(trainer)
-                .status(Status.valueOf(dto.getStatus())) //  String → ENUM 변환
+                .status(dto.getStatus() != null ? Status.valueOf(dto.getStatus()) : Status.Pending) // ✅ 기본값 설정
                 .appliedAt(dto.getAppliedAt() != null ? dto.getAppliedAt() : LocalDateTime.now()) // null 방지
                 .responseAt(dto.getResponseAt())
                 .build();
     }
+
 }

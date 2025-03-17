@@ -10,7 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fitmeup.entity.TrainerApplicationEntity;
+
 import fitmeup.entity.UserEntity;
+
+import fitmeup.entity.TrainerApplicationEntity.Status;
+
 
 @Repository
 public interface TrainerApplicationRepository extends JpaRepository<TrainerApplicationEntity, Long> {
@@ -58,6 +62,7 @@ public interface TrainerApplicationRepository extends JpaRepository<TrainerAppli
     // ✅ userId 기반 특정 상태 목록에 해당하는 상담 신청 여부 확인
     boolean existsByUserUserIdAndStatusIn(Long userId, List<TrainerApplicationEntity.Status> statuses);
 
+
     // 박노은 / 0315
     @Query("SELECT ta.user FROM TrainerApplicationEntity ta WHERE ta.trainer.trainerId = :trainerId AND ta.status = :status")
     List<UserEntity> findApprovedUsersByTrainerId(@Param("trainerId") Long trainerId, @Param("status") TrainerApplicationEntity.Status status);
@@ -65,4 +70,5 @@ public interface TrainerApplicationRepository extends JpaRepository<TrainerAppli
     // 박노은 / 0315
     @Query("SELECT ta.trainer.trainerId FROM TrainerApplicationEntity ta WHERE ta.user.userId = :userId")
     Optional<Long> findTrainerIdByUserId(@Param("userId") Long userId);
+
 }

@@ -64,7 +64,7 @@ public class TrainerScheduleController {
 		   
 		   
 		   
-		   return "trainerschedule";
+		   return "schedule/trainerschedule";
 		}
 	
 	
@@ -113,12 +113,14 @@ public class TrainerScheduleController {
 		
 		return true;
 	}
+	
+	
 	@ResponseBody
 	@GetMapping("/ptSessionHistoryChangeAmount")
 	public String ptSessionHisotryChangeAmount(@RequestParam(name="trainerId") Long userId){
 		log.info("userId============== {}",userId);
 		String temp=scheduleService.minusChangeAmount(userId);
-		
+		log.info(temp);
 		
 		return temp;
 	}
