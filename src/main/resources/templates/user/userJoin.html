@@ -32,6 +32,13 @@
             if (errorMessage) {
                 alert(errorMessage);
             }
+            
+            // ✅ 성공 메시지 alert 추가
+            const successMessage = "[[${successMessage}]]";
+            if (successMessage && successMessage.trim() !== "") {
+                alert(successMessage);
+            }
+            
         });
 
         // ✅ 유효성 검사 함수
