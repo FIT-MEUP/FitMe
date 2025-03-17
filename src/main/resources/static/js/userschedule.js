@@ -238,17 +238,18 @@ document.addEventListener('DOMContentLoaded', function () {
             dataType: 'text',
             success: function(response) {
                 if(response === 'success'){
+					eventInstance.remove();
                     alert('저장이 완료되었습니다.');
 					window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
+                    eventInstance.remove();
                     alert('이용가능한 시간이 아닙니다.');
-                    eventInstance.remove();
                 } else if(response === "alreadySchedule"){
+                    eventInstance.remove();
                     alert('이미 다른사람의 예약이 있습니다.');
-                    eventInstance.remove();
                 } else if(response === "alreadyHaveSchedule"){
-                    alert('이미 예약이 있습니다.');
                     eventInstance.remove();
+                    alert('이미 예약이 있습니다.');
                 }
             },
             error: function() {

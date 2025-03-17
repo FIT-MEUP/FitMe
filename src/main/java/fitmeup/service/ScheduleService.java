@@ -26,7 +26,7 @@ import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.scit.aaa.entity.PtSessionHistoryEntity;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class ScheduleService {
 	private final UserRepository userRepository;
 	private final TrainerRepository trainerRepository;
 	private final PTSessionHistoryRepository ptSessionHistoryRepository;
-	
+		
 	//trainerSchedule Read
 	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
 		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
@@ -46,7 +46,8 @@ public class ScheduleService {
 		
 		List<TrainerScheduleEntity> temp= trainerScheduleRepository.findByTrainerTrainerId(trainerId);
 		List<TrainerScheduleDTO> list = new ArrayList<>();
-
+		log.info("========================================= {}",temp.toString());
+		
 		temp.forEach((entity) -> list.add(TrainerScheduleDTO.toDTO(entity)));
 		
 		return list;	
@@ -113,7 +114,7 @@ public class ScheduleService {
 		
 
 		
-		public long findTrainerId(Long userId) {
+		public Long findTrainerId(Long userId) {
 		    log.info("트레이너 아이디: ",
 		    		trainerApplicationRepository.findByUserUserId(userId)
 		           .map(app -> app.getTrainer().getTrainerId())
@@ -122,6 +123,11 @@ public class ScheduleService {
 		           .map(app -> app.getTrainer().getTrainerId())
 		           .orElse(0L);
 		    
+		}
+		
+		public Long findTrainertrainerId(Long userId) {
+			Optional<TrainerEntity> temp=trainerRepository.findByUser_UserId(userId);
+			return temp.get().getTrainerId();
 		}
 		
 		//자신의 이름 검색
@@ -155,7 +161,10 @@ public class ScheduleService {
 		 //pt시작 버튼을 누르면 없어지는 형태
 		 public String minusChangeAmount(Long userId) {
 			    // Trainer의 userId로 schedule 목록을 가져옵니다.
-			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(userId);
+			 log.info("pt출석 trainer의 userId{}",userId);
+			 	Optional <TrainerEntity> temp=trainerRepository.findByUser_UserId(userId);
+			 	Long trainerId=temp.get().getTrainerId();
+			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(trainerId);
 			    log.info("Retrieved schedules: {}", scheduleList.size());
 
 			    // 현재 시간과 10분 후 시간 계산
@@ -180,8 +189,8 @@ public class ScheduleService {
 			        log.info("매칭된 스케줄의 userId: {}", matchedUserId);
 
 			        // 해당 userId의 PT 세션 내역을 최신 순으로 조회 (changeDate 기준 내림차순)
-			        List<PtSessionHistoryEntity> historyList = ptSessionHistoryRepository.findByUserUserId(matchedUserId, Sort.by("changeDate").descending());
-			        PtSessionHistoryEntity latestHistory = historyList.get(0);  // 내역이 항상 있다고 가정
+			        List<PTSessionHistoryEntity> historyList = ptSessionHistoryRepository.findByUserUserId(matchedUserId, Sort.by("changeDate").descending());
+			        PTSessionHistoryEntity latestHistory = historyList.get(0);  // 내역이 항상 있다고 가정
 
 			        // 만약 최신 내역의 changeAmount가 0이면 더 이상 차감할 PT 세션이 없으므로 "noMore" 반환
 			        if (latestHistory.getChangeAmount() == 0) {
