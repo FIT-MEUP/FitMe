@@ -38,7 +38,7 @@ public class ScheduleService {
 	private final UserRepository userRepository;
 	private final TrainerRepository trainerRepository;
 	private final PTSessionHistoryRepository ptSessionHistoryRepository;
-	
+		
 	//trainerSchedule Read
 	public List<TrainerScheduleDTO> selectTrainerScheduleAll(Long userId){
 		Optional<TrainerEntity> trainer = trainerRepository.findByUser_UserId(userId);
@@ -46,7 +46,8 @@ public class ScheduleService {
 		
 		List<TrainerScheduleEntity> temp= trainerScheduleRepository.findByTrainerTrainerId(trainerId);
 		List<TrainerScheduleDTO> list = new ArrayList<>();
-
+		log.info("========================================= {}",temp.toString());
+		
 		temp.forEach((entity) -> list.add(TrainerScheduleDTO.toDTO(entity)));
 		
 		return list;	
@@ -113,7 +114,7 @@ public class ScheduleService {
 		
 
 		
-		public long findTrainerId(Long userId) {
+		public Long findTrainerId(Long userId) {
 		    log.info("트레이너 아이디: ",
 		    		trainerApplicationRepository.findByUserUserId(userId)
 		           .map(app -> app.getTrainer().getTrainerId())
@@ -122,6 +123,11 @@ public class ScheduleService {
 		           .map(app -> app.getTrainer().getTrainerId())
 		           .orElse(0L);
 		    
+		}
+		
+		public Long findTrainertrainerId(Long userId) {
+			Optional<TrainerEntity> temp=trainerRepository.findByUser_UserId(userId);
+			return temp.get().getTrainerId();
 		}
 		
 		//자신의 이름 검색
@@ -155,7 +161,10 @@ public class ScheduleService {
 		 //pt시작 버튼을 누르면 없어지는 형태
 		 public String minusChangeAmount(Long userId) {
 			    // Trainer의 userId로 schedule 목록을 가져옵니다.
-			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(userId);
+			 log.info("pt출석 trainer의 userId{}",userId);
+			 	Optional <TrainerEntity> temp=trainerRepository.findByUser_UserId(userId);
+			 	Long trainerId=temp.get().getTrainerId();
+			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(trainerId);
 			    log.info("Retrieved schedules: {}", scheduleList.size());
 
 			    // 현재 시간과 10분 후 시간 계산

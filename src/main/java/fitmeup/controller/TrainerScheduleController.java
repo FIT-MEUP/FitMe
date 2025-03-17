@@ -28,13 +28,12 @@ public class TrainerScheduleController {
 	
 	
 	//TrainerScheuldeDTO를 list형태로 front단에 보내주는 method
-		@GetMapping({"firstTrainerSchedule"})
+		@GetMapping({"/firstTrainerSchedule"})
 		public String index(Model model
-//				
-//				,@RequestParam(name = "trainerId", defaultValue = "3") Long userId
 				,@AuthenticationPrincipal LoginUserDetails loginUser
 				) {
 			Long userId= loginUser.getUserId();
+			log.info("userId ===== {}",userId);
 			
 //			List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
 				List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(userId);
@@ -45,7 +44,12 @@ public class TrainerScheduleController {
 		  
 
 //		    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
-		     List<ScheduleDTO> userlist = scheduleService.selectAll(userId);
+		    
+		    //이건 trainerEntity의 trainerId를 넣어야함를 넣어야함
+		    Long trainerId = scheduleService.findTrainertrainerId(userId);
+		    log.info("트레이너 입장 trainerId = {}",trainerId);
+		     List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
+		     log.info("userlist.size()userlist.size()       {}",userlist.size());
 		    
 		   
 		    
@@ -75,8 +79,9 @@ public class TrainerScheduleController {
 	public String trainercalendarInsert(
 	        @RequestParam("start") String start,
 	        @RequestParam("end") String end
-	        ,@RequestParam("trainerId") Long trainerId
+	        ,@AuthenticationPrincipal LoginUserDetails loginUser
 	) {
+		Long trainerId= loginUser.getUserId();
 	    // 오프셋이 포함된 문자열을 파싱한 후 바로 LocalDateTime으로 변환 (추가 변환 X)
 	    LocalDateTime startTime = OffsetDateTime
 	                                .parse(start, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -117,7 +122,11 @@ public class TrainerScheduleController {
 	
 	@ResponseBody
 	@GetMapping("/ptSessionHistoryChangeAmount")
-	public String ptSessionHisotryChangeAmount(@RequestParam(name="trainerId") Long userId){
+	public String ptSessionHisotryChangeAmount(
+			//@RequestParam(name="trainerId") Long userId
+			@AuthenticationPrincipal LoginUserDetails loginUser
+			){
+		Long userId= loginUser.getUserId();
 		log.info("userId============== {}",userId);
 		String temp=scheduleService.minusChangeAmount(userId);
 		log.info(temp);

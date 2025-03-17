@@ -36,9 +36,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         } else if (roleNames.contains("ROLE_PENDINGTRAINER") || roleNames.contains("PendingTrainer")) {
             response.sendRedirect("/user/pendingTrainer");
         } else if (roleNames.contains("ROLE_TRAINER") || roleNames.contains("Trainer")) {
-            response.sendRedirect("/trainerschedule");
+            response.sendRedirect("/firstTrainerSchedule");
         } else if (roleNames.contains("ROLE_USER") || roleNames.contains("User")) {
-            response.sendRedirect("/trainers");
+            response.sendRedirect("/firstUserCalendar");
         } else {
             // 다른 권한이 있을 경우 기본적으로 홈으로 리다이렉트
             response.sendRedirect("/");
