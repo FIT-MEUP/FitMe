@@ -4,8 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fitmeup.dto.ChatUserDTO;
 import fitmeup.dto.UserDTO;
+import fitmeup.dto.WorkDTO;
 import fitmeup.service.ChatUserService;
 import fitmeup.service.UserService;
+import fitmeup.service.WorkService;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
@@ -24,10 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.ApproveRequestDTO;
 import fitmeup.dto.LoginUserDetails;
+import fitmeup.dto.MealDTO;
 import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.dto.TrainerApplicationDTO;
 import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.TrainerApplicationEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.service.AnnouncementService;
 import fitmeup.service.MealService;
 import fitmeup.service.PTSessionHistoryService;
@@ -48,6 +56,7 @@ public class MemberManageController {
     private final ScheduleService scheduleService;
     private final AnnouncementService announcementService;
     private final PTSessionHistoryService ptSessionHistoryService;
+    private final WorkService workService;
     
     
     private final ChatUserService chatUserService;
@@ -111,6 +120,7 @@ public class MemberManageController {
     // 신청 거절 API
     @PostMapping("/trainer/reject")
     @ResponseBody
+    
     public ResponseEntity<String> rejectApplication(@RequestBody ApproveRequestDTO approveRequestDTO) {
         trainerApplicationService.updateApplicationStatus(approveRequestDTO.getApplicationId(), TrainerApplicationEntity.Status.Rejected);
         return ResponseEntity.ok("Application rejected successfully.");
@@ -119,10 +129,9 @@ public class MemberManageController {
     // 회원 PT 선택 API
     @GetMapping("/trainer/selectPT")
     @ResponseBody
-    public PTSessionHistoryDTO selectApplication(@RequestParam(name="applicationId") Long applicationId, Model model) {
+    public PTSessionHistoryDTO selectApplication(@RequestParam(name="userId") Long userId, Model model) {
         PTSessionHistoryDTO dto = new PTSessionHistoryDTO();
-        
-        dto.setUserId(applicationId);
+        dto.setUserId(userId);
         dto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
         dto.setChangeAmount(0L);
         dto.setReason("새로운 PT계약 생성");
@@ -150,13 +159,51 @@ public class MemberManageController {
     // 트레이너 공지사항 API
     @PostMapping("/trainer/saveAnnouncement")
     public boolean saveTrainerAnnouncement(@RequestBody String announcement,@AuthenticationPrincipal LoginUserDetails loginUser) {
-    	log.info("=====================anoun{}",announcement);
         announcementService.saveAnnouncement(announcement, loginUser.getUserId());
         
         return true;
         
     }
-    
+
+    // 오늘의 식단 미리보기 API
+    @GetMapping("/trainer/mealPreview")
+    @ResponseBody
+    public MealDTO mealPreview(@RequestParam(name="userId") Long userId) {
+        List<MealDTO> meals = Collections.emptyList(); // ✅ 기본값: 빈 리스트
+        String currentDate = LocalDate.now().toString();
+
+        Long loggedInUserId = userId;
+
+        meals = mealService.getMealsByUserAndDate(userId, LocalDate.parse(currentDate), loggedInUserId, UserEntity.Role.Trainer.name());
+
+        
+
+        if (meals.isEmpty()) {
+            return null; // 또는 적절한 예외 처리
+        }
+        
+        return meals.get(0);
+        
+    }
+
+    // 오늘의 운동 미리보기 API
+    @GetMapping("/trainer/workPreview")
+    @ResponseBody
+    public WorkDTO workPreview(@RequestParam(name="userId") Long userId) {
+        String currentDate = LocalDate.now().toString();
+        Long loggedInUserId = userId;
+
+        // 운동 기록 조회
+        List<WorkDTO> workouts = workService.getUserWorkoutsByDate(userId, LocalDate.parse(currentDate), loggedInUserId,UserEntity.Role.Trainer.name());
+
+        if (workouts.isEmpty()) {
+        	
+            return null; // 또는 적절한 예외 처리
+        }
+        
+        return workouts.get(0);
+        
+    }
     
     
 

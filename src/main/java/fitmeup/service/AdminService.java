@@ -2,10 +2,12 @@ package fitmeup.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fitmeup.entity.AnnouncementEntity;
 import fitmeup.entity.UserEntity;
 import fitmeup.entity.UserEntity.Role;
 import fitmeup.repository.AdminRepository;
@@ -83,13 +85,16 @@ public class AdminService {
         adminRepository.deleteById(userId);
     }
 
-//  @Transactional
-//    public void updateNotice(String noticeText) {
-//        AnnouncementEntity announcement = AnnouncementEntity.builder()
-//            .authorId(1L) // 관리자 계정 ID (변경 가능)
-//            .content(noticeText)
-//            .createdAt(LocalDateTime.now())
-//            .build();
-//        announcementRepository.save(announcement);
-//    }
+  @Transactional
+    public void updateNotice(String noticeText) {
+
+		AnnouncementEntity entity = new AnnouncementEntity();
+		List<UserEntity> user = userRepository.findByRole(UserEntity.Role.Admin);
+		
+		entity.setContent(noticeText);
+		entity.setUser(user.get(0));
+		
+
+        announcementRepository.save(entity);
+    }
 }

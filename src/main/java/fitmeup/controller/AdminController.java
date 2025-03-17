@@ -54,7 +54,7 @@ public class AdminController {
     @PostMapping("/updateNotice")
     @ResponseBody
     public String updateNotice(@RequestBody String notice) {
-//        adminService.updateNotice(notice);
+        adminService.updateNotice(notice);
         return "{\"message\": \"공지사항 업데이트 완료\"}";
     }
 }

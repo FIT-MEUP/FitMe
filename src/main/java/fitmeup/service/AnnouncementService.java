@@ -40,6 +40,16 @@ public class AnnouncementService {
 		 }
 		 return list.get(0).getContent();
 	}
-	
+
+	public String sendAdminAnnouncement() {
+		List<UserEntity> user = userRepository.findByRole(UserEntity.Role.Admin);
+		
+		 List<AnnouncementEntity> list =announcementRepository.findByUserUserId(user.get(0).getUserId(), Sort.by(Sort.Direction.DESC, "createdAt"));
+		 if(list.isEmpty()) {
+			 return "트레이너 공지 사항 내용";
+
+		 }
+		 return list.get(0).getContent();
+	}
 
 }
