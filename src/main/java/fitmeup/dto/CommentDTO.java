@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import fitmeup.entity.CommentEntity;
 import fitmeup.entity.MealEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.entity.WorkEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ import lombok.Setter;
 public class CommentDTO {
 
     private Long commentId;  // 댓글 ID
-//    private Long userId;  // ✅ [추후 반영] 작성자 (User ID) - 현재는 사용하지 않음.
+    private Long userId;  // ✅ [추후 반영] 작성자 (User ID) - 현재는 사용하지 않음.
     private Long workoutId;  // 운동 게시글 ID (NULL 허용)
     private Long mealId;  // 식단 게시글 ID (NULL 허용)
     private String content;  // 댓글 내용
@@ -30,7 +31,7 @@ public class CommentDTO {
     public static CommentDTO fromEntity(CommentEntity entity) {
         return CommentDTO.builder()
                 .commentId(entity.getCommentId())
-//                .userId(entity.getUser().getUserId())  // ✅ [추후 반영] User 정보 추가 필요
+                .userId(entity.getUser().getUserId())  // ✅ [추후 반영] User 정보 추가 필요
                 .workoutId(entity.getWorkout() != null ? entity.getWorkout().getWorkoutId() : null)
                 .mealId(entity.getMeal() != null ? entity.getMeal().getMealId() : null)
                 .content(entity.getContent())
@@ -39,9 +40,10 @@ public class CommentDTO {
     }
 
     // ✅ DTO → Entity 변환 (저장 시 사용)
-    public CommentEntity toEntity(WorkEntity workout, MealEntity meal, LocalDate requestedDate) {
+    public CommentEntity toEntity(UserEntity user, WorkEntity workout, MealEntity meal, LocalDate requestedDate) {
         return CommentEntity.builder()
                 .workout(workout)
+                .user(user)
                 .meal(meal)
                 .content(this.content)
                 .createdAt(requestedDate.atTime(0, 0, 0)) // 12시 고정
