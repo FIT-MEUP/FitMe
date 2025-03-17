@@ -1,24 +1,24 @@
 // memberManage.js
 $(document).ready(function () {
 
-  // ★ 추가: 트레이너용 알림 WebSocket 연결 함수 (항상 연결되어 있음)
+  //------------------------------------------------------
+  // (1) 트레이너 알림용 WebSocket 연결
+  //------------------------------------------------------
   function connectTrainerNotificationWebSocket() {
     var socket = new SockJS('/ws');
     var notificationClient = Stomp.over(socket);
     notificationClient.connect({}, function (frame) {
       console.log("Trainer 알림용 WS 연결 성공:", frame);
-      // 최상위 container에 저장된 trainer의 userId 사용 (예: .container의 data-user-name에 trainer의 userId가 저장되어 있다고 가정)
+      // 최상위 .container에 저장된 trainer의 userId 사용
       var trainerUserId = parseInt($(".container").data("user-name"));
       console.log("트레이너 userId:", trainerUserId);
       notificationClient.subscribe(`/queue/notifications/${trainerUserId}`, function (response) {
         try {
-          // 서버가 JSON 형태로 { userId1: unreadCount1, userId2: unreadCount2, ... } 전송
           var unreadMap = JSON.parse(response.body);
           console.log("알림으로 받은 unreadMap:", unreadMap);
-          // 각 회원 목록(li) 업데이트: 만약 현재 선택된 대화(targetUser)가 있다면 그 유저는 업데이트하지 않음
           $(".memberList li").each(function () {
             var userId = $(this).find(".select-btn").data("user-id");
-            // 현재 대화중인 유저와 다르면 unread count를 업데이트
+            // 현재 대화중인 유저와 다르면 unread count 업데이트
             if (!window.targetUser || window.targetUser.userId != userId) {
               var unreadCount = unreadMap[userId] || 0;
               if (unreadCount > 0) {
@@ -37,14 +37,15 @@ $(document).ready(function () {
     });
   }
 
-  // 페이지 로드시 트레이너 알림용 WS 연결 실행
+  // 페이지 로드시 트레이너 알림용 WS 연결
   connectTrainerNotificationWebSocket();
 
 
-  // "수락" 버튼 클릭 시
+  //------------------------------------------------------
+  // (2) 신청 승인/거절 처리
+  //------------------------------------------------------
   $(".approve-btn").click(function () {
     let applicationId = $(this).data("id");
-    console.log(applicationId);
     $.ajax({
       url: `/trainer/approve`,
       type: "POST",
@@ -61,7 +62,6 @@ $(document).ready(function () {
     });
   });
 
-  // "거절" 버튼 클릭 시
   $(".reject-btn").click(function () {
     let applicationId = $(this).data("id");
     $.ajax({
@@ -80,16 +80,18 @@ $(document).ready(function () {
     });
   });
 
-  // 관리 회원 목록 클릭 시
+
+  //------------------------------------------------------
+  // (3) 회원 목록 클릭 -> 대화 로드
+  //------------------------------------------------------
   $(".select-btn").click(function () {
     let applicationId = $(this).data("id");
     let userId = $(this).data("user-id");
 
     updateUnreadCountToZero(userId);
-
     console.log("선택한 applicationId:", applicationId);
 
-    // 회원 정보 조회 (선택된 신청서의 정보를 출력)
+    // (A) 회원 정보 조회
     $.ajax({
       url: `/trainer/select?applicationId=${applicationId}`,
       type: "GET",
@@ -103,20 +105,23 @@ $(document).ready(function () {
         console.error("Error:", xhr);
       }
     });
-    window.targetApplicationId = applicationId;
-    console.log("선택한 회원의 applicationId:", applicationId);
 
-    // AJAX를 통해 채팅 프래그먼트 불러오기, 파라미터로 applicationId 전달
+    window.targetApplicationId = applicationId;
+
+    // (B) 채팅 프래그먼트 로드
     $.ajax({
       url: `/chat?applicationId=${encodeURIComponent(applicationId)}`,
       type: "GET",
       success: function (htmlFragment) {
         $("#chatFragmentContainer").html(htmlFragment);
         $("#chatFragmentContainer").show();
+
+        // chat.html의 initChat() 호출
         if (typeof initChat === "function") {
           initChat();
         }
-        // hidden div #chatData에서 currentUser와 targetUser 정보를 읽어서 저장
+
+        // hidden div #chatData에서 currentUser, targetUser 읽어 전역에 저장
         var chatData = $("#chatData");
         if(chatData.length) {
           window.currentUser = {
@@ -127,10 +132,11 @@ $(document).ready(function () {
             userId: parseInt(chatData.data("target-user-id")),
             userName: chatData.data("target-user-name")
           };
-          console.log("로그인한 사용자:", window.currentUser);
+          console.log("로그인 사용자:", window.currentUser);
           console.log("대상 회원:", window.targetUser);
         }
-        // 채팅용 웹소캣 연결: 기존 연결이 있으면 해제 후 재연결
+
+        // 채팅용 웹소캣 연결
         if (!window.stompClient || !window.stompClient.connected) {
           connectChat();
         } else {
@@ -148,32 +154,35 @@ $(document).ready(function () {
   });
 
 
-  // 동적 요소인 #sendBtn 이벤트 위임
+  //------------------------------------------------------
+  // (4) sendBtn 클릭 -> 메시지 전송
+  //------------------------------------------------------
   $(document).on("click", "#sendBtn", function () {
     window.sendChatMessage();
   });
 
-  // 메시지 전송 함수
   window.sendChatMessage = function () {
     const msgInput = $("#newMessage");
     const message = msgInput.val().trim();
     if (!message || !window.targetUser || !window.targetUser.userId) return;
+
     const chatMessage = {
       senderId: window.currentUser.userId,
       receiverId: window.targetUser.userId,
       content: message
     };
     if (window.stompClient && window.stompClient.connected) {
-      window.stompClient.send("/app/chat.sendMessage", {},
-          JSON.stringify(chatMessage));
-      // updateChatWindow(chatMessage); // 서버 응답을 통해 UI 업데이트되도록 함
+      window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
     } else {
-      console.error("WS 연결이 되어있지 않습니다.");
+      console.error("WS 연결이 안 되어있습니다.");
     }
     msgInput.val("");
   };
 
-  // 채팅용 WebSocket 연결 함수 (대화창 열릴 때 호출)
+
+  //------------------------------------------------------
+  // (5) 채팅용 WebSocket 연결 함수
+  //------------------------------------------------------
   function connectChat() {
     const socket = new SockJS('/ws');
     window.stompClient = Stomp.over(socket);
@@ -182,7 +191,7 @@ $(document).ready(function () {
       $("#sendBtn").prop("disabled", false);
       window.stompClient.subscribe(`/queue/chat/${window.currentUser.userId}`, function (response) {
         const chat = JSON.parse(response.body);
-        // 만약 현재 대화중인 대상과의 메시지라면 채팅창에 표시하고, unread 배지는 초기화
+        // 현재 열려있는 대화인지
         if (
             (chat.senderId === window.targetUser.userId && chat.receiverId === window.currentUser.userId) ||
             (chat.senderId === window.currentUser.userId && chat.receiverId === window.targetUser.userId)
@@ -190,7 +199,7 @@ $(document).ready(function () {
           updateChatWindow(chat);
           console.log("채팅 메시지 수신:", chat);
         } else {
-          // 현재 대화중이 아닌 경우에만 unread 배지를 업데이트
+          // 현재 대화중이 아니면 unread 배지 증가
           updateUnreadCount(chat.senderId);
         }
       });
@@ -199,23 +208,33 @@ $(document).ready(function () {
     });
   }
 
-  // 채팅창 UI 업데이트 함수
+
+  //------------------------------------------------------
+  // (6) 채팅창 UI 업데이트 함수 (텍스트 메시지 기준)
+  //------------------------------------------------------
   function updateChatWindow(chat) {
     const conversationArea = $("#conversationArea");
     const messageDiv = $("<div>").addClass("message");
-    let senderName = (chat.senderId === window.currentUser.userId) ? window.currentUser.userName : window.targetUser.userName;
+    let senderName = (chat.senderId === window.currentUser.userId)
+        ? window.currentUser.userName
+        : window.targetUser.userName;
+
+    // 파일/텍스트 여부(간단 처리: text만)
+    // 상세 파일처리는 chat.html의 updateChatWindow() or shared code에서
     messageDiv.html(`<strong>${senderName}</strong>: <span>${chat.content}</span>`);
+
     conversationArea.append(messageDiv);
     conversationArea.scrollTop(conversationArea.prop("scrollHeight"));
   }
 
-  // unread 메시지 업데이트 함수 (대화창이 닫힌 상태에서)
+
+  //------------------------------------------------------
+  // (7) 미읽음 배지 업데이트
+  //------------------------------------------------------
   function updateUnreadCount(senderId) {
-    // 만약 현재 열려 있는 대화 대상이 senderId와 동일하면 업데이트하지 않음
     if (window.targetUser && senderId === window.targetUser.userId) {
       return;
     }
-    // 해당 회원의 unread 배지를 찾아서 증가
     const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
     const unreadSpan = $(sel);
     if (unreadSpan.length) {
@@ -224,17 +243,70 @@ $(document).ready(function () {
     }
   }
 
-  // 대화창이 열릴 때 선택한 회원의 unread 배지 초기화 함수
   function updateUnreadCountToZero(userId) {
     const sel = `.select-btn[data-user-id="${userId}"] .unread-count`;
     $(sel).text("").hide();
   }
-});
 
-function showUserInfo(response) {
-  const $userInfoDiv = $("#userInfo");
-  console.log(response);
-  $userInfoDiv.html(`
-    <h3 class="text-2xl font-semibold text-left px-2 py-1 text-black"> ${response}</h3>
-  `);
-}
+
+  //------------------------------------------------------
+  // (8) 회원 정보 표시
+  //------------------------------------------------------
+  window.showUserInfo = function(response) {
+    const $userInfoDiv = $("#userInfo");
+    console.log(response);
+    $userInfoDiv.html(`
+      <h3 class="text-2xl font-semibold text-left px-2 py-1 text-black"> ${response}</h3>
+    `);
+  };
+
+
+  //------------------------------------------------------
+  // (9) 파일 업로드 (fa-circle-plus 아이콘 + fileInput)
+  //------------------------------------------------------
+  // 아이콘 클릭 => 숨겨진 파일 input 열기
+  $(document).on("click", "#fileSelectIcon", function() {
+    $("#fileInput").click();
+  });
+
+  // 파일 선택(change)이 일어났을 때 업로드
+  $(document).on("change", "#fileInput", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    uploadChatFile(file);
+    // 선택 후 input.value 비워 다시 선택 가능하도록
+    e.target.value = "";
+  });
+
+  function uploadChatFile(file) {
+    let formData = new FormData();
+    formData.append("uploadFile", file);
+
+    fetch("/chat/uploadFile", {
+      method: "POST",
+      body: formData
+    })
+    .then(resp => resp.json())
+    .then(result => {
+      // 파일 업로드 성공 => STOMP로 파일 메시지 전송
+      const chatMessage = {
+        senderId: window.currentUser.userId,
+        receiverId: window.targetUser.userId,
+        content: "",
+        originalFileName: result.originalFileName,
+        savedFileName: result.savedFileName,
+        fileType: result.fileType,
+        fileUrl: result.fileUrl
+      };
+      if (window.stompClient && window.stompClient.connected) {
+        window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+      } else {
+        console.error("WS 연결이 안 되어있습니다.");
+      }
+    })
+    .catch(err => {
+      console.error("파일 업로드 실패:", err);
+    });
+  }
+
+});

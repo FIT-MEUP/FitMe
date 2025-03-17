@@ -1,6 +1,5 @@
 package fitmeup.controller;
 
-import fitmeup.dto.ChatMessage;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -31,38 +30,47 @@ public class DownloadController {
 
   @GetMapping("/download/{savedFileName}")
   public ResponseEntity<Resource> downloadFile(@PathVariable String savedFileName) throws IOException {
-    // 파일 다운로드를 위해 savedFileName에 해당하는 메시지를 조회
-    Optional<ChatMessage> optional = chatService.findBySavedFileName(savedFileName);
+    // 1) DB 조회
+    Optional<ChatDTO> optional = chatService.findBySavedFileName(savedFileName);
     if (optional.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
-    ChatMessage chatMessage = optional.get();
-    // ChatMessage에는 원본 파일 이름 정보가 없으므로, 저장된 파일명(savedFileName)을 기본값으로 사용
-    String originalName = savedFileName;
+    ChatDTO chatDTO = optional.get();
 
-    // 실제 파일 경로 설정
+    // 2) originalFileName 존재 여부
+    String originalName = (chatDTO.getOriginalFileName() != null && !chatDTO.getOriginalFileName().isEmpty())
+        ? chatDTO.getOriginalFileName()
+        : savedFileName;
+
+    // 3) 파일 경로
     Path filePath = Paths.get(uploadDir, savedFileName);
     if (!Files.exists(filePath)) {
       return ResponseEntity.notFound().build();
     }
 
-    // MIME 타입 추론, 기본값은 application/octet-stream
+    // 4) MIME 타입
     String contentType = Files.probeContentType(filePath);
     if (contentType == null) {
       contentType = "application/octet-stream";
     }
 
-    // Resource 객체 생성
+    // 5) Resource 생성
     Resource resource = new InputStreamResource(Files.newInputStream(filePath));
 
-    // Content-Disposition 헤더 설정
-    String encodedFilename = URLEncoder.encode(originalName, StandardCharsets.UTF_8)
-        .replace("+", "%20");
+    // 6) 파일명 인코딩 (공백이 '+'로 치환되므로 replace 처리)
+    String encodedFilename = URLEncoder.encode(originalName, StandardCharsets.UTF_8).replace("+", "%20");
+
+    // 7) Content-Disposition 헤더 설정
+    //    filename=... 과 filename*=... 을 함께 쓰면,
+    //    최신 브라우저에서 UTF-8 파일명을 잘 처리하고, 구형 브라우저는 filename= 를 사용합니다.
+    String contentDispositionValue =
+        "attachment; " +
+            "filename=\"" + encodedFilename + "\"; " +
+            "filename*=UTF-8''" + encodedFilename;
 
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(contentType))
-        .header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + encodedFilename + "\"")
+        .header(HttpHeaders.CONTENT_DISPOSITION, contentDispositionValue)
         .body(resource);
   }
 }
