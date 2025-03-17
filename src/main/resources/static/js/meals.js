@@ -1,8 +1,59 @@
+let localStoredDate = localStorage.getItem("selectedDate");
 document.addEventListener("DOMContentLoaded", function () {
+
+    /** ✅ 트레이너가 회원 선택 시 userId 변경 */
+    let role = document.getElementById("role").value;
+    let userId = document.getElementById("loggedInUserId").value;
+    let selectedUserId = userId;  // 기본값: 로그인한 사용자 ID
+    let addMealButton = document.getElementById("addMealButton");
+
+
+
+    if (role === "Trainer") {
+        let trainerMemberSelect = document.getElementById("trainerMemberSelect");
+
+        if (trainerMemberSelect) {
+            trainerMemberSelect.value = selectedUserId; // ✅ URL에서 가져온 userId를 드롭다운에 반영
+
+            trainerMemberSelect.addEventListener("change", function () {
+                selectedUserId = trainerMemberSelect.value;
+                let mealDate = new URLSearchParams(window.location.search).get("mealDate") || new Date().toISOString().split("T")[0];
+
+                // ✅ 선택한 userId와 날짜를 유지한 상태로 페이지 이동
+                window.location.href = `/meals?userId=${selectedUserId}&mealDate=${mealDate}`;
+            });
+        }
+    }
+
+    /** ✅ 트레이너는 추가, 수정, 삭제 버튼 숨김 */
+    if (role === "Trainer") {
+        if (addMealButton) {
+            addMealButton.style.display = "none"; // ✅ `null` 체크 후 실행
+        } else {
+            console.warn("❗[meals.js] #addMealButton 요소가 존재하지 않습니다.");
+        }
+
+        document.querySelectorAll(".edit-meal-btn, form[action='/meals/delete']").forEach(button => {
+            button.style.display = "none";
+        });
+    }
+
     /** ✅ 캘린더 설정 */
     let calendarEl = document.getElementById("calendar");
+
+    if (!calendarEl) {
+        console.warn("❗[meals.js] #calendar 요소를 찾을 수 없습니다. 캘린더를 생성할 수 없음.");
+        return; //  `calendarEl`이 없으면 실행 중지
+    }
+
     let addButton = document.querySelector("#addMealButton");
-    let selectedDate = new URLSearchParams(window.location.search).get("mealDate");
+    let urlDate = new URLSearchParams(window.location.search).get("mealDate");
+    let selectedDate = urlDate || localStoredDate || new Date().toISOString().split("T")[0];
+
+    if (!urlDate) {
+        localStorage.setItem("selectedDate", selectedDate);
+    }
+
 
     if (!selectedDate) {
         selectedDate = new Date().toISOString().split("T")[0]; // 기본값: 오늘 날짜
@@ -15,10 +66,9 @@ document.addEventListener("DOMContentLoaded", function () {
         aspectRatio: 1.0,
         height: '700px',
         headerToolbar: { left: "prev,next", center: "title", right: "today" },
+
+        /** 날짜 클릭 시 동작 */
         dateClick: function (info) {
-            document.querySelectorAll(".fc-daygrid-day").forEach(day => {
-                day.classList.remove("selected-date");
-            });
 
             let clickedCell = document.querySelector(`[data-date="${info.dateStr}"]`);
             if (clickedCell) clickedCell.classList.add("selected-date");
@@ -26,19 +76,87 @@ document.addEventListener("DOMContentLoaded", function () {
             selectedDate = info.dateStr;
             document.getElementById("selectedMealDate").value = selectedDate;
 
-            window.location.href = `/meals?mealDate=${selectedDate}`;
+
+            // ✅ localStorage에 선택한 날짜 저장 후 이동
+            localStorage.setItem("selectedDate", info.dateStr);
+            window.location.href = `/meals?userId=${selectedUserId}&mealDate=${info.dateStr}`;
+
+        },
+
+        /** ✅ 날짜 셀이 그려질 때마다 selected-date 유지 */
+        dayCellDidMount: function (arg) {
+            if (arg.dateStr === selectedDate) {
+                arg.el.classList.add('selected-date');
+            }
         }
+
     });
 
-    calendar.render();
 
-    /**  캘린더에서 이미 선택된 날짜 강조 */
-    setTimeout(() => {
-        let selectedCell = document.querySelector(`[data-date="${selectedDate}"]`);
+    calendar.render();
+    highlightSelectedDate();
+    // 첫 진입 시 강제로 fetchMealDates 호출
+    let view = calendar.view;
+    fetchMealDates(view.currentStart.getFullYear(), view.currentStart.getMonth() + 1);
+
+    function highlightSelectedDate() {
+        document.querySelectorAll(".fc-daygrid-day").forEach(day => {
+            day.classList.remove("selected-date");
+        });
+
+        let selectedCell = document.querySelector(`.fc-daygrid-day[data-date="${selectedDate}"]`);
         if (selectedCell) {
             selectedCell.classList.add("selected-date");
         }
-    }, 300);
+    }
+
+    calendar.on('datesSet', function (info) {
+        console.log("🔥 datesSet 호출됨!", info.start);
+
+        let year = info.start.getFullYear();
+        let month = info.start.getMonth() + 1;
+        highlightSelectedDate();
+        requestAnimationFrame(() => {
+            fetchMealDates(year, month);
+        });
+    });
+
+
+    /** 🔴 새로 추가: 식단 기록 있는 날짜에 dot 표시 */
+    function fetchMealDates(year, month) {
+        document.querySelectorAll('.fc-event-dot').forEach(dot => dot.remove());
+
+        fetch(`/meals/highlight-dates?userId=${selectedUserId}&year=${year}&month=${month}`)
+            .then(response => response.json())
+            .then(dates => {
+                console.log("📅 dot 표시용 날짜 목록:", dates); // 여기서 찍어보기!
+
+                dates.forEach(dateStr => {
+                    let cell = document.querySelector(`[data-date="${dateStr}"]`);
+                    if (cell && !cell.querySelector('.fc-event-dot')) {
+                        // ✅ fc-daygrid-day-frame 안에 dot 삽입
+                        let innerFrame = cell.querySelector('.fc-daygrid-day-frame') || cell;
+                        let dot = document.createElement("div");
+                        dot.className = "fc-event-dot";
+                        innerFrame.appendChild(dot);
+                    }
+                });
+
+
+
+            });
+    }
+
+    /** ✅ 식단 이미지 클릭 시 새 창으로 크게 보기 */
+    document.querySelectorAll('.card img').forEach(img => {
+        img.style.cursor = "pointer"; // 커서 스타일 변경
+        img.addEventListener("click", function () {
+            let imageUrl = img.getAttribute("src");
+            if (imageUrl) {
+                window.open(imageUrl, "_blank", "width=800,height=600");
+            }
+        });
+    });
 
 
     /** ✅ 식단 추가 버튼 활성화/비활성화 */
@@ -64,8 +182,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('form[action="/meals/delete"]').forEach(form => {
         form.addEventListener("submit", function (event) {
             event.preventDefault();
+
             let formData = new FormData(form);
             let mealDate = formData.get("mealDate");
+
+            //  트레이너는 삭제 불가
+            if (role === "Trainer") {
+                alert("트레이너는 식단을 삭제할 수 없습니다.");
+                return;
+            }
 
             fetch(form.action, { method: form.method, body: formData })
                 .then(() => {
@@ -73,12 +198,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         });
     });
-
-
-
-
-
-
 
     console.log("✅ DOM이 로드되었습니다!");
 

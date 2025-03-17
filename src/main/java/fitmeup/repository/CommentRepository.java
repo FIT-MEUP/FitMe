@@ -28,7 +28,11 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
         @Param("startOfDay") LocalDateTime startOfDay,
         @Param("endOfDay") LocalDateTime endOfDay
     );
-
+    
+    @Query("SELECT c FROM CommentEntity c " +
+    	       "WHERE c.workout.workoutId = :workoutId " +
+    	       "AND c.workout.workoutDate = :date")
+    	List<CommentEntity> findByWorkoutAndDate(@Param("workoutId") Long workoutId, @Param("date") LocalDate date);
 
 
 

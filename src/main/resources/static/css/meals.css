@@ -1,69 +1,271 @@
- .selected-date {
-     background-color: #ffeb99 !important;
- }
+/* 기존 스타일 유지 */
 
- .fc-header-toolbar {
-     display: flex;
-     justify-content: center;
-     /* 🔹 버튼과 타이틀 간격 조정 */
-     align-items: center;
-     padding-bottom: 5px;
- }
+.fc-daygrid-day.selected-date .fc-daygrid-day-frame {
+    background-color: #ffeb99 !important;
+    border-radius: 5px;
+    z-index: 3;
+    position: relative;
+}
 
- .fc-toolbar-title {
-     font-size: 0.8rem;
-     /* 🔹 제목 크기 조정 */
-     font-weight: center;
- }
+.fc-daygrid-day-bg {
+    display: none !important;
+}
 
- .fc-button {
-     padding: 2px 6px;
-     /* 🔹 버튼 크기 조정 */
-     font-size: 0.75rem;
-     display: flex;
-     align-items: center;
-     justify-content: center;
- }
+.fc-daygrid-day {
+    transition: background-color 0.2s ease-in-out;
+}
 
- /* 🔹 캘린더 크기 조정 */
- #calendar {
-     max-height: 550px;
-     /* 🔹 캘린더 너비 줄이기 */
-     margin: 0 auto;
-     /* 🔹 중앙 정렬 */
- }
+.fc-daygrid-day:hover {
+    background-color: #f0f0f0;
+}
 
- .comment-section {
-     margin-top: 20px;
-     padding: 15px;
-     background: #f9f9f9;
-     border-radius: 8px;
- }
+#calendar {
+    max-height: 550px;
+    margin: 0 auto;
+}
 
- #mealCommentList {
-     list-style: none;
-     padding: 0;
- }
+.comment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
 
- #mealCommentList li {
-     padding: 10px;
-     border-bottom: 1px solid #ddd;
- }
+#mealCommentList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
 
- #mealCommentList li:last-child {
-     border-bottom: none;
- }
+.comment-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    word-break: break-word;
+}
 
- .selected-date {
-     background-color: #ffeb99 !important;
-     /* 🔥 선택한 날짜의 배경색 */
-     border-radius: 5px;
- }
+.comment-nickname {
+    font-weight: bold;
+    color: #198754;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
 
- .fc-daygrid-day {
-     transition: background-color 0.2s ease-in-out;
- }
+.comment-text {
+    color: #333;
+    font-size: 0.88rem;
+    white-space: normal;
+}
 
- .fc-daygrid-day:hover {
-     background-color: #f0f0f0;
- }
+.comment-delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.comment-delete-btn:hover {
+    text-decoration: underline;
+}
+
+#mealCommentForm {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#mealCommentInput {
+    resize: none;
+    flex: 1;
+    min-height: 40px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+}
+
+#mealCommentForm button {
+    background: #198754;
+    border: none;
+    font-size: 0.9rem;
+    padding: 8px 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+#mealCommentForm button:hover {
+    background: #146c43;
+}
+
+/* ✅ 트레이너 드롭다운 커스텀 */
+.trainer-dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* 라벨과 드롭다운 사이 간격 */
+    margin-top: 12px;
+    margin-right: 16px;
+    /* 오른쪽에 너무 붙지 않도록 여백 */
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    /* 줄바꿈 방지 */
+}
+
+.trainer-dropdown-container label {
+    font-weight: 600;
+    font-size: 1.0rem;
+    margin: 0;
+    margin-right: 6px;
+    white-space: nowrap;
+}
+
+#trainerMemberSelect {
+    padding: 8px 14px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    background-color: #fff;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    min-width: 160px;
+}
+
+#trainerMemberSelect:focus {
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.3);
+    outline: none;
+}
+
+.d-flex.justify-content-end {
+    margin-bottom: 12px;
+}
+
+.fc-event-dot {
+    width: 7px;
+    height: 7px;
+    background: radial-gradient(circle, #198754 30%, #28a745 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(25, 135, 84, 0.6);
+    margin: 2px auto;
+}
+
+.fc-header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.fc-toolbar-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.fc .fc-button {
+    background: #198754;
+    color: white;
+    border: none;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fc .fc-button:hover {
+    background: #146c43;
+}
+
+.fc .fc-button:disabled {
+    background: #ccc;
+    color: #666;
+}
+
+.fc .fc-button.fc-prev-button,
+.fc .fc-button.fc-next-button {
+    padding: 4px 6px;
+}
+
+.fc .fc-button.fc-today-button {
+    background: #ffc107;
+    color: #333;
+}
+
+.fc .fc-button.fc-today-button:hover {
+    background: #e0a800;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card img:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 16px;
+}
+
+.card img {
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.card-text span {
+    font-weight: bold;
+    color: #198754;
+}
+
+.card ul {
+    padding-left: 18px;
+    margin-bottom: 8px;
+}
+
+.card ul li {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.row>.col-md-4 {
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

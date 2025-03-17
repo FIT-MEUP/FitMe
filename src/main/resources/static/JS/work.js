@@ -1,5 +1,7 @@
 let loggedInUserId = document.getElementById("loggedInUserId").value;
+
 let isTrainer = document.getElementById("isTrainer").value === "true"; // Trainer 여부 (Boolean)
+let approvedUserIds = [];
 
 let urlParams = new URLSearchParams(window.location.search);
 let selectedDate = urlParams.get("workoutDate") || new Date().toISOString().split("T")[0];
@@ -7,7 +9,25 @@ let selectedDate = urlParams.get("workoutDate") || new Date().toISOString().spli
 let selectedWorkoutId = null; // 수정할 workoutId 저장 (초기값: null)
 let videoMap = {}; //  전역 변수로 videoMap 초기화
 
+let selectedUserId = urlParams.get("userId") || loggedInUserId;
+
+let calendar;
+
 document.addEventListener("DOMContentLoaded", function () {
+
+    highlightSelectedDate(selectedDate);
+
+    // 검색 버튼 이벤트 등록 추가!
+    const searchBtn = document.getElementById("searchBtn");
+    if (searchBtn) {
+        searchBtn.addEventListener("click", function () {
+            const query = document.getElementById("search").value;
+            searchWorkout(query);
+            document.getElementById("workoutTable").classList.add("hidden");
+            document.getElementById("searchResultsTable").classList.remove("hidden");
+        });
+    }
+
 
     let today = new Date().toISOString().split("T")[0]; // 오늘 날짜 (YYYY-MM-DD)
     let mainPageLink = document.getElementById("mainPageLink");
@@ -18,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let calendarEl = document.getElementById("calendar");
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         selectable: true,
         aspectRatio: 1.2,
@@ -31,19 +51,71 @@ document.addEventListener("DOMContentLoaded", function () {
         dateClick: function (info) {
             selectedDate = info.dateStr;
             let newUrl = window.location.pathname + "?workoutDate=" + selectedDate;
+
+            // ✅ 특정 회원 선택 시 userId 유지
+            if (selectedUserId) {
+                newUrl += `&userId=${selectedUserId}`;
+            }
+
             window.history.pushState({ path: newUrl }, "", newUrl);
             loadWorkoutData(selectedDate);
+            highlightSelectedDate(info.dateStr);
         }
     });
+
+
     calendar.render();
 
     loadWorkoutData(selectedDate);
+
+    // ✅ 캘린더 날짜 변경 시 dot 업데이트
+    calendar.on('datesSet', function (info) {
+        const year = info.start.getFullYear();
+        const month = info.start.getMonth() + 1; // JS는 0부터 시작하므로 +1
+        fetchWorkoutDates(year, month);
+    });
 
     // 댓글
     let selectedDateInput = document.getElementById("selectedDate");
     selectedDateInput.value = selectedDate;
 
 });
+
+// 캘린더 날짜 클릭 시 선택된 날짜에만 highlight 적용
+function highlightSelectedDate(dateStr) {
+    document.querySelectorAll(".fc-daygrid-day").forEach(day => {
+        day.classList.remove("selected-date"); // 모든 날짜에서 제거
+        if (day.getAttribute("data-date") === dateStr) {
+            day.classList.add("selected-date"); // 선택한 날짜만 추가
+        }
+    });
+}
+// ✅ 운동 기록 있는 날짜 조회 및 캘린더에 dot 추가
+function fetchWorkoutDates(year, month) {
+    $.ajax({
+        url: `/workout/highlight-dates?userId=${selectedUserId}&year=${year}&month=${month}`,
+        type: "GET",
+        success: function (dateList) {
+            const dots = document.querySelectorAll(".fc-daygrid-day .workout-dot");
+            dots.forEach(dot => dot.remove());
+
+            document.querySelectorAll(".fc-daygrid-day").forEach(cell => {
+                const date = cell.getAttribute("data-date");
+                if (dateList.includes(date)) {
+                    const dot = document.createElement("div");
+                    dot.className = "workout-dot";
+                    const target = cell.querySelector(".fc-daygrid-day-top");
+                    if (target) {
+                        target.appendChild(dot);
+                    }
+                }
+            });
+        },
+        error: function () {
+            console.error("❌ 운동 기록 날짜 불러오기 실패!");
+        }
+    });
+}
 
 
 //  전역에서 handleSearchClick 함수 정의 (window.onload 전에!)
@@ -59,56 +131,65 @@ function handleSearchClick() {
     document.getElementById("searchResultsTable").classList.remove("hidden");
 }
 
-// window.onload에서 검색 버튼 이벤트 연결
-window.onload = function () {
 
-    setTimeout(() => {
-        let searchBtn = document.getElementById("searchBtn");
+// 트레이너가 회원 선택 시, userId를 포함하여 페이지 갱신
+// 트레이너가 특정 회원을 선택할 때, URL을 변경하여 유지
+function handleTrainerMemberChange(userId) {
+    console.log("🔍 선택된 회원 ID: ", userId);
+    selectedUserId = userId; // 🔥 전역 변수에 저장
 
-        if (searchBtn) {
-            searchBtn.removeEventListener("click", handleSearchClick); // 중복 방지
-            searchBtn.addEventListener("click", handleSearchClick);
-        } else {
+    let currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('userId', userId);
+    window.history.pushState({}, "", currentUrl.toString()); // ✅ URL은 변경하지만 페이지 이동 없음
 
+    loadWorkoutData(selectedDate); // ✅ 특정 회원 선택 후 운동 기록 다시 로드
+}
+
+
+
+// ✅ approvedUserIds를 최신 상태로 업데이트하는 함수 추가
+function updateApprovedUserIds() {
+    if (isTrainer) {
+        let trainerMemberSelect = document.getElementById("trainerMemberSelect");
+        if (trainerMemberSelect) {
+            approvedUserIds = Array.from(trainerMemberSelect.options)
+                .filter(option => option.value)
+                .map(option => Number(option.value)); // 모든 회원 ID를 저장
         }
-    }, 500);
-};
+    }
+}
 
-
-
-//운동기록 불러오기 + 댓글 불러오기 추가 
+// ✅ 운동 기록 불러올 때 approvedUserIds도 함께 업데이트
 function loadWorkoutData(date) {
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || selectedUserId || loggedInUserId;
+
+    if (isTrainer) {
+        userId = selectedUserId || loggedInUserId; // 트레이너는 회원 선택 가능
+        updateApprovedUserIds(); // 🔥 최신 승인 회원 목록 업데이트
+    } else {
+        userId = loggedInUserId; // 일반 사용자는 본인 ID만 사용
+    }
+
+    console.log("🔍 조회할 userId:", userId);
+    console.log("🔍 approvedUserIds 업데이트:", approvedUserIds); // ✅ approvedUserIds 최신 값 확인
+
+    document.getElementById("workoutTable").classList.remove("hidden");
+    document.getElementById("searchResultsTable").classList.add("hidden");
+
     $.ajax({
-        url: `/workout/data?workoutDate=${date}`,
+        url: `/workout/data?workoutDate=${date}&userId=${userId}`,
         type: "GET",
         success: function (response) {
-            document.getElementById("workoutTable").classList.remove("hidden");
-            document.getElementById("searchResultsTable").classList.add("hidden");
-
             $.ajax({
-                url: `/workout/videoMap?workoutDate=${date}`,
+                url: `/workout/videoMap?workoutDate=${date}&userId=${userId}`,
                 type: "GET",
                 success: function (videoResponse) {
+                    console.log("🎥 불러온 영상 데이터:", videoResponse);
                     updateWorkoutTable(response, videoResponse || {});
-
-                    // ✅ 운동 기록이 있을 경우 댓글 섹션 표시
-                    if (response.length > 0) {
-                        document.getElementById("commentSection").style.display = "block";
-                        loadComments(date);
-                    } else {
-                        document.getElementById("commentSection").style.display = "none";
-                    }
                 },
                 error: function () {
                     updateWorkoutTable(response, {});
-
-                    // ✅ 운동 기록이 없으면 댓글 섹션 숨김
-                    if (response.length > 0) {
-                        document.getElementById("commentSection").style.display = "block";
-                        loadComments(date);
-                    } else {
-                        document.getElementById("commentSection").style.display = "none";
-                    }
                 }
             });
         },
@@ -119,15 +200,45 @@ function loadWorkoutData(date) {
 }
 
 
-
+// ✅ updateWorkoutTable 수정 (approvedUserIds 최신 값 사용)
 function updateWorkoutTable(workouts, videoMap) {
     let table = document.getElementById("workoutTable").getElementsByTagName("tbody")[0];
     table.innerHTML = workouts.length === 0 ? `<tr><td colspan="7">운동 기록이 없습니다.</td></tr>` : "";
 
-    workouts.forEach(workout => {
-        let videoFile = videoMap[workout.workoutId] || null;
+    console.log("✅ 불러온 운동 기록:", workouts);
+    console.log("✅ updateWorkoutTable 호출됨. 운동 기록 개수:", workouts.length);
 
-        let newRow = table.insertRow();
+    const workoutTable = document.getElementById("workoutTable").getElementsByTagName("tbody")[0];
+    workoutTable.innerHTML = "";  // 기존 내용 제거
+
+    console.log("📌 받은 workout 데이터:", workouts);
+    console.log("📌 받은 videoMap 데이터:", videoMap);
+    console.log("🔍 최신 approvedUserIds:", approvedUserIds); // ✅ 최신 approvedUserIds 확인
+
+    let userDropdown = document.getElementById("trainerMemberSelect");
+    let selectedUserId = userDropdown && userDropdown.value ? Number(userDropdown.value) : Number(document.getElementById("loggedInUserId").value);
+    console.log("🔍 selectedUserId:", selectedUserId);
+
+    let firstWorkoutId = null; // 🟢 여기로 이동
+
+    workouts.forEach((workout, index) => {
+        let workoutUserId = Number(workout.userId);
+
+        // ✅ 요청한 userId와 데이터 userId가 일치하는지 확인
+        if (workoutUserId !== selectedUserId) {
+            console.warn(`⚠️ userId 불일치: 요청한 userId=${selectedUserId}, 응답 데이터 userId=${workoutUserId}`);
+            return;
+        }
+
+        let videoFile = videoMap[workout.workoutId] || null;
+        let isOwner = workoutUserId === Number(document.getElementById("loggedInUserId").value);
+        let isTrainerOfThisUser = isTrainer && approvedUserIds.includes(workoutUserId);
+
+        console.log(`✅ isTrainerOfThisUser 체크: workout.userId=${workoutUserId}, 포함 여부=${isTrainerOfThisUser}`);
+
+        let newRow = workoutTable.insertRow();
+        newRow.setAttribute("data-workout-id", workout.workoutId);
+
         newRow.innerHTML = `
             <td>${workout.part}</td>
             <td>${workout.exercise}</td>
@@ -141,12 +252,35 @@ function updateWorkoutTable(workouts, videoMap) {
             }
             </td>
             <td>
-                <button class="btn btn-sm btn-warning" onclick="editWorkout(${workout.workoutId})">수정</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteWorkout(${workout.workoutId})">삭제</button>
+                ${isOwner || isTrainerOfThisUser ? `
+                    <button class="btn btn-sm btn-warning" onclick="editWorkout(${workout.workoutId})">수정</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteWorkout(${workout.workoutId})">삭제</button>
+                ` : ''}
             </td>
         `;
+
+        // 첫 번째 workoutId만 저장
+        if (firstWorkoutId === null) {
+            firstWorkoutId = workout.workoutId;
+        }
+
+        // ✅ 수정, 삭제 버튼 클릭 시 요청되는 userId 로그 출력
+        newRow.querySelectorAll("button").forEach(button => {
+            button.addEventListener("click", function () {
+                console.log(`🔍 버튼 클릭됨: ${this.innerText}, 요청 userId=${selectedUserId}, workoutUserId=${workoutUserId}`);
+            });
+        });
     });
+
+    // 운동 기록이 있을 경우, 첫 번째 운동에 대한 댓글 로딩
+    if (firstWorkoutId) {
+        selectedWorkoutId = firstWorkoutId;
+        loadWorkoutComments(firstWorkoutId);
+    } else {
+        document.getElementById("commentSection").style.display = "none";
+    }
 }
+
 
 
 
@@ -159,16 +293,21 @@ function editWorkout(id) {
         type: "GET",
         success: function (workout) {
             if (workout) {
+                // 폼에 값 세팅 (기존 유지)
                 $("#part").val(workout.part);
                 $("#exercise").val(workout.exercise);
                 $("#sets").val(workout.sets);
                 $("#reps").val(workout.reps);
                 $("#weight").val(workout.weight);
 
+                // 버튼 상태 전환
                 $("#updateWorkoutBtn").removeClass("hidden");
                 $("#addWorkoutBtn").addClass("hidden");
 
-                // ✅ 수정 시 버튼 상태 업데이트
+                // 🟢 모든 수정/삭제 버튼 숨김
+                $("#workoutTable tbody tr td:last-child button").addClass("hidden");
+
+                // 기존 동작 유지
                 loadWorkoutVideo(id);
             } else {
                 alert("🚨 운동 기록을 찾을 수 없습니다.");
@@ -221,21 +360,28 @@ function loadWorkoutVideo(workoutId) {
 function deleteWorkoutVideo(workoutId) {
     if (!confirm("정말 삭제하시겠습니까?")) return;
 
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || loggedInUserId; // 트레이너가 특정 회원을 선택한 경우 포함
+
     $.ajax({
         url: `/workout/video/${workoutId}`,
         type: "DELETE",
+        contentType: "application/json",
+        data: JSON.stringify({ userId: userId }), // ✅ userId 추가
         success: function (response) {
-            alert(response); // ✅ 서버에서 반환된 메시지 표시
-            loadWorkoutVideo(workoutId); // UI 업데이트
+            alert(response);
+            let videoSection = document.getElementById(`videoSection-${workoutId}`);
+
+            // ✅ 영상 삭제 후, 삽입 버튼으로 UI 즉시 변경
+            videoSection.innerHTML = `
+                <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
+            `;
         },
         error: function (xhr) {
-            alert("❌ 삭제 실패: " + xhr.responseText); // ✅ 서버 응답 메시지 표시
+            alert("❌ 삭제 실패: " + xhr.responseText);
         }
     });
 }
-
-
-
 
 
 
@@ -249,9 +395,13 @@ function uploadNewVideo(workoutId) {
         return;
     }
 
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || loggedInUserId; // 트레이너가 특정 회원을 선택한 경우 포함
+
     let formData = new FormData();
     formData.append("videoFile", file);
     formData.append("workoutId", workoutId);
+    formData.append("userId", userId);
 
     $.ajax({
         url: "/workout/video",
@@ -273,9 +423,13 @@ function uploadNewVideo(workoutId) {
 // 수정 완료 버튼 클릭 시, PUT 요청 전송
 function updateWorkout() {
     if (!selectedWorkoutId) {
-        alert("수정할 운동을 선택하세요!");
+        console.warn("⚠️ selectedWorkoutId가 설정되지 않음 → 댓글 불러오기 중단");
         return;
     }
+    console.log("🔥 loadWorkoutComments 호출 - selectedWorkoutId:", selectedWorkoutId);
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || loggedInUserId; // 트레이너가 특정 회원을 선택한 경우 포함
 
     let updatedWorkout = {
         part: $("#part").val(),
@@ -283,7 +437,8 @@ function updateWorkout() {
         sets: $("#sets").val(),
         reps: $("#reps").val(),
         weight: $("#weight").val(),
-        workoutDate: selectedDate
+        workoutDate: selectedDate,
+        userId: userId
     };
 
     $.ajax({
@@ -312,9 +467,15 @@ function resetForm() {
     $("#sets").val("");
     $("#reps").val("");
     $("#weight").val("");
+
+    // 버튼 상태 복원
     $("#updateWorkoutBtn").addClass("hidden");
     $("#addWorkoutBtn").removeClass("hidden");
+
+    // 🟢 모든 수정/삭제 버튼 복구
+    $("#workoutTable tbody tr td:last-child button").removeClass("hidden");
 }
+
 
 // 추가 버튼 클릭 시, POST 요청 전송 (새로운 데이터 추가)
 function addWorkout() {
@@ -330,13 +491,16 @@ function addWorkout() {
         return;
     }
 
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || loggedInUserId; // 트레이너가 특정 회원을 선택한 경우 포함
+
     console.log("🔥 운동 등록 요청:", { part, exercise, sets, reps, weight, workoutDate, userId: loggedInUserId }); // ✅ 디버깅용 콘솔 로그 추가
 
     $.ajax({
         url: "/workout",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ part, exercise, sets, reps, weight, workoutDate }),  // ✅ workoutDate 포함
+        data: JSON.stringify({ part, exercise, sets, reps, weight, workoutDate, userId }),  // ✅ workoutDate 포함
         success: function (response) {
             console.log("✅ 운동 기록 저장 완료:", response);
             resetForm();
@@ -355,15 +519,20 @@ function deleteWorkout(workoutId) {
     if (!confirm("정말 삭제하시겠습니까?")) {
         return;
     }
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || loggedInUserId; // 트레이너가 특정 회원을 선택한 경우 포함
+
     $.ajax({
         url: `/workout/delete/${workoutId}`,
         type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ userId: userId }), // ✅ userId 추가
         success: function (response) {
-            alert("운동 기록이 삭제되었습니다.");
+            alert("✅ 운동 기록이 삭제되었습니다.");
             loadWorkoutData(selectedDate);
         },
         error: function (xhr, status, error) {
-            alert("삭제 중 오류 발생!");
+            alert("❌ 삭제 중 오류 발생!");
         }
     });
 }
@@ -391,6 +560,7 @@ function uploadVideoForWorkout(workoutId) {
         let formData = new FormData();
         formData.append("videoFile", file);
         formData.append("workoutId", workoutId);
+        formData.append("userId", loggedInUserId); // ✅ 변경된 부분
 
         $.ajax({
             url: "/workout/upload/video",
@@ -401,6 +571,19 @@ function uploadVideoForWorkout(workoutId) {
             success: function () {
                 alert("✅ 영상이 업로드되었습니다.");
                 loadWorkoutVideo(workoutId);
+
+                // ✅ 수정 버튼을 누르지 않은 경우
+                if (selectedWorkoutId !== workoutId) {
+                    videoSection.innerHTML = `
+                        <button class="btn btn-sm btn-success" onclick="openVideo('${file.name}')">🎥 영상 열기</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
+                    `;
+                } else {
+                    // ✅ 수정 버튼을 누른 경우 (삭제 버튼만 유지)
+                    videoSection.innerHTML = `
+                        <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
+                    `;
+                }
             },
             error: function () {
                 alert("❌ 영상 업로드 중 오류 발생!");
@@ -411,13 +594,11 @@ function uploadVideoForWorkout(workoutId) {
     fileInput.click();
 }
 
-
 // 영상 열기 : 새 창으로 열기 
 function openVideo(videoFileName) {
     let videoUrl = `/uploads/video/${videoFileName}`;
     window.open(videoUrl, "_blank", "width=800,height=600");
 }
-
 
 // 검색 결과를 표시할 때 기존 운동 기록 테이블을 숨기긱
 // 검색 후 기존 테이블 숨기고, 검색 결과 테이블 보이기
@@ -457,7 +638,7 @@ function updateSearchResultsTable(workouts, videoMap) {
         let newRow = tbody.insertRow();
         newRow.innerHTML = `
             <td>
-                <a href="/work?workoutDate=${workout.workoutDate}" class="text-primary">
+                <a href="/work?workoutDate=${workout.workoutDate}&userId=${selectedUserId}">
                     ${workout.workoutDate || "날짜 없음"}
                 </a>
             </td>
@@ -472,23 +653,30 @@ function updateSearchResultsTable(workouts, videoMap) {
     table.style.display = "table"; // ✅ 강제 표시
 }
 
-
-
-// ✅ 운동 검색 기능 (AJAX 요청)
+// 운동 검색 기능 (AJAX 요청)
 function searchWorkout(query) {
+
+    console.log("✅ 검색 호출됨, query:", query);
     let hasVideo = document.getElementById("videoFilter").checked;
+    let urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("userId") || selectedUserId || loggedInUserId;
 
     if (!query.trim()) {
         alert("검색어를 입력하세요!");
         return;
     }
 
+    // 🟢 트레이너가 회원을 선택하지 않은 경우 차단
+    if (isTrainer && (!urlParams.get("userId") || userId === loggedInUserId)) {
+        alert("트레이너는 먼저 회원을 선택해야 검색할 수 있습니다.");
+        return;
+    }
+
     $.ajax({
-        url: `/workout/search?query=${query}&hasVideo=${hasVideo}&userId=${loggedInUserId}`,
+        url: `/workout/search?query=${query}&hasVideo=${hasVideo}&userId=${userId}`,
         type: "GET",
         success: function (response) {
-
-
+            console.log("✅ 서버에서 받은 검색결과:", response);
             if (response.length === 0) {
                 updateSearchResultsTable([], {});
                 return;
@@ -501,37 +689,57 @@ function searchWorkout(query) {
                 return;
             }
 
-            //  videoMap 가져오기 (검색된 운동들의 영상 정보)
+            // videoMap 가져오기
             $.ajax({
-                url: "/workout/videoMap",  // 🔥 GET → POST 변경
+                url: "/workout/videoMap",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(workoutIds),
                 success: function (videoResponse) {
-
                     updateSearchResultsTable(response, videoResponse);
                 },
-                error: function (xhr) {
-
+                error: function () {
                     updateSearchResultsTable(response, {});
                 }
             });
         },
-        error: function (xhr, status, error) {
-
+        error: function () {
+            alert("❌ 검색 중 오류 발생!");
         }
     });
-
 }
 
-// 
+
+
+// 댓글 ~~~~~~~~~~~~~~~~~
+
+// ✅ 첫 번째 workoutId 가져오기 (운동 기록이 있는 경우만)
+function getFirstWorkoutId() {
+    setTimeout(() => {
+        let firstWorkoutRow = document.querySelector("#workoutTable tbody tr[data-workout-id]");
+
+        if (!firstWorkoutRow) {
+            console.warn("⚠️ 운동 기록 없음 → workoutId 반환 실패");
+            return null;
+        }
+
+        let workoutId = firstWorkoutRow.getAttribute("data-workout-id");
+        console.log("🔥 첫 번째 workoutId 가져오기:", workoutId);
+
+        if (workoutId) {
+            loadWorkoutComments(workoutId); // ✅ workoutId를 가져온 후 댓글 로딩
+        }
+
+        return workoutId;
+    }, 500); // 🕒 운동 기록 로드 후 0.5초 기다림
+}
+
+//
 function submitCommentForm(event) {
     event.preventDefault();
 
     let content = document.getElementById("commentInput").value.trim();
-    let displayDate = selectedDate; // ✅ 선택된 날짜 기반으로 저장
-
-    console.log("🔥 선택된 날짜:", displayDate); // ✅ 디버깅 추가
+    let workoutId = selectedWorkoutId || getFirstWorkoutId();
 
     if (!content) {
         alert("댓글을 입력하세요!");
@@ -540,111 +748,110 @@ function submitCommentForm(event) {
 
     let commentData = {
         content: content,
-        createdAt: displayDate + "T12:00:00", // ✅ 날짜 + 12시 설정 (ISO 8601 형식)
-        workoutId: null,
-        mealId: null
+        workoutId: workoutId
     };
-
-    console.log("🔥 댓글 요청 데이터:", commentData); // ✅ 디버깅 추가
 
     $.ajax({
         url: "/comments/add",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(commentData),
-        success: function () {
+        success: function (response) {
             document.getElementById("commentInput").value = "";
-            loadComments(displayDate);
+
+            // ✅ UI에 즉시 추가
+            appendNewComment(response);
         },
         error: function (xhr) {
-            console.error("❌ 댓글 추가 실패!", xhr.responseText);
+            console.error("❌ 운동 댓글 추가 실패!", xhr.responseText);
             alert("댓글 추가 실패: " + xhr.responseText);
         }
     });
 }
 
 
+function appendNewComment(comment) {
+    let commentList = document.getElementById("commentList");
+
+    // 🔥 "댓글이 없습니다." 메시지가 있을 경우 삭제
+    let emptyMsg = document.querySelector('#commentList li');
+    if (emptyMsg && emptyMsg.textContent.includes("댓글이 없습니다.")) {
+        emptyMsg.remove();
+    }
+
+    let li = document.createElement("li");
+    li.id = `comment-${comment.commentId}`;
+
+    let userDisplayName = comment.isTrainer ? "트레이너" : comment.userName;
+
+    li.innerHTML = `
+    <div class="comment-left">
+        <span class="comment-nickname">${userDisplayName}</span>
+        <span class="comment-text">${comment.content}</span>
+    </div>
+    ${comment.isOwnerOrTrainer ? `<button class="comment-delete-btn" onclick="deleteWorkoutComment(${comment.commentId})">삭제</button>` : ""}
+`;
+
+
+    commentList.appendChild(li);
+
+    document.getElementById("commentSection").style.display = "block";
+}
 
 
 
 
 // ✅ 날짜별 댓글 불러오기 (URL 확인)
-function loadComments(date) {
-    console.log("🔥 댓글 불러오기 요청 날짜: " + date); // 디버깅용 로그 추가
-
-    $.ajax({
-        url: `/comments/date/${date}`,  // ✅ API 요청할 때 날짜 올바르게 포함
-        type: "GET",
-        success: function (comments) {
-            let commentList = document.getElementById("commentList");
-            commentList.innerHTML = "";  // 기존 댓글 초기화
-
-            if (comments.length === 0) {
-                commentList.innerHTML = "<li>댓글이 없습니다.</li>";
-                return;
-            }
-
-            comments.forEach(comment => {
-                let li = document.createElement("li");
-                li.innerHTML = `
-                    <strong>${comment.userId || "익명"}</strong>: ${comment.content}
-                    <button class="btn btn-sm btn-danger" onclick="deleteComment(${comment.commentId})">삭제</button>
-                `;
-                commentList.appendChild(li);
-            });
-        },
-        error: function (xhr) {
-            console.error("❌ 날짜별 댓글 불러오기 실패!", xhr.responseText);
-        }
-    });
-}
-
-
-// 댓글 추가
-function addComment() {
-    let content = document.getElementById("commentInput").value.trim();
-    let selectedDate = document.getElementById("selectedDate").value || new Date().toISOString().split("T")[0]; // 🔥 기본값 설정
-
-    if (!content) {
-        alert("댓글을 입력하세요!");
+function loadWorkoutComments(workoutId) {
+    if (!workoutId) {
+        console.warn("⚠️ workoutId가 없음 → 댓글 불러오기 중단");
         return;
     }
 
+    console.log(`🔥 댓글 불러오기 - workoutId: ${workoutId}`);
+
     $.ajax({
-        url: "/comments/add",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            content: content,
-            workoutId: selectedWorkoutId,
-            displayDate: selectedDate // ✅ 날짜 포함
-        }),
-        success: function () {
-            document.getElementById("commentInput").value = "";
-            loadComments(selectedDate);
+        url: `/comments/workout/${workoutId}`,  // ✅ 날짜 제거!
+        type: "GET",
+        success: function (comments) {
+            let commentList = document.getElementById("commentList");
+            commentList.innerHTML = "";
+
+            if (comments.length === 0) {
+                commentList.innerHTML = "<li>댓글이 없습니다.</li>";
+            } else {
+                comments.forEach(comment => appendNewComment(comment));
+            }
+
+            document.getElementById("commentSection").style.display = "block";
         },
         error: function (xhr) {
-            console.error("❌ 댓글 추가 실패!", xhr.responseText);
-            alert("댓글 추가 실패: " + xhr.responseText);
+            console.error("❌ 운동 댓글 불러오기 실패!", xhr.responseText);
         }
     });
 }
 
 
 
-// 댓글 삭제 
-function deleteComment(commentId) {
+// ✅ 동적 댓글 삭제 함수 (기존 코드 수정)
+function deleteWorkoutComment(commentId) {
     if (!confirm("정말 삭제하시겠습니까?")) return;
 
     $.ajax({
         url: `/comments/${commentId}`,
         type: "DELETE",
         success: function () {
-            alert("댓글이 삭제되었습니다.");
-            loadComments(selectedDate);
+            alert("✅ 댓글이 삭제되었습니다.");
+
+            // ✅ 삭제된 댓글을 UI에서 즉시 제거
+            let commentElement = document.getElementById(`comment-${commentId}`);
+            if (commentElement) {
+                commentElement.remove(); // 🔥 해당 댓글 DOM에서 제거
+            }
+
         },
         error: function () {
-            alert("댓글 삭제 실패!");
+            alert("❌ 댓글 삭제 실패!");
         }
     });
 }

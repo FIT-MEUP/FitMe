@@ -11,11 +11,75 @@
     border-radius: 10px;
 }
 
+/* 🔥 FullCalendar 커스터마이징 */
+#calendar {
+    max-height: 550px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.fc-daygrid-day {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.fc-daygrid-day:hover {
+    background-color: #f0f0f0;
+}
+
+.fc-daygrid-day.selected-date .fc-daygrid-day-frame {
+    background-color: #ffeb99 !important;
+    border-radius: 5px;
+    z-index: 3;
+    position: relative;
+}
+
+.fc-daygrid-day-bg {
+    display: none !important;
+}
+
+.fc-header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.fc-toolbar-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* 캘린더 버튼 연한 회색 */
+.fc .fc-button,
+.fc .fc-button.fc-prev-button,
+.fc .fc-button.fc-next-button,
+.fc .fc-button.fc-today-button {
+    background: #e0e0e0;
+    color: #333;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+.fc .fc-button:hover,
+.fc .fc-button.fc-prev-button:hover,
+.fc .fc-button.fc-next-button:hover,
+.fc .fc-button.fc-today-button:hover {
+    background: #d5d5d5;
+}
+
+.calendar-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 /* 검색 입력창과 버튼을 가로로 정렬 */
 .search-container {
     display: flex;
     gap: 5px;
-    /* 🔥 검색창과 버튼 사이 간격 줄이기 */
     align-items: center;
 }
 
@@ -25,73 +89,175 @@
     border: 1px solid #ccc;
     padding: 8px;
     flex: 1;
-    /* 🔥 입력창이 가능한 공간을 차지하도록 조정 */
 }
 
 /* 검색 버튼 스타일 */
 #searchBtn {
+    background: #198754;
+    color: #fff;
     font-size: 0.8rem;
     padding: 6px 10px;
-    /* 🔥 내부 여백 최적화 */
-    white-space: nowrap;
+    border: none;
+    border-radius: 6px;
 }
 
-/* 댓글 섹션 스타일 */
+/* 테이블을 카드처럼 */
+.table {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* 테이블 헤더 스타일 */
+.table thead {
+    background: #f5f5f5;
+}
+
+/* 테이블 버튼들 스타일 (투명한 배경) */
+.table .btn-primary,
+.table .btn-info,
+.table .btn-success,
+.table .btn-warning,
+.table .btn-danger {
+    background: rgba(0, 0, 0, 0.04);
+    color: #333;
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: none;
+}
+
+/* 운동 입력 폼 버튼 스타일 */
+#addWorkoutBtn {
+    width: 100%;
+    padding: 6px 0;
+    background: #198754;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: block;
+    margin: 0 auto;
+}
+
+#updateWorkoutBtn {
+    width: 100%;
+    padding: 6px 0;
+    background: #198754;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: block;
+    margin: 0 auto;
+}
+
+/* 입력창 비율 맞춤 */
+.row.mb-3 .col {
+    display: flex;
+    align-items: center;
+}
+
+.row.mb-3 .col input.form-control {
+    flex: 1 1 auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 수정/삭제 버튼 숨김용 클래스 */
+.hidden-action-buttons {
+    display: none;
+}
+
+/* 댓글 영역 */
 .comment-section {
-    margin-top: 10px;
-    padding: 12px;
+    margin-top: 30px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
-    background-color: #f8f9fa;
-    width: 100%;
-    max-width: 900px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* 💬 댓글 제목 스타일 조정 */
-.comment-section h4 {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-/* 댓글 목록 스타일 */
-#commentList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-
-/* 댓글 항목 스타일 */
 #commentList li {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
     font-size: 0.9rem;
 }
 
-/* ✅ 댓글 입력창과 버튼을 같은 줄에 정렬 */
-.comment-input-container {
+.comment-left {
     display: flex;
-    gap: 8px;
-    /* 🔥 입력창과 버튼 간격 */
     align-items: center;
-    width: 100%;
+    gap: 8px;
+    flex: 1;
 }
 
-/* 댓글 입력창 스타일 */
+.comment-nickname {
+    font-weight: bold;
+    color: #198754;
+}
+
+.comment-text {
+    color: #333;
+}
+
+.comment-delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#commentForm {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 #commentInput {
     flex: 1;
-    /* 🔥 가능한 최대 너비 차지 */
-    min-height: 40px;
-    border-radius: 5px;
-    padding: 8px;
+    border-radius: 6px;
+    padding: 8px 10px;
 }
 
-/* ✅ 댓글 작성 버튼을 입력창 옆에 배치 */
-#commentBtn {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    /* 🔥 버튼 크기 유지 */
+#commentForm button {
+    background: #198754;
+    color: #fff;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+}
+
+.fc-daygrid-day.selected-date .fc-daygrid-day-frame {
+    background-color: #b9e4c9 !important;
+    /* 연한 그린톤 */
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.custom-divider {
+    border: none;
+    border-top: 1.5px solid #ccc;
+    /* 연한 회색 */
+    margin: 8px 0 20px 0;
+    opacity: 1;
+    margin: 16px 0 20px 0;
+}
+
+.workout-dot {
+    width: 6px;
+    height: 6px;
+    background: #198754;
+    border-radius: 50%;
+    margin: 2px auto 0 auto;
 }
