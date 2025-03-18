@@ -32,68 +32,14 @@ $(document).ready(function () {
           }
         });
 
-        // --- (1-2) (★추가) /topic/onlineStatus 구독 ---
-        notificationClient.subscribe("/topic/onlineStatus", function (response) {
-          var msg = response.body; // "LOGIN:123" or "LOGOUT:123"
-          var parts = msg.split(":");
-          var action = parts[0];   // "LOGIN" or "LOGOUT"
-          var userId = parseInt(parts[1]);
-          console.log("onlineStatus 수신:", action, userId);
-
-          if (action === "LOGIN") {
-            // 새로 로그인한 userId -> 초록 점 표시
-            setOnlineDot(userId);
-          } else if (action === "LOGOUT") {
-            // 로그아웃한 userId -> 초록 점 제거
-            removeOnlineDot(userId);
-          }
-        });
       }, function (error) {
         console.error("Trainer 알림용 WS 연결 오류:", error);
-      });
-
-      window.addEventListener('beforeunload', function() {
-        var chatDataElem = document.getElementById("chatData");
-        if (chatDataElem) {
-          var userId = chatDataElem.getAttribute("data-current-user-id");
-          if (userId) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/user/forceLogout?userId=' + userId, false); // false: 동기 요청
-            xhr.send(null);
-          }
-        }
       });
     }
 
     // 페이지 로드시 트레이너 알림용 WS 연결
     connectTrainerNotificationWebSocket();
 
-    // --- (★추가) 초록 점 표시/제거 함수 ---
-    function setOnlineDot(userId) {
-      var $selectBtn = $(`.select-btn[data-user-id="${userId}"]`);
-      if ($selectBtn.length) {
-        if ($selectBtn.find(".greenDot").length === 0) {
-          $selectBtn.append('<span class="greenDot" style="color:green; margin-left:5px;">●</span>');
-        }
-      }
-    }
-
-    function removeOnlineDot(userId) {
-      var $selectBtn = $(`.select-btn[data-user-id="${userId}"]`);
-      if ($selectBtn.length) {
-        $selectBtn.find(".greenDot").remove();
-      }
-    }
-
-    window.addEventListener('beforeunload', function(event) {
-      var chatDataElem = document.getElementById("chatData");
-      if (chatDataElem) {
-        var userId = chatDataElem.getAttribute("data-current-user-id");
-        if (userId) {
-          navigator.sendBeacon('/user/forceLogout?userId=' + userId);
-        }
-      }
-    });
 
     const noticeText = $("#noticeText");
     const editNotice = $("#editNotice");
@@ -480,7 +426,6 @@ $(document).ready(function () {
       });
     }
 
-});
 
 
 // 보여질 정보들
@@ -664,4 +609,5 @@ function showUserInfo(latestData) {
 function noUserInfo() {
   const $workInfoDiv = $("#user-card");
   $workInfoDiv.html("해당 이용자의 최신 신체 정보");
+}
 }
