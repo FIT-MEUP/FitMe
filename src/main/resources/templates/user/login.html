@@ -6,28 +6,55 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body {
-	background-image:
-		url('https://source.unsplash.com/1600x900/?gym,fitness');
-	background-size: cover;
-	background-position: center;
+    background-color: black; /* 배경 블랙 처리 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* 스크롤 방지 */
 }
 
+/* 🎥 비디오 컨테이너 */
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -1;
+}
+
+/* 📽️ 비디오 스타일 */
+.video-container video {
+    width: 100%;
+    max-width: 1200px; /* 최대 가로 크기 설정 */
+    max-height: 90vh; /* 최대 높이 90%로 설정 (작업 표시줄 안 가리도록) */
+    object-fit: contain; /* 비율 유지하며 축소 */
+}
+
+/* 🏋️‍♂️ 유리 패널 효과 */
 .glass {
-	background: rgba(0, 0, 0, 0.7);
-	backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 10px;
 }
 </style>
 </head>
 <body class="min-h-screen flex items-center justify-center">
 
 
-	<!-- 🎬 YouTube 영상 배경 -->
-	<div class="absolute inset-0 w-full h-full overflow-hidden">
-		<iframe
-			src="https://www.youtube.com/embed/pcw_t_E7JGA?autoplay=1&mute=1&loop=1&playlist=pcw_t_E7JGA&controls=0&showinfo=0&modestbranding=1"
-			width="100%" height="100%" style="border: none;" allow="fullscreen">
-		</iframe>
-	</div>
+	 <!-- 🎥 배경 비디오 -->
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source src="../../static/videos/login.mp4" th:src="@{/videos/login.mp4}"type="video/mp4">
+            브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
+    </div>
 	<div class="absolute inset-0 bg-black opacity-50"></div>
 	<!-- 어두운 오버레이 추가 -->
 
