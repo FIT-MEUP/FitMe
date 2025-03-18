@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -19,7 +20,16 @@
 
 <body>
     <nav class="navbar navbar-light bg-light p-3">
-        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
+        <!-- 트레이너일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
+            onclick="location.href='/trainer/memberManage';">
+          ← 뒤로 가기
+        </button>
+        <!-- 일반 사용자일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
+                onclick="location.href='/firstUserCalendar';">
+          ← 뒤로 가기
+        </button>
         <h3 class="text-center flex-grow-1">식단 게시판</h3>
     </nav>
 

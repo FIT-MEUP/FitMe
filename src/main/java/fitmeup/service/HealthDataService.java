@@ -90,7 +90,7 @@ public class HealthDataService {
 	public HealthDataDTO getLatestHealthData(Long userId) {
 	    List<HealthDataEntity> dataList = healthRepository.findByUser_UserId(
 	        userId, Sort.by(Sort.Direction.DESC, "recordDate"));
-	    
+	    log.info("=======================getgetget{}",dataList.get(0).getUserId());
 	    if (!dataList.isEmpty()) {
 	        return HealthDataDTO.toDTO(dataList.get(0)); // 가장 최신 데이터 반환
 	    }
