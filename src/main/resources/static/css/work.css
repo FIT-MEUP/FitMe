@@ -1,185 +1,149 @@
-/* 전체 레이아웃 스타일 */
+/* ✅ 전체 배경 및 기본 스타일 */
+body {
+    margin: 40px 10px;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    background: #111827; /* Tailwind bg-gray-900 */
+    color: white;
+    padding-top: 80px; /* 헤더 높이만큼 추가 */
+}
+
+/* ✅ 네온 효과 (타이틀 및 강조 텍스트) */
+.neon-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea, 0 0 20px #9333ea;
+}
+
+/* ✅ 강한 타이틀 스타일 (강제 적용) */
+.font-title {
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* ✅ 네비게이션 & 주요 버튼 */
+.font-nav {
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+/* ✅ 공통 버튼 스타일 */
+.btn-primary, .btn-info, .btn-success, .btn-warning, .btn-danger {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    border: none;
+    color: white;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn.btn-primary.addbtn {
+    width: 100%;
+}
+.btn.btn-primary.comments{
+	margin-top: 10px;
+}
+.btn.btn-primary.search{
+	margin-top: 10px;
+}
+.btn.btn-success{
+	width: 100%;
+}
+.btn-primary:hover, .btn-info:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5);
+}
+
+/* ✅ 전체 페이지 컨테이너 */
 .container {
     display: flex;
     gap: 20px;
 }
 
-/* 왼쪽 사이드바 스타일 */
-.col-md-3 {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-/* 🔥 FullCalendar 커스터마이징 */
+/* ✅ 캘린더 스타일 */
 #calendar {
     max-height: 550px;
-    margin: 0 auto;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* ✅ FullCalendar 스타일 */
 .fc-daygrid-day {
     transition: background-color 0.2s ease-in-out;
 }
 
 .fc-daygrid-day:hover {
-    background-color: #f0f0f0;
+    background-color: #374151;
 }
 
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #ffeb99 !important;
+    background-color: #facc15 !important;
     border-radius: 5px;
     z-index: 3;
     position: relative;
 }
 
-.fc-daygrid-day-bg {
-    display: none !important;
-}
-
-.fc-header-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 5px;
-}
-
-.fc-toolbar-title {
+.fc .fc-button {
+    background: #6366f1;
+    color: white;
+    border: none;
     font-size: 0.9rem;
-    font-weight: 600;
-    color: #333;
-}
-
-/* 캘린더 버튼 연한 회색 */
-.fc .fc-button,
-.fc .fc-button.fc-prev-button,
-.fc .fc-button.fc-next-button,
-.fc .fc-button.fc-today-button {
-    background: #e0e0e0;
-    color: #333;
-    font-size: 0.75rem;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 6px;
-    border: none;
+    transition: background 0.2s ease;
 }
 
-.fc .fc-button:hover,
-.fc .fc-button.fc-prev-button:hover,
-.fc .fc-button.fc-next-button:hover,
-.fc .fc-button.fc-today-button:hover {
-    background: #d5d5d5;
+.fc .fc-button:hover {
+    background: #4f46e5;
+}
+.fc-toolbar-title{
+	text-align: center;
 }
 
-.calendar-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* ✅ 운동 기록 있는 날짜 dot 스타일 */
+.workout-dot {
+    width: 6px;
+    height: 6px;
+    background: #facc15;
+    border-radius: 50%;
+    margin: 2px auto 0 auto;
 }
 
-/* 검색 입력창과 버튼을 가로로 정렬 */
-.search-container {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-/* 검색 입력창 스타일 */
-#search {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 8px;
-    flex: 1;
-}
-
-/* 검색 버튼 스타일 */
-#searchBtn {
-    background: #198754;
-    color: #fff;
-    font-size: 0.8rem;
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
-}
-
-/* 테이블을 카드처럼 */
-.table {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-/* 테이블 헤더 스타일 */
-.table thead {
-    background: #f5f5f5;
-}
-
-/* 테이블 버튼들 스타일 (투명한 배경) */
-.table .btn-primary,
-.table .btn-info,
-.table .btn-success,
-.table .btn-warning,
-.table .btn-danger {
-    background: rgba(0, 0, 0, 0.04);
-    color: #333;
-    font-size: 0.75rem;
-    padding: 5px 8px;
-    border-radius: 6px;
-    border: none;
-}
-
-/* 운동 입력 폼 버튼 스타일 */
-#addWorkoutBtn {
-    width: 100%;
-    padding: 6px 0;
-    background: #198754;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    display: block;
-    margin: 0 auto;
-}
-
-#updateWorkoutBtn {
-    width: 100%;
-    padding: 6px 0;
-    background: #198754;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    display: block;
-    margin: 0 auto;
-}
-
-/* 입력창 비율 맞춤 */
-.row.mb-3 .col {
-    display: flex;
-    align-items: center;
-}
-
-.row.mb-3 .col input.form-control {
-    flex: 1 1 auto;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* 수정/삭제 버튼 숨김용 클래스 */
-.hidden-action-buttons {
-    display: none;
-}
-
-/* 댓글 영역 */
+/* ✅ 댓글 섹션 스타일 */
 .comment-section {
     margin-top: 30px;
     padding: 20px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    background: #1f2937;
+    border-radius: 10px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.comment-section h4 {
+    color: #facc15;
+}
+
+.comment-section textarea {
+    background: #374151;
+    color: white;
+    border: 1px solid #4b5563;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.comment-section button {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 8px 14px;
 }
 
 #commentList li {
@@ -187,7 +151,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #4b5563;
     font-size: 0.9rem;
 }
 
@@ -200,11 +164,11 @@
 
 .comment-nickname {
     font-weight: bold;
-    color: #198754;
+    color: #facc15;
 }
 
 .comment-text {
-    color: #333;
+    color: white;
 }
 
 .comment-delete-btn {
@@ -216,48 +180,11 @@
     margin-left: 10px;
 }
 
-#commentForm {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.hidden {
+    display: none !important;
 }
 
-#commentInput {
-    flex: 1;
-    border-radius: 6px;
-    padding: 8px 10px;
-}
-
-#commentForm button {
-    background: #198754;
-    color: #fff;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-}
-
-.fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #b9e4c9 !important;
-    /* 연한 그린톤 */
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    transition: background-color 0.2s ease;
-}
-
-.custom-divider {
-    border: none;
-    border-top: 1.5px solid #ccc;
-    /* 연한 회색 */
-    margin: 8px 0 20px 0;
-    opacity: 1;
-    margin: 16px 0 20px 0;
-}
-
-.workout-dot {
-    width: 6px;
-    height: 6px;
-    background: #198754;
-    border-radius: 50%;
-    margin: 2px auto 0 auto;
+/* 수정/삭제 버튼 숨김용 클래스 */
+.hidden-action-buttons {
+    display: none;
 }

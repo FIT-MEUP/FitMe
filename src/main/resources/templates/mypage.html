@@ -9,7 +9,10 @@
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 </head>
 
-<body>
+<body class="bg-gray-900 text-black" style="
+    margin-top: 100px;">
+
+	<div th:replace="~{fragment/header :: header}"></div>
 
     <div class="container">
         <!-- 상단 메뉴 -->

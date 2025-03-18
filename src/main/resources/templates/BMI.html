@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비만 자가진단</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <!-- ✅ Google Fonts (스포티하고 강렬한 폰트 적용) -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        .font-title {
+            font-family: 'Oswald', sans-serif !important;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .font-nav {
+            font-family: 'Oswald', sans-serif !important;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+        .font-body {
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 400;
+        }
+        .content-container {
+            margin-top: 120px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgba(31, 41, 55, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        .form-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #facc15;
+        }
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 8px;
+            background-color: #374151;
+            color: white;
+            border: 1px solid #4b5563;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #facc15;
+            box-shadow: 0px 0px 10px rgba(250, 204, 21, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white" style="
+    margin-top: 100px;">
+
+	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+    <div class="flex justify-between items-center px-6 py-4">
+        <!-- 로고 -->
+        <a href="/" class="text-3xl font-title">
+            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+        </a>
+
+        <!-- 네비게이션 메뉴 -->
+        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
+            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+        </nav>
+
+        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
+        <div class="flex gap-6">
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/user/login}"
+                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+                    로그인
+                </a>
+            </th:block>
+
+            <th:block sec:authorize="isAuthenticated()">
+                <div class="relative">
+                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
+                            id="userMenu" onclick="toggleDropdown()">
+                        [[${#authentication.principal.displayName}]]
+                    </button>
+                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
+                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+
+    // 클릭 외부 감지하여 닫기
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("dropdownMenu");
+        var button = document.getElementById("userMenu");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
+</script>
+
+    <div class="content-container">
+        <h2 class="text-center font-title mb-6 text-yellow-400 text-3xl">비만 자가진단</h2>
+        <form id="bmiForm" class="bg-gray-800 p-8 rounded-lg shadow">
+            <div class="mb-5">
+                <label for="height" class="form-label">키 (cm)</label>
+                <input type="number" id="height" class="form-control" placeholder="예: 170">
+            </div>
+            <div class="mb-5">
+                <label for="weight" class="form-label">몸무게 (kg)</label>
+                <input type="number" id="weight" class="form-control" placeholder="예: 70">
+            </div>
+            <div class="mb-5">
+                <label for="exercise" class="form-label">주간 운동 횟수</label>
+                <input type="number" id="exercise" class="form-control" placeholder="예: 3">
+            </div>
+            <button type="button" class="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-lg py-3 rounded-lg" onclick="calculateBMI()">결과 보기</button>
+        </form>
+        <div id="bmiResult" class="mt-6 p-6 bg-gray-800 rounded-lg shadow hidden">
+            <h4 class="text-center text-yellow-400 text-2xl font-title">진단 결과</h4>
+            <p id="bmiValue" class="text-center text-lg mt-2"></p>
+            <p id="bmiCategory" class="text-center text-md mt-1"></p>
+            <button class="btn btn-success w-full bg-green-600 hover:bg-green-700 text-lg py-3 rounded-lg mt-4" onclick="redirectToTrainers()">내 몸에 대해 더 자세히 알고 싶다면?</button>
+        </div>
+    </div>
+
+    <script>
+        function calculateBMI() {
+            let height = parseFloat(document.getElementById("height").value) / 100;
+            let weight = parseFloat(document.getElementById("weight").value);
+            let exercise = parseInt(document.getElementById("exercise").value);
+
+            if (isNaN(height) || isNaN(weight) || isNaN(exercise) || height <= 0 || weight <= 0) {
+                alert("올바른 값을 입력하세요!");
+                return;
+            }
+
+            let bmi = (weight / (height * height)).toFixed(1);
+            let category = bmi < 18.5 ? "저체중입니다. 건강한 체중을 유지하도록 노력하세요." : 
+                           bmi < 24.9 ? "정상 체중입니다. 건강한 생활을 유지하세요!" : 
+                           bmi < 29.9 ? "과체중입니다. 운동과 식단 관리를 고려하세요." : "비만입니다. 전문적인 건강 상담을 고려해보세요.";
+
+            document.getElementById("bmiValue").innerText = `BMI 지수: ${bmi}`;
+            document.getElementById("bmiCategory").innerText = category;
+            document.getElementById("bmiResult").classList.remove("hidden");
+        }
+        function redirectToTrainers() {
+            window.location.href = "/trainers";
+        }
+    </script>
+</body>
+</html>

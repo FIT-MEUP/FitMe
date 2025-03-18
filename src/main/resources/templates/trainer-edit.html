@@ -2,59 +2,90 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>프로필 수정</title>
-    
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>프로필 수정 | Fit Me</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        .font-title { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; }
+        .font-body { font-family: 'Montserrat', sans-serif; font-weight: 400; }
+        .bg-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+        .fade-in { animation: fadeIn 0.7s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-    <div class="container mt-5">
-        <h2>프로필 수정</h2>
-        <form th:action="@{/trainer/edit}" method="post">
-            <input type="hidden" th:value="${trainer.trainerId}" name="trainerId">
 
-            <!-- 트레이너 이름 (읽기 전용) -->
-            <div class="mb-3">
-                <label class="form-label">이름</label>
-                <input type="text" class="form-control" th:value="${trainer.user.userName}" readonly>
-            </div>
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
 
-            <!-- 짧은 소개 -->
-            <div class="mb-3">
-                <label class="form-label">짧은 소개</label>
-                <input type="text" class="form-control" name="shortIntro" th:value="${trainer.shortIntro}" required>
-            </div>
+    <div class="relative z-10 flex flex-col w-full max-w-lg fade-in">
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit Me Logo" class="w-36">
+            </a>
+        </header>
 
-            <!-- 전문 분야 -->
-            <div class="mb-3">
-                <label class="form-label">전문 분야</label>
-                <input type="text" class="form-control" name="specialization" th:value="${trainer.specialization}" required>
-            </div>
+        <section class="bg-overlay p-8 py-10 shadow-lg rounded-lg w-full text-center">
+            <h1 class="text-3xl font-title text-white tracking-widest">프로필 수정</h1>
+            <p class="text-gray-300 mt-1 font-body">트레이너 정보를 업데이트하세요.</p>
 
-            <!-- 경력 -->
-            <div class="mb-3">
-                <label class="form-label">경력 (년)</label>
-                <input type="number" class="form-control" name="experience" th:value="${trainer.experience}" required>
-            </div>
+            <form th:action="@{/trainer/edit}" method="post" class="mt-6 space-y-4">
+                <input type="hidden" th:value="${trainer.trainerId}" name="trainerId">
 
-            <!-- 비용 -->
-            <div class="mb-3">
-                <label class="form-label">회당 비용 (원)</label>
-                <input type="number" class="form-control" name="fee" th:value="${trainer.fee}" required>
-            </div>
+                <!-- ✅ 이름 (읽기 전용) -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">이름</label>
+                    <input type="text" class="w-full p-3 rounded-lg bg-gray-800 text-gray-300 border border-gray-700" 
+                           th:value="${trainer.user.userName}" readonly>
+                </div>
 
-            <!-- 자기소개 -->
-            <div class="mb-3">
-                <label class="form-label">자기소개</label>
-                <textarea class="form-control" name="bio" rows="5" required th:text="${trainer.bio}"></textarea>
-            </div>
+                <!-- ✅ 짧은 소개 -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">짧은 소개</label>
+                    <input type="text" name="shortIntro" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
+                           th:value="${trainer.shortIntro}" required>
+                </div>
 
-            <!-- 저장 버튼 -->
-            <button type="submit" class="btn btn-primary w-100">저장</button>
-        </form>
+                <!-- ✅ 전문 분야 -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">전문 분야</label>
+                    <input type="text" name="specialization" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
+                           th:value="${trainer.specialization}" required>
+                </div>
+
+                <!-- ✅ 경력 (년) -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">경력 (년)</label>
+                    <input type="number" name="experience" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
+                           th:value="${trainer.experience}" required>
+                </div>
+
+                <!-- ✅ 회당 비용 -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">회당 비용 (원)</label>
+                    <input type="number" name="fee" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
+                           th:value="${trainer.fee}" required>
+                </div>
+
+                <!-- ✅ 자기소개 -->
+                <div>
+                    <label class="block text-gray-400 font-semibold text-left mb-1">자기소개</label>
+                    <textarea name="bio" rows="5" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
+                              required th:text="${trainer.bio}"></textarea>
+                </div>
+
+                <!-- ✅ 저장 버튼 -->
+                <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-title uppercase">
+                    저장하기
+                </button>
+            </form>
+        </section>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
