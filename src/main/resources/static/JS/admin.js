@@ -38,7 +38,7 @@ function updateNotice() {
     fetch("/admin/updateNotice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notice: text })
+        body: text
     }).then(response => response.json())
       .then(() => alert("공지사항이 업데이트되었습니다!"));
 }

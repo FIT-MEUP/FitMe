@@ -5,7 +5,6 @@ let isEditMode = false;
 
 // 수정 모드 토글 함수
 function toggleEditMode() {
-
 	const userInfoRow = document.getElementById("userInfoRow");
 	const editButtons = document.getElementById("editButtons");
 
@@ -40,7 +39,6 @@ function toggleEditMode() {
 		        const fatMass = parseFloat(document.getElementById("fatMass").innerText.replace('%', '').trim()) || 0;
 		        const muscleMass = parseFloat(document.getElementById("muscleMass").innerText.replace('kg', '').trim()) || 0; 
 		        const basalMetabolicRate = parseFloat(document.getElementById("basalMetabolicRate").innerText.replace(' kcal', '').trim()) || 0;
-		
 
 		// 각 셀을 입력 필드로 변환
 		userInfoRow.innerHTML = `
@@ -50,40 +48,36 @@ function toggleEditMode() {
 		           <td><input type="number" step="0.1" id="editFatMass" value="${fatMass}">%</td>
 		           <td><input type="number" step="0.1" id="editMuscleMass" value="${muscleMass}">kg</td> 
 		           <td><input type="number" id="editBmr" value="${basalMetabolicRate}"> kcal</td>
-
+				   
             <td>
                 <select id="editYear">${yearOptions}</select>
                 <select id="editMonth" onchange="updateDays()">${monthOptions}</select>
                 <select id="editDay">${dayOptions}</select>
             </td>
         `;
-
 	} else {
 		cancelEdit();
 	}
 }
 
-
-
 // 월 변경 시 일 수 업데이트 함수
 function updateDays() {
-    const year = document.getElementById("editYear").value;
-    const month = document.getElementById("editMonth").value;
-    const daySelect = document.getElementById("editDay");
-    
-    const daysInMonth = new Date(year, month, 0).getDate();
-    
-    let dayOptions = "";
-    for (let i = 1; i <= daysInMonth; i++) {
-        dayOptions += `<option value="${i}">${i}일</option>`;
-    }
-    
-    daySelect.innerHTML = dayOptions;
+	const year = document.getElementById("editYear").value;
+	const month = document.getElementById("editMonth").value;
+	const daySelect = document.getElementById("editDay");
+
+	const daysInMonth = new Date(year, month, 0).getDate();
+
+	let dayOptions = "";
+	for (let i = 1; i <= daysInMonth; i++) {
+		dayOptions += `<option value="${i}">${i}일</option>`;
+	}
+
+	daySelect.innerHTML = dayOptions;
 }
 
 // 저장 버튼 클릭 시 동작
 function saveChanges() {
-
 	const height = document.getElementById("editHeight").value;
 	const weight = document.getElementById("editWeight").value;
 	const bmi = document.getElementById("editBmi").value;
@@ -102,7 +96,6 @@ function saveChanges() {
 
 	const userInfoRow = document.getElementById("userInfoRow");
 	userInfoRow.innerHTML = `
-
         <td id="height">${height} cm</td>
         <td id="weight">${weight} kg</td>
         <td id="bmi">${bmi}</td>
@@ -111,7 +104,6 @@ function saveChanges() {
         <td id="basalMetabolicRate">${basalMetabolicRate} kcal</td>
         <td id="current-date">${year}.${month}.${day}</td>
     `;
-
 
 	isEditMode = false;
 	document.getElementById("editButtons").style.display = "none";
@@ -129,7 +121,8 @@ function saveChanges() {
 			muscleMass,
 			basalMetabolicRate,
 			userId,
-			recordDate
+			recordDate,
+			
 		}),
 		success: function(response) {
 			alert('저장 성공');
@@ -144,13 +137,11 @@ function saveChanges() {
 			console.error("에러 내용:", error);
 		}
 	});
-
 }
 
 // 취소 버튼 클릭 시 동작
 function cancelEdit() {
 	location.reload();
-
 }
 
 //////////////////////////////////////////////////////////////여기부터 달력/////////////////////////////////////////////////////////
@@ -279,35 +270,6 @@ function showGraph(type) {
 
 
 
-// 그래프 선택 함수
-/*function showGraph(type) {
-	const graphContainer = document.getElementById("graph-container");
-	const graphCanvas = document.getElementById("graphCanvas");
-	graphContainer.style.display = 'block'; // 그래프 영역 보이기
-	const ctx = graphCanvas.getContext('2d');
-	const data = generateGraphData(type); // 그래프 데이터 생성
-
-	// 기존에 생성된 차트가 있다면 제거
-	if (chartInstance) {
-		chartInstance.destroy();
-	}
-
-
-	// 새 차트 생성 및 전역 변수에 할당
-	chartInstance = new Chart(ctx, {
-		type: 'line',
-		data: data,
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					position: 'top',
-				},
-			},
-		},
-	});
-}*/
-
 
 
 function updateGraph(data, type) {
@@ -380,38 +342,9 @@ function updateGraph(data, type) {
 	});
 
 	console.log("✅ 그래프 업데이트 완료!");
-
 }
 
 
-//// 선택된 그래프에 맞는 데이터 생성 함수
-//function generateGraphData(type) {
-//    const labels = Array.from({ length: 30 }, (_, i) => `${i + 1} 사`);
-//    let data = [];
-//
-//    switch (type) {
-//        case 'weight':
-//            data = [60, 62, 64, 63, 65, 66, 67, 68, 69, 70];
-//            break;
-//        case 'muscle':
-//            data = [10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70];
-//            break;
-//        case 'fat':
-//            data = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0];
-//            break;
-//    }
-//
-//    return {
-//        labels: ['2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25','2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25','2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25', '2023-03-25'],
-//        datasets: [{
-//            label: type === 'weight' ? '체중' : type === 'muscle' ? '골격근' : '체지방',
-//            data: data,
-//            fill: true,
-//            borderColor: 'rgba(75, 192, 192, 1)',
-//            tension: 0.1
-//        }]
-//    };
-//}
 
 // 페이지 로딩 시 달력 생성
 createCalendar();

@@ -66,7 +66,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);  
             return "redirect:/user/userJoin"; // 실패 시 다시 회원가입 페이지로 이동
         }
-
+        redirectAttributes.addFlashAttribute("successMessage", "회원가입이 정상적으로 완료되었습니다! 다시 로그인 해주세요.");
         return "redirect:/user/login";  // 성공 시 로그인 페이지로 이동
     }
     

@@ -26,11 +26,12 @@ public interface TrainerApplicationRepository extends JpaRepository<TrainerAppli
 //  @Query("select ta.trainer.trainerId from TrainerApplicationEntity ta where ta.user.userId = :userId")
 //  Long findTrainerIdByUserId(@Param("userId") Long userId);
   //User테이블에 있는 UserId를 찾는 메소드
-  Optional<TrainerApplicationEntity> findByUserUserId(Long userId);
+  List<TrainerApplicationEntity> findByUserUserId(Long userId);
+
     List<TrainerApplicationEntity> findByTrainerTrainerId(Long trainerNum);
     
     
-    // 승인된 회원만 반환 
+    // 승인된 회원만 반환 	
     @Query("SELECT t.user.userId FROM TrainerApplicationEntity t WHERE t.trainer.trainerId = :trainerId AND t.status = 'APPROVED'")
     List<Long> findApprovedUserIdsByTrainerId(@Param("trainerId") Long trainerId);
 
@@ -71,4 +72,10 @@ public interface TrainerApplicationRepository extends JpaRepository<TrainerAppli
     @Query("SELECT ta.trainer.trainerId FROM TrainerApplicationEntity ta WHERE ta.user.userId = :userId")
     Optional<Long> findTrainerIdByUserId(@Param("userId") Long userId);
 
+    
+    //배재혁
+   	List<TrainerApplicationEntity> findByUserUserIdAndStatus(Long userId, TrainerApplicationEntity.Status status);
+    
+    //배재혁
+    
 }

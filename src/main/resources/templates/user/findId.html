@@ -10,45 +10,59 @@
     <!-- ✅ Google Fonts (스포티하고 강렬한 폰트 적용) -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <style>
-        /* 🏋️‍♂️ 강한 타이틀 스타일 */
-        .font-title { font-family: 'Oswald', sans-serif !important; font-weight: 600; text-transform: uppercase; }
+  <style>
+body {
+    background-color: black; /* 배경 블랙 처리 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* 스크롤 방지 */
+}
 
-        /* 📌 네비게이션 & 주요 버튼 */
-        .font-nav { font-family: 'Oswald', sans-serif !important; font-weight: 400; text-transform: uppercase; }
+/* 🎥 비디오 컨테이너 */
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: -1;
+}
 
-        /* 💎 설명 문구 & 본문 */
-        .font-body { font-family: 'Montserrat', sans-serif !important; font-weight: 400; }
+/* 📽️ 비디오 스타일 */
+.video-container video {
+    width: 100%;
+    max-width: 1200px; /* 최대 가로 크기 설정 */
+    max-height: 90vh; /* 최대 높이 90%로 설정 (작업 표시줄 안 가리도록) */
+    object-fit: contain; /* 비율 유지하며 축소 */
+}
 
-        /* 🔥 배경 스타일 */
-        .bg-overlay {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-        }
-
-        /* ✨ 애니메이션 효과 */
-        .fade-in {
-            animation: fadeIn 0.8s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+/* 🏋️‍♂️ 유리 패널 효과 */
+.glass {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 10px;
+}
+</style>
 </head>
-<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
+<body class="min-h-screen flex items-center justify-center">
 
-    <!-- 🎬 YouTube 영상 배경 -->
-    <div class="absolute inset-0 w-full h-full overflow-hidden">
-        <iframe 
-            src="https://www.youtube.com/embed/pcw_t_E7JGA?autoplay=1&mute=1&loop=1&playlist=pcw_t_E7JGA&controls=0&showinfo=0&modestbranding=1"
-            class="absolute inset-0 w-full h-full"
-            frameborder="0" allow="autoplay; fullscreen"></iframe>
+
+	 <!-- 🎥 배경 비디오 -->
+    <div class="video-container">
+        <video autoplay muted loop playsinline>
+            <source src="../../static/videos/login.mp4" th:src="@{/videos/login.mp4}"type="video/mp4">
+            브라우저가 비디오 태그를 지원하지 않습니다.
+        </video>
     </div>
-
-    <!-- 🔥 어두운 오버레이 -->
-    <div class="absolute inset-0 bg-black opacity-50"></div>
+	<div class="absolute inset-0 bg-black opacity-50"></div>
+	<!-- 어두운 오버레이 추가 -->
 
     <div class="relative z-10 flex flex-col w-full max-w-md py-8 fade-in">
         <!-- 🏋️‍♂️ 네비게이션 -->

@@ -1,5 +1,6 @@
 package fitmeup.controller;
 
+import fitmeup.service.AnnouncementService;
 import fitmeup.service.ChatService;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.UserService;
@@ -30,6 +31,7 @@ public class ScheduleController {
 private final ScheduleService scheduleService;
 	private final TrainerApplicationService trainerApplicationService;
 	private final ChatService chatService;
+    private final AnnouncementService announcementService;
 
 
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
@@ -98,7 +100,10 @@ private final ScheduleService scheduleService;
         	   Long changeAmount=0L;
        		model.addAttribute("changeAmount",changeAmount);
         }
-        
+
+
+        model.addAttribute("AdminAnnouncementContent",  announcementService.sendAdminAnnouncement());
+        model.addAttribute("AnnouncementContent",  announcementService.sendAnnouncement(trainerId));
         
 		return "schedule/userschedule";
 

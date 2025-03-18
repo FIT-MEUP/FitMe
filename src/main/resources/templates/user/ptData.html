@@ -15,34 +15,37 @@
 	<div class="container">
 		<!-- 상단 메뉴 -->
 		<div class="header">
-			<button class="back-button">로고</button>
+			<button class="logo">로고</button>
 			<h1>PT 이력</h1>
 			<div class="header-right">
-				<button class="back-button">돌아가기</button>
+				<a th:href="@{/mypage(userId=${userId})}" class="button">돌아가기</a>
 			</div>
 		</div>
 
 		<div class="content">
-			<h2>최용재 님</h2>
+			<h2 th:text="${userName} + ' 님'">사용자 이름</h2>
 
-			<table class="user-info">
-				<thead>
-					<tr>
-						<th>키</th>
-						<th>체중</th>
-						<th>BMI</th>
-						<th>체지방률</th>
-						<th>골격근</th>
-						<th>기초대사량</th>
-						<th>날짜</th>
-						<th>수정</th>
-						<th>삭제</th>
-					</tr>
-				</thead>
-				<tbody id="userInfoTable">
-					<!-- 데이터가 동적으로 삽입될 부분 -->
-				</tbody>
-			</table>
+			 <table class="user-info">
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>내용</th>
+                        <th>남은 횟수</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 데이터가 없을 때 메시지 출력 -->
+                    <tr th:if="${list.isEmpty()}">
+                        <td colspan="3" style="text-align:center;">PT 내역이 없습니다.</td>
+                    </tr>
+                    <!-- PT 데이터 반복 출력 -->
+                    <tr th:each="data : ${list}">
+                        <td th:text="${#temporals.format(data.changeDate, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${data.reason}"></td>
+                        <td th:text="${data.changeAmount} + ' 회' "></td>
+                    </tr>
+                </tbody>
+            </table>
 		</div>
 
 
@@ -124,6 +127,12 @@
 
 			// 페이지 로드 시 테이블 표시
 			window.onload = loadTable;
+			
+			//ptData.html에서 오른쪽 상단 "돌아가기" 버튼을 클릭하면 mypage.html로
+			document.getElementById("backButton").addEventListener("click", function() {
+			    window.location.href = "mypage.html"; // mypage.html로 이동
+			});
+
 		</script>
 
 	</div>

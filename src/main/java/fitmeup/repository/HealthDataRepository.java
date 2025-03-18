@@ -10,6 +10,5 @@ import fitmeup.entity.HealthDataEntity;
 public interface HealthDataRepository extends JpaRepository<HealthDataEntity, Long> {
 	
 	
-  //  List<HealthDataEntity> findByUser_UserId(Long userId);
-		List<HealthDataEntity> findByUserId(Long userId, Sort by);
+    List<HealthDataEntity> findByUser_UserId(Long userId, Sort by);
 }

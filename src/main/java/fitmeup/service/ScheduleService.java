@@ -14,6 +14,7 @@ import fitmeup.dto.ScheduleDTO;
 import fitmeup.dto.TrainerScheduleDTO;
 import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.ScheduleEntity;
+import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerScheduleEntity;
 import fitmeup.entity.UserEntity;
@@ -26,7 +27,6 @@ import fitmeup.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Service
 @RequiredArgsConstructor
@@ -114,16 +114,31 @@ public class ScheduleService {
 		
 
 		
+//		public Long findTrainerId(Long userId) {
+////		    log.info("트레이너 아이디: ",
+////		    		trainerApplicationRepository.findByUserUserId(userId)
+////		           .map(app -> app.getTrainer().getTrainerId())
+////		           .orElse(0L));
+////			return trainerApplicationRepository.findByUserUserId(userId)
+////		           .map(app -> app.getTrainer().getTrainerId())
+////		           .orElse(0L);
+//			Optional<TrainerApplicationEntity> applicationOpt = 
+//                    trainerApplicationRepository.findByUserUserIdAndStatus(userId, TrainerApplicationEntity.Status.Approved);
+//			return applicationOpt.get().getTrainer().getTrainerId();
+//		    
+//		}
+		//에러 list로 받아서 에러 피하기
 		public Long findTrainerId(Long userId) {
-		    log.info("트레이너 아이디: ",
-		    		trainerApplicationRepository.findByUserUserId(userId)
-		           .map(app -> app.getTrainer().getTrainerId())
-		           .orElse(0L));
-			return trainerApplicationRepository.findByUserUserId(userId)
-		           .map(app -> app.getTrainer().getTrainerId())
-		           .orElse(0L);
-		    
+		    List<TrainerApplicationEntity> applications =
+		        trainerApplicationRepository.findByUserUserIdAndStatus(userId, TrainerApplicationEntity.Status.Approved);
+		    if(applications.isEmpty()){
+		        return 0L; // 또는 예외 처리
+		    }
+		    // 여러 건일 경우 첫 번째 결과를 사용하거나, 추가 조건으로 정렬 후 선택
+		    return applications.get(0).getTrainer().getTrainerId();
 		}
+
+		
 		
 		public Long findTrainertrainerId(Long userId) {
 			Optional<TrainerEntity> temp=trainerRepository.findByUser_UserId(userId);
@@ -151,12 +166,21 @@ public class ScheduleService {
 			 
 			 return temp.get().getUser().getUserId(); 
 		 }
+		 public PTSessionHistoryEntity selectfirstByUserDTO(PTSessionHistoryDTO dto) {
+			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(dto.getUserId(), Sort.by("changeDate").descending());
+			 if(historyList.isEmpty()) {
+				 ptSessionHistoryRepository.save(PTSessionHistoryEntity.toEntity(dto));
+			 }
+			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
+			 return latestHistory;
+		 }
 		 
 		 public PTSessionHistoryEntity selectfirstByUserId(Long userId) {
 			 List<PTSessionHistoryEntity> historyList =ptSessionHistoryRepository.findByUserUserId(userId, Sort.by("changeDate").descending());
 			 PTSessionHistoryEntity latestHistory = historyList.isEmpty() ? null : historyList.get(0);
 			 return latestHistory;
 		 }
+		 
 		 //trainer의 userId를 통해 그에 해당하는 schedule을 List를 뽑은후 지금 시간에서 10분전부터 그 시각까지 
 		 //pt시작 버튼을 누르면 없어지는 형태
 		 public String minusChangeAmount(Long userId) {
