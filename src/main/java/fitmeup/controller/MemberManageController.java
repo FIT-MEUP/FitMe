@@ -3,15 +3,16 @@ package fitmeup.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fitmeup.dto.ChatUserDTO;
-import fitmeup.dto.UserDTO;
+import fitmeup.dto.HealthDataDTO;
 import fitmeup.dto.WorkDTO;
 import fitmeup.service.ChatUserService;
+import fitmeup.service.HealthDataService;
 import fitmeup.service.UserService;
 import fitmeup.service.WorkService;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
@@ -22,7 +23,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,15 +49,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberManageController {
-    private final TrainerService trainerService;
     private final MealService mealService;
     private final TrainerApplicationService trainerApplicationService;
-    private final UserService userService;
     private final ScheduleService scheduleService;
     private final AnnouncementService announcementService;
     private final PTSessionHistoryService ptSessionHistoryService;
     private final WorkService workService;
-    
+	private final HealthDataService healthDataService; // ✅ 서비스 주입
+
     
     private final ChatUserService chatUserService;
 
@@ -112,7 +111,6 @@ public class MemberManageController {
     @PostMapping("/trainer/approve")
     @ResponseBody
     public ResponseEntity<String> approveApplication(@RequestBody ApproveRequestDTO approveRequestDTO) {
-    	log.info("===============수락:{}",approveRequestDTO.getApplicationId());
         trainerApplicationService.updateApplicationStatus(approveRequestDTO.getApplicationId(), TrainerApplicationEntity.Status.Approved);
         return ResponseEntity.ok("Application approved successfully.");
     }
@@ -156,14 +154,27 @@ public class MemberManageController {
         return true; 
     }
     
-    // 트레이너 공지사항 API
-    @PostMapping("/trainer/saveAnnouncement")
-    public boolean saveTrainerAnnouncement(@RequestBody String announcement,@AuthenticationPrincipal LoginUserDetails loginUser) {
-        announcementService.saveAnnouncement(announcement, loginUser.getUserId());
-        
-        return true;
-        
-    }
+//    // 트레이너 공지사항 API
+//    @PostMapping("/trainer/saveAnnouncement")
+//    public boolean saveTrainerAnnouncement(@RequestBody String announcement,@AuthenticationPrincipal LoginUserDetails loginUser) {
+//        announcementService.saveAnnouncement(announcement, loginUser.getUserId());
+//        
+//        return true;
+//        
+//    }
+        @PostMapping("/trainer/saveAnnouncement")
+        @ResponseBody
+        public ResponseEntity<Boolean> saveTrainerAnnouncement(
+            @RequestBody Map<String, String> requestData, 
+            @AuthenticationPrincipal LoginUserDetails loginUser) {
+
+            String announcement = requestData.get("announcement");
+            announcementService.saveAnnouncement(announcement, loginUser.getUserId());
+
+            return ResponseEntity.ok(true); // ResponseEntity로 감싸서 반환
+        }
+    
+
 
     // 오늘의 식단 미리보기 API
     @GetMapping("/trainer/mealPreview")
@@ -195,13 +206,37 @@ public class MemberManageController {
 
         // 운동 기록 조회
         List<WorkDTO> workouts = workService.getUserWorkoutsByDate(userId, LocalDate.parse(currentDate), loggedInUserId,UserEntity.Role.Trainer.name());
-
+        
         if (workouts.isEmpty()) {
         	
             return null; // 또는 적절한 예외 처리
         }
         
         return workouts.get(0);
+        
+    }
+
+    // 회원정보 미리보기 API
+    @GetMapping("/trainer/userPreview")
+    @ResponseBody
+    public HealthDataDTO userPreview(@RequestParam(name="userId") Long userId) {
+        Long loggedInUserId = userId;
+
+        HealthDataDTO latestData = healthDataService.getLatestHealthData(loggedInUserId);
+    	log.info("===============latestData:{}", latestData);
+        
+	    if (latestData == null) {
+	        // 데이터가 없으면 기본값 세팅
+	        latestData = new HealthDataDTO();
+	        latestData.setHeight(BigDecimal.ZERO);
+	        latestData.setWeight(BigDecimal.ZERO);
+	        latestData.setMuscleMass(BigDecimal.ZERO);
+	        latestData.setFatMass(BigDecimal.ZERO);
+	        latestData.setBmi(BigDecimal.ZERO);
+	        latestData.setBasalMetabolicRate(BigDecimal.ZERO);
+	    }
+        
+        return latestData;
         
     }
     

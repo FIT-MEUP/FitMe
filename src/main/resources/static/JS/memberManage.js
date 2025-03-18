@@ -79,12 +79,34 @@ $(document).ready(function () {
       return;
     }
 
-    // 서버로 데이터 전송
+    // // 서버로 데이터 전송
+    // $.ajax({
+    //   url: "/trainer/saveAnnouncement",
+    //   type: "POST",
+    //   contentType: "application/json",
+    //   data: updatedNotice,
+    //   success: function (data) {
+    //     console.log("data: " + data);
+    //     if (data) {
+    //       noticeText.text(updatedNotice);
+    //       noticeText.removeClass("hidden");
+    //       editNotice.addClass("hidden");
+    //       editBtn.removeClass("hidden");
+    //       saveBtn.addClass("hidden");
+    //       cancelBtn.addClass("hidden");
+    //     } else {
+    //       alert("공지사항 업데이트에 실패했습니다.");
+    //     }
+    //   },
+    //   error: function () {
+    //     alert("서버 오류가 발생했습니다.");
+    //   },
+    // });
     $.ajax({
       url: "/trainer/saveAnnouncement",
       type: "POST",
       contentType: "application/json",
-      data: updatedNotice,
+      data: JSON.stringify({ announcement: updatedNotice }), // JSON 형식으로 변환
       success: function (data) {
         console.log("data: " + data);
         if (data) {
@@ -102,6 +124,7 @@ $(document).ready(function () {
         alert("서버 오류가 발생했습니다.");
       },
     });
+    
   });
 
   // "수락" 버튼 클릭 시
@@ -165,23 +188,43 @@ $(document).ready(function () {
         window.location.href = `/work?userId=${userId}`;
       });
 
+      $("#userInfo button")
+        .removeClass("hidden")
+        .off("click")
+        .on("click", function () {
+          // 원하는 URL로 이동 (예: '/workoutBoard'로 이동하면서 userId를 쿼리 파라미터로 전달)
+          window.location.href = `/mypage?userId=${userId}`;
+        });
+
     updateUnreadCountToZero(userId);
 
     console.log("선택한 applicationId:", applicationId);
 
     // 회원 정보 조회 (선택된 신청서의 정보를 출력)
     $.ajax({
-      url: `/trainer/selectPT?userId=${userId}`,
+      url: `/trainer/userPreview?userId=${userId}`,
       type: "GET",
       success: function (response) {
         showUserInfo(response, userId);
       },
       error: function (xhr) {
-        alert("회원 정보 조회 중 오류가 발생했습니다.");
+        noUserInfo();
         console.error("Error:", xhr);
       },
     });
 
+  // 회원 PT 조회 (선택된 신청서의 정보를 출력)
+  $.ajax({
+    url: `/trainer/selectPT?userId=${userId}`,
+    type: "GET",
+    success: function (response) {
+      showPTInfo(response, userId);
+    },
+    error: function (xhr) {
+      alert("PT 정보 조회 중 오류가 발생했습니다.");
+      console.error("Error:", xhr);
+    },
+  });
     $.ajax({
       url: `/trainer/mealPreview?userId=${userId}`,
       type: "GET",
@@ -350,8 +393,8 @@ $(document).ready(function () {
 });
 
 // 보여질 정보들
-function showUserInfo(response, userId) {
-  const $userInfoDiv = $("#userInfo");
+function showPTInfo(response, userId) {
+  const $userInfoDiv = $("#userPTInfo");
 
   $userInfoDiv.html(`
       <table class="w-full border border-gray-300">
@@ -494,4 +537,41 @@ function showWorkInfo(workout) {
 function noWorkInfo() {
   const $workInfoDiv = $("#workout-card");
   $workInfoDiv.html("해당 이용자의 오늘의 운동"); // HTML을 완전히 비움
+}
+
+function showUserInfo(latestData) {
+  console.log("latestData", latestData);
+  const $workInfoDiv = $("#user-card");
+
+  let workHtml = `
+    <table class="table table-bordered text-center" id="workoutTable">
+      <thead class="bg-gray-800">
+        <tr class="text-white">
+          <th>키</th>
+          <th>체중</th>
+          <th>BMI</th>
+          <th>체지방률</th>
+          <th>골격근</th>
+          <th>기초대사량</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+   					 <td id="height" th:text="${latestData.height} + ' cm'">${latestData.height} cm</td>
+   					 <td id="weight" th:text="${latestData.weight} + ' kg'">${latestData.weight} kg</td>
+   					 <td id="bmi" th:text="${latestData.bmi}">${latestData.bmi}</td>
+   					 <td id="fatMass" th:text="${latestData.fatMass} + '%'">${latestData.fatMass}%</td>
+   					 <td id="muscleMass" th:text="${latestData.muscleMass} + 'kg'">${latestData.muscleMass}</td>
+   					 <td id="basalMetabolicRate" th:text="${latestData.basalMetabolicRate} + ' kcal'">${latestData.basalMetabolicRate} kcal</td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  $workInfoDiv.html(workHtml);
+}
+
+function noUserInfo() {
+  const $workInfoDiv = $("#user-card");
+  $workInfoDiv.html("해당 이용자의 최신 신체 정보"); // HTML을 완전히 비움
 }
