@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
             right: 'logout personalInfo dayGridMonth,timeGridWeek,timeGridDay'
         },
         initialDate: new Date(),
-        initialView: 'dayGridMonth',
+        initialView: 'timeGridWeek',
         navLinks: true,
         selectable: true,
         selectMirror: true,
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 miniCalendar.updateSize();
             }
         }
-    });
+    });//
 
     mainCalendar.render();
     miniCalendar.render();
@@ -217,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
             success: function (response) {
                 if (response === true) {
                     alert('입력에 성공하셨습니다');
+				
                 } else {
                     alert('입력 실패ㅠㅠ');
                 }

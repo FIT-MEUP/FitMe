@@ -3,7 +3,6 @@ package fitmeup.handler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -34,11 +33,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 세션에 사용자 이메일 저장
         request.getSession().setAttribute("userEmail", authentication.getName());
 
-        // 사용자 권한 목록을 생성 (ROLE_ 접두어가 붙은 경우와 그렇지 않은 경우 모두 체크)
+        // 사용자 권한 목록 생성 (ROLE_ 접두어가 붙은 경우와 그렇지 않은 경우 모두 체크)
         List<String> roleNames = new ArrayList<>();
         authentication.getAuthorities().forEach(auth -> roleNames.add(auth.getAuthority()));
 
-        // LoginUserDetails를 통해 사용자 ID 추출
+        // LoginUserDetails에서 사용자 ID 추출
         Long userId = ((LoginUserDetails) authentication.getPrincipal()).getUserId();
 
         // 권한에 따라 리다이렉트 처리
@@ -49,16 +48,15 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         } else if (roleNames.contains("ROLE_TRAINER") || roleNames.contains("Trainer")) {
             response.sendRedirect("/firstTrainerSchedule");
         } else if (roleNames.contains("ROLE_USER") || roleNames.contains("User")) {
-            // TrainerApplicationEntity에서 현재 사용자의 신청 상태 조회
-            Optional<TrainerApplicationEntity> applicationOpt = trainerApplicationRepository.findByUserUserId(userId);
-            if (applicationOpt.isPresent() && applicationOpt.get().getStatus() == TrainerApplicationEntity.Status.Approved) {
+            // Approved 상태의 TrainerApplicationEntity 리스트를 조회합니다.
+            List<TrainerApplicationEntity> applications = 
+                    trainerApplicationRepository.findByUserUserIdAndStatus(userId, TrainerApplicationEntity.Status.Approved);
+            if (!applications.isEmpty()) {
                 response.sendRedirect("/firstUserCalendar");
             } else {
-                // 신청 엔티티가 없거나, 상태가 Approved가 아니면 홈으로 리다이렉트
                 response.sendRedirect("/");
             }
         } else {
-            // 기타 다른 권한의 경우 기본 홈으로 리다이렉트
             response.sendRedirect("/");
         }
     }
