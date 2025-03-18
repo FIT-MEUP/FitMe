@@ -25,6 +25,10 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/chat/**")
             .addResourceLocations("file:///" + videoUploadDir);
+        
+        // "/uploads/**" 요청은 "C:/uploadPath/" 폴더 내의 파일로 매핑
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:///C:/uploadPath/");
     }
 }
 
