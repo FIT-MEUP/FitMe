@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -372,10 +373,13 @@ public class WorkService {
     	            throw new RuntimeException("🚨 이 회원의 운동 기록을 조회할 권한이 없습니다!");
     	        }
     	    }
-
+    	    // 4. 운동 기록이 있는 날짜 조회 (월 단위)
     	    List<LocalDate> dates = workRepository.findWorkoutDatesByUserAndMonth(user, year, month);
-
-    	    return dates.stream().map(LocalDate::toString).toList();
+    	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    	    
+    	    return dates.stream()
+    	            .map(date -> date.format(formatter))
+    	            .toList();
     	}
 
       

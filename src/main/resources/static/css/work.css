@@ -67,11 +67,13 @@ body {
 /* ✅ 캘린더 스타일 */
 #calendar {
     max-height: 550px;
+
     margin: 0 auto 20px auto;
     background: #1f2937;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+
 }
 
 /* ✅ FullCalendar 스타일 */
@@ -188,3 +190,20 @@ body {
 .hidden-action-buttons {
     display: none;
 }
+
+
+/* dot 스타일 수정 */
+.workout-dot {
+    width: 7px;
+    height: 7px;
+    background: radial-gradient(circle, #198754 30%, #28a745 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(25, 135, 84, 0.6);
+    margin: 2px auto;
+}
+
+.fc-daygrid-day-frame {
+    position: relative;
+    /* 기준점 */
+}
+

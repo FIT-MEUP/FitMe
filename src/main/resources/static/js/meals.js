@@ -1,6 +1,13 @@
 let localStoredDate = localStorage.getItem("selectedDate");
 document.addEventListener("DOMContentLoaded", function () {
 
+    let today = new Date().toISOString().split("T")[0]; // 오늘 날짜 (YYYY-MM-DD)
+    let mainPageLink = document.getElementById("mainPageLink");
+
+    if (mainPageLink) {
+        mainPageLink.href = `/meals?mealDate=${today}`; // 식단 게시판 클릭 시 오늘 날짜로 이동
+    }
+
     /** ✅ 트레이너가 회원 선택 시 userId 변경 */
     let role = document.getElementById("role").value;
     let userId = document.getElementById("loggedInUserId").value;
@@ -475,3 +482,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+$(document).on('hidden.bs.modal', function () {
+    // 현재 열린 모달이 더 남아있는 경우 backdrop을 제거하지 않음
+    if ($('.modal.show').length > 0) {
+        return;
+    }
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open');
+});
+

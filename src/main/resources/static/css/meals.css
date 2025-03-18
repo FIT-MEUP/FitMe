@@ -1,5 +1,4 @@
-/* 기존 스타일 유지 */
-
+/* 공통 및 캘린더 스타일 */
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
     background-color: #facc15 !important; /* Tailwind yellow-300 */
     color: black !important;
@@ -34,6 +33,7 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* 댓글 섹션 */
 .comment-section {
     margin-top: 30px;
     padding: 20px;
@@ -116,18 +116,15 @@
     background: #146c43;
 }
 
-/* ✅ 트레이너 드롭다운 커스텀 */
+/* 트레이너 드롭다운 */
 .trainer-dropdown-container {
     display: flex;
     align-items: center;
     gap: 8px;
-    /* 라벨과 드롭다운 사이 간격 */
     margin-top: 12px;
     margin-right: 16px;
-    /* 오른쪽에 너무 붙지 않도록 여백 */
     justify-content: flex-end;
     flex-wrap: nowrap;
-    /* 줄바꿈 방지 */
 }
 
 .trainer-dropdown-container label {
@@ -154,10 +151,7 @@
     outline: none;
 }
 
-.d-flex.justify-content-end {
-    margin-bottom: 12px;
-}
-
+/* 캘린더 dot */
 .fc-event-dot {
     width: 7px;
     height: 7px;
@@ -167,6 +161,8 @@
     margin: 2px auto;
 }
 
+
+/* 캘린더 header */
 
 .fc-header-toolbar {
     display: flex;
@@ -181,7 +177,9 @@
     color: #333;
 }
 
-/* ✅ 네비게이션 버튼 스타일 */
+
+/* 캘린더 버튼 스타일 */
+
 .fc .fc-button {
     background: #60a5fa; /* Tailwind blue-400 */
     color: white;
@@ -194,6 +192,7 @@
 
 .fc .fc-button:hover {
     background: #3b82f6; /* Tailwind blue-500 */
+
 }
 
 .fc .fc-button:disabled {
@@ -206,24 +205,22 @@
     padding: 6px 8px !important;
 }
 
-.fc .fc-button.fc-today-button {
-    background: #ffc107;
-    color: #333;
-}
-
-.fc .fc-button.fc-today-button:hover {
-    background: #e0a800;
-}
-
+/* 카드 */
 .card {
     border: 1px solid #ddd;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .card img {
+    border-radius: 8px;
+    margin-bottom: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -233,23 +230,28 @@
 }
 
 .card-body {
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.card img {
-    border-radius: 8px;
-    margin-bottom: 12px;
+.card-buttons {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }
 
 .card-title {
     font-size: 1.1rem;
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: 14px;
 }
 
 .card-subtitle {
     font-size: 0.9rem;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .card-text span {
@@ -270,6 +272,7 @@
 .row>.col-md-4 {
     display: flex;
     flex-direction: column;
+
 }
 
 .card {
@@ -404,4 +407,5 @@ nav a:hover {
         max-width: 100%;
     }
 }
+
 

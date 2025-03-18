@@ -13,6 +13,8 @@ let selectedUserId = urlParams.get("userId") || loggedInUserId;
 
 let calendar;
 
+let editModeWorkoutId = null;
+
 document.addEventListener("DOMContentLoaded", function () {
 
     highlightSelectedDate(selectedDate);
@@ -41,8 +43,8 @@ document.addEventListener("DOMContentLoaded", function () {
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         selectable: true,
-        aspectRatio: 1.2,
-        height: "auto",
+        aspectRatio: 1.0,
+        height: "700px",
         headerToolbar: {
             left: "prev,next",
             center: "title",
@@ -63,17 +65,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
-    calendar.render();
-
-    loadWorkoutData(selectedDate);
-
     // ✅ 캘린더 날짜 변경 시 dot 업데이트
     calendar.on('datesSet', function (info) {
         const year = info.start.getFullYear();
         const month = info.start.getMonth() + 1; // JS는 0부터 시작하므로 +1
+        updateApprovedUserIds();
         fetchWorkoutDates(year, month);
     });
+
+    calendar.render();
+    updateApprovedUserIds();
+    const currentDate = calendar.getDate();
+    fetchWorkoutDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
+
+
+    loadWorkoutData(selectedDate);
+
+
 
     // 댓글
     let selectedDateInput = document.getElementById("selectedDate");
@@ -92,30 +100,39 @@ function highlightSelectedDate(dateStr) {
 }
 // ✅ 운동 기록 있는 날짜 조회 및 캘린더에 dot 추가
 function fetchWorkoutDates(year, month) {
+    let userId = selectedUserId || loggedInUserId;
+    console.log("✅ fetchWorkoutDates 호출됨! year:", year, "month:", month, "userId:", userId);
+
     $.ajax({
-        url: `/workout/highlight-dates?userId=${selectedUserId}&year=${year}&month=${month}`,
+        url: `/workout/highlight-dates?userId=${userId}&year=${year}&month=${month}`,
         type: "GET",
         success: function (dateList) {
+            console.log("✅ API 응답 받은 날짜 목록:", dateList);
+
             const dots = document.querySelectorAll(".fc-daygrid-day .workout-dot");
             dots.forEach(dot => dot.remove());
 
             document.querySelectorAll(".fc-daygrid-day").forEach(cell => {
                 const date = cell.getAttribute("data-date");
+
                 if (dateList.includes(date)) {
+                    console.log("✨ dot 추가되는 날짜:", date);
                     const dot = document.createElement("div");
                     dot.className = "workout-dot";
-                    const target = cell.querySelector(".fc-daygrid-day-top");
+                    const target = cell.querySelector(".fc-daygrid-day-frame");
                     if (target) {
                         target.appendChild(dot);
                     }
                 }
             });
         },
-        error: function () {
-            console.error("❌ 운동 기록 날짜 불러오기 실패!");
+        error: function (xhr) {
+            console.error("❌ 운동 기록 날짜 불러오기 실패! ", xhr);
         }
     });
 }
+
+
 
 
 //  전역에서 handleSearchClick 함수 정의 (window.onload 전에!)
@@ -147,7 +164,7 @@ function handleTrainerMemberChange(userId) {
 
 
 
-// ✅ approvedUserIds를 최신 상태로 업데이트하는 함수 추가
+//  approvedUserIds를 최신 상태로 업데이트하는 함수 추가
 function updateApprovedUserIds() {
     if (isTrainer) {
         let trainerMemberSelect = document.getElementById("trainerMemberSelect");
@@ -159,14 +176,14 @@ function updateApprovedUserIds() {
     }
 }
 
-// ✅ 운동 기록 불러올 때 approvedUserIds도 함께 업데이트
+//  운동 기록 불러올 때 approvedUserIds도 함께 업데이트
 function loadWorkoutData(date) {
     let urlParams = new URLSearchParams(window.location.search);
     let userId = urlParams.get("userId") || selectedUserId || loggedInUserId;
 
     if (isTrainer) {
         userId = selectedUserId || loggedInUserId; // 트레이너는 회원 선택 가능
-        updateApprovedUserIds(); // 🔥 최신 승인 회원 목록 업데이트
+        updateApprovedUserIds(); //  최신 승인 회원 목록 업데이트
     } else {
         userId = loggedInUserId; // 일반 사용자는 본인 ID만 사용
     }
@@ -282,11 +299,10 @@ function updateWorkoutTable(workouts, videoMap) {
 }
 
 
-
-
 // 수정 버튼 클릭 시, 입력 필드에 기존 데이터 채우고 버튼 상태 전환
 function editWorkout(id) {
     selectedWorkoutId = id;
+    editModeWorkoutId = id; // 수정 모드 활성화
 
     $.ajax({
         url: `/workout/${id}`,
@@ -329,23 +345,22 @@ function loadWorkoutVideo(workoutId) {
             videoSection.innerHTML = "";
 
             if (videoFileName && videoFileName !== "null") {
-                videoSection.innerHTML = `
-                    <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
-                `;
+                // 수정 모드일 때 → 삭제 버튼만
+                if (editModeWorkoutId === workoutId) {
+                    videoSection.innerHTML = `
+                        <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
+                    `;
+                } else {
+                    // 수정 모드 아닐 때 → 영상 열기 버튼만
+                    videoSection.innerHTML = `
+                        <button class="btn btn-sm btn-success" onclick="openVideo('${videoFileName}')">🎥 영상 열기</button>
+                    `;
+                }
             } else {
+                // 영상 없을 때는 삽입 버튼
                 videoSection.innerHTML = `
                     <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
                 `;
-
-                // ✅ 삭제 후 파일 업로드 필드를 재생성
-                let fileInput = document.getElementById("videoFileForWorkout");
-                if (fileInput) fileInput.remove(); // 기존 input 삭제
-
-                fileInput = document.createElement("input");
-                fileInput.type = "file";
-                fileInput.id = "videoFileForWorkout"; // 새로 추가
-                fileInput.style.display = "none"; // UI에서 숨기기
-                document.body.appendChild(fileInput);
             }
         },
         error: function () {
@@ -462,6 +477,7 @@ function updateWorkout() {
 // 입력 폼 초기화 및 버튼 상태 복구
 function resetForm() {
     selectedWorkoutId = null;
+    editModeWorkoutId = null; // 수정 모드 비활성화
     $("#part").val("");
     $("#exercise").val("");
     $("#sets").val("");
@@ -570,6 +586,7 @@ function uploadVideoForWorkout(workoutId) {
             contentType: false,
             success: function () {
                 alert("✅ 영상이 업로드되었습니다.");
+
                 loadWorkoutVideo(workoutId);
 
                 // ✅ 수정 버튼을 누르지 않은 경우
