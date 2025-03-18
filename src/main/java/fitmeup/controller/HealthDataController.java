@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.HealthDataDTO;
 import fitmeup.service.HealthDataService;
@@ -32,10 +31,20 @@ public class HealthDataController {
 	 */
 	
 	  @GetMapping("/userbodyData") 
-	  public String userbodyData(@RequestParam(name="userId") Long userId ,Model model ) {
-	  List <HealthDataDTO> list=healthDataService.listFindByUserId(userId);
-	 
-	  
+	  public String userbodyData(
+			Model model	
+			,LoginUserDetails loginUser
+			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
+			) 
+	{
+		Long userId=0L;
+		if(userIdRequest==0) {
+			userId=loginUser.getUserId();
+		}else {
+		 userId=userIdRequest;	
+		}  
+		  
+		List <HealthDataDTO> list=healthDataService.listFindByUserId(userId);
 	  model.addAttribute("list",list); // model.addAttribute("userId",userId);
 	
 	 
@@ -85,18 +94,11 @@ public class HealthDataController {
 		}
 	}
 	
-
 	/**
 	 * 가장 최신데이터 반환 api
 	 * 
 	 * @return
 	 */
-	
-//	@GetMapping("/latestHealthData")
-//	@ResponseBody
-//	public HealthDataDTO getLatestHealthData(@RequestParam(name="userId") Long userId) {
-//	    return healthDataService.getLatestHealthData(userId);
-//	}
 	
 	@GetMapping("/latestHealthData")
 	public ResponseEntity<HealthDataDTO> getLatestHealthData(
@@ -117,5 +119,9 @@ public class HealthDataController {
 	public List<HealthDataDTO> getHealthDataHistory(@RequestParam(name="userId") Long userId) {
 	    return healthDataService.listFindByUserId(userId); // 해당 사용자의 모든 데이터 가져오기
 	}
+
+
+	
+	
 
 }
