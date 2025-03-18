@@ -15,16 +15,22 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    
-    // 로그인, 로그아웃 핸들러 등록
-    private final LoginSuccessHandler loginSuccessHandler;
-    private final LoginFailureHandler loginFailureHandler;
-    private final CustomLogoutSuccessHandler logoutHandler;
 
+    private final LoginFailureHandler loginFailureHandler;
+
+    // LoginFailureHandler만 생성자 주입(예시)
+    public SecurityConfig(LoginFailureHandler loginFailureHandler) {
+        this.loginFailureHandler = loginFailureHandler;
+    }
+
+    // ★ Method Injection: LoginSuccessHandler, CustomLogoutSuccessHandler를
+    //   이 filterChain() 메서드의 파라미터로 주입받는다
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+        LoginSuccessHandler loginSuccessHandler,
+        CustomLogoutSuccessHandler logoutHandler)
+        throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers(
                 "/", "/user/**", "/trainer/**", "/trainers","/trainerJoin","/videos/**",

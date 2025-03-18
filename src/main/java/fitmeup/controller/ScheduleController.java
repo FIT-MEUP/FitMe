@@ -31,7 +31,8 @@ public class ScheduleController {
 private final ScheduleService scheduleService;
 	private final TrainerApplicationService trainerApplicationService;
 	private final ChatService chatService;
-    private final AnnouncementService announcementService;
+	private final UserService userService;
+  private final AnnouncementService announcementService;
 
 
 	//ScheuldeDTO를 list형태로 front단에 보내주는 method
@@ -53,7 +54,13 @@ private final ScheduleService scheduleService;
 		  //UserEntity의 UserId를 넣어야함 즉 trainerId가 2인 유저가 UserId가 3이어야 하니깐 그걸 넣어야함
 		  //즉 trainerId를 통해 UserId를 찾는 작업을 해야함
 		  Long trainerId= scheduleService.findTrainerUserId(apptrainerId);		// trainer의 userId
-	    List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
+
+		// 트레이너 현재 온라인 상태 추가 (이 부분이 필수 ★★★)
+		boolean isTrainerOnline = userService.getUserById(trainerId).getIsOnline();
+		model.addAttribute("isTrainerOnline", isTrainerOnline);
+
+
+		List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(trainerId);
 	    
 	    model.addAttribute("list", list);
 	

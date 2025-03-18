@@ -212,7 +212,17 @@ public class UserService {
             .userId(user.getUserId())
             .userName(user.getUserName())
             // 필요한 경우 다른 필드도 매핑
+            .isOnline(user.getIsOnline())
             .build();
     }
 
+    @Transactional
+    public void setOnline(Long userId, boolean online) {
+        UserEntity user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다: " + userId));
+
+        user.setIsOnline(online);
+        userRepository.save(user);
+        log.info("유저({}) 온라인 상태를 {}로 변경", userId, online);
+    }
 }

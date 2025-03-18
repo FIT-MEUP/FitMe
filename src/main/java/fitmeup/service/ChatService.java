@@ -1,5 +1,6 @@
 package fitmeup.service;
 
+import fitmeup.dto.ChatDTO;
 import fitmeup.dto.ChatMessage;
 import fitmeup.dto.UserDTO;
 import fitmeup.entity.ChatEntity;
@@ -88,6 +89,10 @@ public class ChatService {
             .receiverId(chat.getReceiver().getUserId())
             .content(chat.getMessage())
             .time(chat.getSentAt())
+            .originalFileName(chat.getOriginalFileName())
+            .savedFileName(chat.getSavedFileName())
+            .fileType(chat.getFileType())
+            .fileUrl(chat.getFileUrl())
             .build())
         .collect(Collectors.toList());
   }
@@ -113,6 +118,10 @@ public class ChatService {
         .message(chatMessage.getContent())
         .sentAt(LocalDateTime.now())
         .isRead(false)
+        .originalFileName(chatMessage.getOriginalFileName())
+        .savedFileName(chatMessage.getSavedFileName())
+        .fileType(chatMessage.getFileType())
+        .fileUrl(chatMessage.getFileUrl())
         .build();
 
     ChatEntity savedEntity = chatRepository.save(chatEntity);
@@ -123,25 +132,36 @@ public class ChatService {
         .receiverId(savedEntity.getReceiver().getUserId())
         .content(savedEntity.getMessage())
         .time(savedEntity.getSentAt())
+        .originalFileName(savedEntity.getOriginalFileName())
+        .savedFileName(savedEntity.getSavedFileName())
+        .fileType(savedEntity.getFileType())
+        .fileUrl(savedEntity.getFileUrl())
         .build();
   }
 
   /**
-   * 서버에 저장된 파일명을 기준으로 채팅 메시지를 조회하여 ChatMessage로 변환합니다.
+   * 서버에 저장된 파일명을 기준으로 채팅 메시지를 조회하여 ChatDTO로 변환합니다.
    *
    * @param savedFileName 서버에 저장된 UUID 파일명
-   * @return 해당 파일명을 가진 채팅 메시지의 ChatMessage (존재하면)
+   * @return 해당 파일명을 가진 채팅 메시지의 ChatDTO (존재하면)
    */
-  // findBySavedFileName 메서드를 ChatMessage 기반으로 수정 (파일 관련 정보가 없으므로 저장된 파일명으로 대체)
-  public Optional<ChatMessage> findBySavedFileName(String savedFileName) {
+  public Optional<ChatDTO> findBySavedFileName(String savedFileName) {
     return chatRepository.findBySavedFileName(savedFileName)
-        .map(chat -> ChatMessage.builder()
-            .senderId(chat.getSender().getUserId())
-            .receiverId(chat.getReceiver().getUserId())
-            .content(chat.getMessage())
-            .time(chat.getSentAt())
-            .build());
+        .map(chatEntity -> ChatDTO.builder()
+            .chatId(chatEntity.getChatId())
+            .senderId(chatEntity.getSender().getUserId())
+            .receiverId(chatEntity.getReceiver().getUserId())
+            .message(chatEntity.getMessage())
+            .sentAt(chatEntity.getSentAt())
+            .isRead(chatEntity.getIsRead())
+            .originalFileName(chatEntity.getOriginalFileName())
+            .savedFileName(chatEntity.getSavedFileName())
+            .fileType(chatEntity.getFileType())
+            .fileUrl(chatEntity.getFileUrl())
+            .build()
+        );
   }
+
 
   public int getUnreadCountFromTrainer(Long userId) {
     // 현재 사용자와 관련된 모든 메시지 조회 (발신자 또는 수신자)

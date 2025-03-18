@@ -8,6 +8,7 @@ import fitmeup.dto.WorkDTO;
 import fitmeup.service.ChatUserService;
 import fitmeup.service.HealthDataService;
 import fitmeup.service.UserService;
+import java.util.HashMap;
 import fitmeup.service.WorkService;
 
 import java.math.BigDecimal;
@@ -80,6 +81,26 @@ public class MemberManageController {
             model.addAttribute("ApprovedList", ApprovedList);
             model.addAttribute("PendingList", PendingList);
             model.addAttribute("AnnouncementContent",  announcementService.sendAnnouncement(trainerNum));
+
+            // (2) ApprovedList의 각 applicationId별 userId를 통해 user.isOnline을 조회
+            //     userOnlineMap: key=applicationId, value=(true/false)
+            Map<Long, Boolean> userOnlineMap = new HashMap<>();
+            for (TrainerApplicationDTO item : ApprovedList) {
+                Long userId = item.getUserId();  // 신청서상 회원 ID
+                Long applicationId = item.getApplicationId(); // 신청서 ID
+
+
+                UserDTO userDTO = userService.getUserById(userId);
+
+                boolean online = Boolean.TRUE.equals(userDTO.getIsOnline());
+
+                userOnlineMap.put(applicationId, online);
+            }
+
+
+            // userOnlineMap을 Thymeleaf로 넘겨서, ApprovedItem.applicationId → userOnlineMap → online
+            model.addAttribute("userOnlineMap", userOnlineMap);
+
 
             // ChatUserService에서 채팅 대상 유저 정보 조회 (ChatUserDTO: userId, unreadCount, online)
             List<ChatUserDTO> chatUserList = chatUserService.getChatUserList();

@@ -47,6 +47,17 @@
                     <a href="#" class="block bg-blue-100 text-black font-bold text-2xl p-2 rounded-lg text-center hover:bg-blue-700 transition select-btn" 
                     th:data-id="${ApprovedItem.applicationId}" th:data-user-id="${ApprovedItem.userId}">
                         <span class="username" th:text="${ApprovedItem.name}">유저이름</span>
+
+
+
+                        <!-- userOnlineMap[ApprovedItem.applicationId]가 true면 ● 표시 -->
+<!--                        <span th:if="${userOnlineMap != null and userOnlineMap[ApprovedItem.applicationId] eq true}" style="color:green;"> ● </span>-->
+                        <!-- ApprovedItem.userId 기준으로 online 상태 출력 -->
+                        <span th:if="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].online}"
+                              style="color:green;"> ● </span>
+
+
+
                         <span class="unread-count"
                               th:text="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0 ? ChatUserMap[ApprovedItem.userId].unreadCount : ''}"></span>
                     </a>
