@@ -1,10 +1,12 @@
 package fitmeup.handler;
 
+import fitmeup.service.UserService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -24,13 +26,26 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final TrainerApplicationRepository trainerApplicationRepository;
-    
+
+
+    private final UserService userService;
+    private final SimpMessagingTemplate messagingTemplate;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, 
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         log.info("로그인 성공");
-        
+
+
+        Long userId = ((LoginUserDetails) authentication.getPrincipal()).getUserId();
+        userService.setOnline(userId, true);
+
+        // STOMP 브로드캐스트: "/topic/onlineStatus"에 userId 전달
+        // 다른 화면에서 이 userId가 온라인임을 실시간으로 반영 가능
+        messagingTemplate.convertAndSend("/topic/onlineStatus",
+            "LOGIN:" + userId);
+
         // 세션에 사용자 이메일 저장
         request.getSession().setAttribute("userEmail", authentication.getName());
 
@@ -38,8 +53,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         List<String> roleNames = new ArrayList<>();
         authentication.getAuthorities().forEach(auth -> roleNames.add(auth.getAuthority()));
 
-        // LoginUserDetails를 통해 사용자 ID 추출
-        Long userId = ((LoginUserDetails) authentication.getPrincipal()).getUserId();
 
         // 권한에 따라 리다이렉트 처리
         if (roleNames.contains("ROLE_ADMIN") || roleNames.contains("Admin")) {

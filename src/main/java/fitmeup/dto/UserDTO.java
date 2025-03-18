@@ -18,7 +18,8 @@ public class UserDTO {
     private String userContact;
     private String role;
     private TrainerDTO trainerInfo;
-    
+    private Boolean isOnline;
+
     // raw 비밀번호를 입력받음; joinProc()에서 암호화하여 Entity로 변환
     private String password;
 
@@ -50,6 +51,7 @@ public class UserDTO {
                 .userBirthdate(this.userBirthdate)
                 .userEmail(this.userEmail)
                 .userContact(this.userContact)
+                .isOnline(this.isOnline)
                 .role(convertToRoleEnum(this.role))  // ✅ 변환 함수 사용
                 .build();
     }

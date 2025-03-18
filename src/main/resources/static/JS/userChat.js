@@ -24,6 +24,23 @@ $(document).ready(function() {
           $("#trainerUnreadBadge").hide();
         }
       });
+
+      // 트레이너 온라인 상태 구독 추가
+      notificationClient.subscribe('/topic/onlineStatus', function(response) {
+        const [action, trainerId] = response.body.split(":");
+        const currentTrainerId = parseInt($("#chatData").data("target-user-id"));
+
+        if (parseInt(trainerId) === currentTrainerId) {
+          if (action === "LOGIN") {
+            $("#trainerOnlineBadge").show();
+            console.log("트레이너 로그인");
+          } else if (action === "LOGOUT") {
+            $("#trainerOnlineBadge").hide();
+            console.log("트레이너 로그아웃");
+          }
+        }
+      });
+
     }, function(error) {
       console.error("알림용 WS 연결 오류:", error);
     });

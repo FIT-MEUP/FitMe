@@ -2,6 +2,8 @@ package fitmeup.controller;
 
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.LoginUserDetails;
@@ -24,8 +27,10 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	
 	 private final UserService userService; // ✅ UserService 필드 추가 (자동 주입)
+  private final SimpMessagingTemplate messagingTemplate;
 
-	 @GetMapping("/login")
+
+  @GetMapping("/login")
 	 public String loginForm(HttpSession session, Model model) {
 	     // ✅ 로그인 페이지 처음 열 때 세션 초기화 (이전 에러 메시지 제거)
 	     if (session.getAttribute("errorMessage") != null) {
@@ -167,6 +172,16 @@ public class UserController {
             return "redirect:/user/logout";
         }
 
+  // forceLogout 엔드포인트: 사용자 ID를 받아서 online 상태를 false로 설정
+  // 강제 로그아웃 처리 메소드 추가
+  @PostMapping("/forceLogout")
+  @ResponseBody
+  public ResponseEntity<String> forceLogout(@RequestParam("userId") Long userId) {
+    userService.setOnline(userId, false);
+    // STOMP로 로그아웃 브로드캐스팅
+    messagingTemplate.convertAndSend("/topic/onlineStatus", "LOGOUT:" + userId);
+    return ResponseEntity.ok("OK");
+  }
 }
 
     

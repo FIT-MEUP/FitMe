@@ -32,13 +32,89 @@ $(document).ready(function () {
           console.error("알림 데이터 파싱 오류:", e);
         }
       });
+
+      // --- (1-2) (★추가) /topic/onlineStatus 구독 ---
+      notificationClient.subscribe("/topic/onlineStatus", function (response) {
+        var msg = response.body; // "LOGIN:123" or "LOGOUT:123"
+        var parts = msg.split(":");
+        var action = parts[0];   // "LOGIN" or "LOGOUT"
+        var userId = parseInt(parts[1]);
+        console.log("onlineStatus 수신:", action, userId);
+
+        if (action === "LOGIN") {
+          // 새로 로그인한 userId -> 초록 점 표시
+          setOnlineDot(userId);
+        } else if (action === "LOGOUT") {
+          // 로그아웃한 userId -> 초록 점 제거
+          removeOnlineDot(userId);
+        }
+      });
     }, function (error) {
       console.error("Trainer 알림용 WS 연결 오류:", error);
     });
+
+
+
+
+    window.addEventListener('beforeunload', function() {
+      var chatDataElem = document.getElementById("chatData");
+      if (chatDataElem) {
+        var userId = chatDataElem.getAttribute("data-current-user-id");
+        if (userId) {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', '/user/forceLogout?userId=' + userId, false); // false: 동기 요청
+          xhr.send(null);
+        }
+      }
+    });
+
+
+
+
+
   }
 
   // 페이지 로드시 트레이너 알림용 WS 연결
   connectTrainerNotificationWebSocket();
+
+
+  // --- (★추가) 초록 점 표시/제거 함수 ---
+  function setOnlineDot(userId) {
+    // userId에 해당하는 .select-btn DOM 찾기
+    var $selectBtn = $(`.select-btn[data-user-id="${userId}"]`);
+    if ($selectBtn.length) {
+      // 만약 이미 ● 찍혀있지 않다면 append
+      if ($selectBtn.find(".greenDot").length === 0) {
+        // .greenDot 클래스를 달아 식별
+        $selectBtn.append(`<span class="greenDot" style="color:green; margin-left:5px;">●</span>`);
+      }
+    }
+  }
+
+  function removeOnlineDot(userId) {
+    var $selectBtn = $(`.select-btn[data-user-id="${userId}"]`);
+    if ($selectBtn.length) {
+      // .greenDot 제거
+      $selectBtn.find(".greenDot").remove();
+    }
+  }
+
+
+
+
+  window.addEventListener('beforeunload', function(event) {
+    var chatDataElem = document.getElementById("chatData");
+    if (chatDataElem) {
+      var userId = chatDataElem.getAttribute("data-current-user-id");
+      if (userId) {
+        navigator.sendBeacon('/user/forceLogout?userId=' + userId);
+      }
+    }
+  });
+
+
+
+
 
 
   //------------------------------------------------------
@@ -176,7 +252,7 @@ $(document).ready(function () {
       window.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
 
       // (★1) 트레이너도 "local UI" 즉시 반영
-      updateChatWindow(chatMessage);
+      // updateChatWindow(chatMessage);
     } else {
       console.error("WS 연결이 안 되어있습니다.");
     }
