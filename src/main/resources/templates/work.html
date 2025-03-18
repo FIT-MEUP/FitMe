@@ -19,7 +19,16 @@
     <input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
 
     <nav class="navbar navbar-light bg-light p-3">
-        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
+        <!-- 트레이너일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
+            onclick="location.href='/trainer/memberManage';">
+            ← 뒤로 가기
+        </button>
+        <!-- 일반 사용자일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
+            onclick="location.href='/firstUserCalendar';">
+            ← 뒤로 가기
+        </button>
         <h3 class="text-center flex-grow-1">
             <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">운동 게시판</a>
         </h3>
@@ -51,25 +60,36 @@
                 <h4>운동 기록 입력</h4>
                 <hr class="custom-divider">
                 <!-- 트레이너만 보이는 회원 선택 dropdown -->
-                <div class="mb-3" th:if="${role == 'Trainer'}">
-                    <label for="trainerMemberSelect">회원 선택:</label>
-                    <select id="trainerMemberSelect" class="form-select"
+                <div class="mb-3 d-flex align-items-center gap-2" th:if="${role == 'Trainer'}"
+                    style="width: fit-content;">
+                    <select id="trainerMemberSelect" class="form-select" style="width: 150px;"
                         onchange="handleTrainerMemberChange(this.value)">
                         <option value="" th:selected="${userId == null}">회원 선택하기</option>
                         <option th:each="member : ${trainerMembers}" th:value="${member.userId}"
                             th:text="${member.userName}" th:selected="${userId == member.userId}"></option>
                     </select>
                 </div>
+
                 <div class="row mb-3">
                     <!-- ✅ 숨겨진 input으로 userId 포함 -->
                     <input type="hidden" id="selectedUserId" th:value="${userId}">
+                    <div class="col-2">
+                        <select id="part" class="form-select" style="min-width: 100px;">
+                            <option value="">운동 부위</option>
+                            <option value="등">등</option>
+                            <option value="어깨">어깨</option>
+                            <option value="가슴">가슴</option>
+                            <option value="팔">팔</option>
+                            <option value="하체">하체</option>
+                        </select>
+                    </div>
 
-                    <div class="col"><input type="text" id="part" class="form-control" placeholder="운동 부위"></div>
-                    <div class="col"><input type="text" id="exercise" class="form-control" placeholder="운동 이름"></div>
-                    <div class="col"><input type="number" id="sets" class="form-control" placeholder="세트"></div>
-                    <div class="col"><input type="number" id="reps" class="form-control" placeholder="횟수"></div>
-                    <div class="col"><input type="number" id="weight" class="form-control" placeholder="무게 (KG)"></div>
-                    <div class="col">
+                    <div class="col-2"><input type="text" id="exercise" class="form-control" placeholder="운동 이름"></div>
+                    <div class="col-2"><input type="number" id="sets" class="form-control" placeholder="세트"></div>
+                    <div class="col-2"><input type="number" id="reps" class="form-control" placeholder="횟수"></div>
+                    <div class="col-2"><input type="number" id="weight" class="form-control" placeholder="무게 (KG)">
+                    </div>
+                    <div class="col-2 d-grid">
                         <button id="addWorkoutBtn" class="btn btn-primary" onclick="addWorkout()">추가</button>
                         <button id="updateWorkoutBtn" class="btn btn-success hidden" onclick="updateWorkout()">수정
                             완료</button>

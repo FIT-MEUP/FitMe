@@ -15,7 +15,6 @@
 #calendar {
     max-height: 550px;
     margin: 0 auto;
-    margin-bottom: 20px;
 }
 
 .fc-daygrid-day {
@@ -254,10 +253,17 @@
     margin: 16px 0 20px 0;
 }
 
+/* dot 스타일 수정 */
 .workout-dot {
-    width: 6px;
-    height: 6px;
-    background: #198754;
+    width: 7px;
+    height: 7px;
+    background: radial-gradient(circle, #198754 30%, #28a745 100%);
     border-radius: 50%;
-    margin: 2px auto 0 auto;
+    box-shadow: 0 0 4px rgba(25, 135, 84, 0.6);
+    margin: 2px auto;
+}
+
+.fc-daygrid-day-frame {
+    position: relative;
+    /* 기준점 */
 }

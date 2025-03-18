@@ -19,8 +19,19 @@
 
 <body>
     <nav class="navbar navbar-light bg-light p-3">
-        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
-        <h3 class="text-center flex-grow-1">식단 게시판</h3>
+        <!-- 트레이너일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
+            onclick="location.href='/trainer/memberManage';">
+            ← 뒤로 가기
+        </button>
+        <!-- 일반 사용자일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
+            onclick="location.href='/firstUserCalendar';">
+            ← 뒤로 가기
+        </button>
+        <h3 class="text-center flex-grow-1">
+            <a href="/meals?mealDate=" id="mainPageLink" class="text-dark text-decoration-none">식단 게시판</a>
+        </h3>
     </nav>
 
     <input type="hidden" id="loggedInUserId" th:value="${userId}">
@@ -86,7 +97,7 @@
 
                                     <!-- ✅ 수정 버튼 추가 -->
                                     <th:block th:if="${userId == meal.userId}">
-                                        <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+                                        <div class="card-buttons">
                                             <!-- 수정 버튼 -->
                                             <button class="btn btn-outline-warning btn-sm flex-grow-1 edit-meal-btn"
                                                 th:data-mealid="${meal.mealId}" th:data-mealdate="${meal.mealDate}"
