@@ -30,15 +30,14 @@ public class HealthDataDTO {
 	    private BigDecimal fatMass;
 	    private BigDecimal bmi;
 	    private BigDecimal basalMetabolicRate;
-
 	    private LocalDate recordDate;
-
+//	    private Long changeAmount;
 	    
 				public static HealthDataDTO toDTO(HealthDataEntity entity) {
 					return HealthDataDTO.builder()
 							.dataId(entity.getDataId())
-//							.userId(entity.getUser().getUserId())
-							.userId(entity.getUserId())
+							.userId(entity.getUser().getUserId())
+//							.userId(entity.getUserId())
 							.height(entity.getHeight())
 							.weight(entity.getWeight())
 							.muscleMass(entity.getMuscleMass())

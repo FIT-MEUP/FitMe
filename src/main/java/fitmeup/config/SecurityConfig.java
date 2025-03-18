@@ -33,7 +33,7 @@ public class SecurityConfig {
         throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers(
-                "/", "/user/**", "/trainer/**", "/trainers","/trainerJoin",
+                "/", "/user/**", "/trainer/**", "/trainers","/trainerJoin","/videos/**",
                 "/api/**", "/images/**", "/js/**", "/css/**"
             ).permitAll()
             .requestMatchers("/admin/**").hasAuthority("Admin")

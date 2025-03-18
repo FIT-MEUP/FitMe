@@ -355,6 +355,7 @@ public class WorkController {
         Long loginUserId = loginUser.getUserId();
         String role = loginUser.getRoles();
 
+        System.out.println("🔥 userId: " + userId + ", year: " + year + ", month: " + month); 
         return workService.getWorkoutDatesForMonth(userId, year, month, loginUserId, role);
     }
     

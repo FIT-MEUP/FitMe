@@ -13,13 +13,84 @@
 
 </head>
 
-<body>
+<body class="bg-gray-900 text-white" style="
+    margin-top: 100px;">
+
+	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+    <div class="flex justify-between items-center px-6 py-4">
+        <!-- 로고 -->
+        <a href="/" class="text-3xl font-title">
+            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+        </a>
+
+        <!-- 네비게이션 메뉴 -->
+        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
+            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+        </nav>
+
+        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
+        <div class="flex gap-6">
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/user/login}"
+                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+                    로그인
+                </a>
+            </th:block>
+
+            <th:block sec:authorize="isAuthenticated()">
+                <div class="relative">
+                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
+                            id="userMenu" onclick="toggleDropdown()">
+                        [[${#authentication.principal.displayName}]]
+                    </button>
+                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
+                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+
+    // 클릭 외부 감지하여 닫기
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("dropdownMenu");
+        var button = document.getElementById("userMenu");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
+</script>
 
     <input type="hidden" id="loggedInUserId" th:value="${userId}">
     <input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
 
     <nav class="navbar navbar-light bg-light p-3">
-        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
+        <!-- 트레이너일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
+            onclick="location.href='/trainer/memberManage';">
+
+            ← 뒤로 가기
+        </button>
+        <!-- 일반 사용자일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
+            onclick="location.href='/firstUserCalendar';">
+            ← 뒤로 가기
+
+        </button>
         <h3 class="text-center flex-grow-1">
             <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">운동 게시판</a>
         </h3>
@@ -36,7 +107,7 @@
                         <h6>🔍 검색</h6>
                         <div class="search-container">
                             <input type="text" id="search" class="form-control" placeholder="운동 검색...">
-                            <button id="searchBtn" class="btn btn-primary">검색</button>
+                            <button id="searchBtn" class="btn btn-primary search">검색</button>
                         </div>
                         <div class="mt-2">
                             <input type="checkbox" id="videoFilter">
@@ -51,26 +122,39 @@
                 <h4>운동 기록 입력</h4>
                 <hr class="custom-divider">
                 <!-- 트레이너만 보이는 회원 선택 dropdown -->
-                <div class="mb-3" th:if="${role == 'Trainer'}">
-                    <label for="trainerMemberSelect">회원 선택:</label>
-                    <select id="trainerMemberSelect" class="form-select"
+                <div class="mb-3 d-flex align-items-center gap-2" th:if="${role == 'Trainer'}"
+                    style="width: fit-content;">
+                    <select id="trainerMemberSelect" class="form-select" style="width: 150px;"
                         onchange="handleTrainerMemberChange(this.value)">
                         <option value="" th:selected="${userId == null}">회원 선택하기</option>
                         <option th:each="member : ${trainerMembers}" th:value="${member.userId}"
                             th:text="${member.userName}" th:selected="${userId == member.userId}"></option>
                     </select>
                 </div>
+
                 <div class="row mb-3">
                     <!-- ✅ 숨겨진 input으로 userId 포함 -->
                     <input type="hidden" id="selectedUserId" th:value="${userId}">
+                    <div class="col-2">
+                        <select id="part" class="form-select" style="min-width: 100px;">
+                            <option value="">운동 부위</option>
+                            <option value="등">등</option>
+                            <option value="어깨">어깨</option>
+                            <option value="가슴">가슴</option>
+                            <option value="팔">팔</option>
+                            <option value="하체">하체</option>
+                        </select>
+                    </div>
 
-                    <div class="col"><input type="text" id="part" class="form-control" placeholder="운동 부위"></div>
-                    <div class="col"><input type="text" id="exercise" class="form-control" placeholder="운동 이름"></div>
-                    <div class="col"><input type="number" id="sets" class="form-control" placeholder="세트"></div>
-                    <div class="col"><input type="number" id="reps" class="form-control" placeholder="횟수"></div>
-                    <div class="col"><input type="number" id="weight" class="form-control" placeholder="무게 (KG)"></div>
-                    <div class="col">
+
+                    <div class="col-2"><input type="text" id="exercise" class="form-control" placeholder="운동 이름"></div>
+                    <div class="col-2"><input type="number" id="sets" class="form-control" placeholder="세트"></div>
+                    <div class="col-2"><input type="number" id="reps" class="form-control" placeholder="횟수"></div>
+                    <div class="col-2"><input type="number" id="weight" class="form-control" placeholder="무게 (KG)">
+                    </div>
+                    <div class="col-2 d-grid">
                         <button id="addWorkoutBtn" class="btn btn-primary" onclick="addWorkout()">추가</button>
+
                         <button id="updateWorkoutBtn" class="btn btn-success hidden" onclick="updateWorkout()">수정
                             완료</button>
                     </div>
@@ -80,7 +164,7 @@
                 <input type="hidden" id="selectedDate">
                 <!-- 기본 운동 기록 테이블 -->
                 <table class="table table-bordered text-center" id="workoutTable">
-                    <thead class="table-dark">
+                    <thead class="table-dark ">
                         <tr>
                             <th>부위</th>
                             <th>운동 이름</th>
@@ -169,7 +253,7 @@
                     <!--  댓글 입력 폼 -->
                     <form id="commentForm" onsubmit="submitCommentForm(event)">
                         <textarea id="commentInput" class="form-control" placeholder="댓글을 입력하세요..."></textarea>
-                        <button type="submit" class="btn btn-primary">댓글 작성</button>
+                        <button type="submit" class="btn btn-primary comments">댓글 작성</button>
                     </form>
                 </div>
 

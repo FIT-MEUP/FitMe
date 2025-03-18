@@ -9,7 +9,10 @@
     <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 </head>
 
-<body>
+<body class="bg-gray-900 text-black" style="
+    margin-top: 100px;">
+
+	<div th:replace="~{fragment/header :: header}"></div>
 
     <div class="container">
         <!-- 상단 메뉴 -->
@@ -35,7 +38,7 @@
                 </div>
                 <table class="calendar" id="calendar"></table>
                 <div class="menu-buttons">
-  				  <a th:href="@{/user/ptData}" class="button">PT 이력</a>
+				  <a th:href="@{/user/ptData(userId=${userId})}" class="button">PT 이력</a>
    				  <a th:href="@{/user/userbodyData(userId=${userId})}" class="button">신체정보 내역 조회</a>
 				</div>
 
@@ -57,7 +60,6 @@
                     </tr>
                     <tr>
                     <tr id="userInfoRow">
-
    					 <td id="height" th:text="${latestData.height} + ' cm'">0 cm</td>
    					 <td id="weight" th:text="${latestData.weight} + ' kg'">0 kg</td>
    					 <td id="bmi" th:text="${latestData.bmi}">0</td>
@@ -67,7 +69,6 @@
    					 <td id="current-date" th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
 					</tr>
 	
-
                 </table>
                 <!-- 저장 및 취소 버튼 (수정 모드에서만 표시) -->
                 <div id="editButtons" style="display: none; margin-top: 10px;">

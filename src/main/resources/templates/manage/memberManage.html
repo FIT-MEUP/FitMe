@@ -32,9 +32,6 @@
             <a th:href="@{/user/logout}">
                 <button class="bg-blue-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">로그아웃</button>
             </a>
-            <a th:href="@{#}">
-                <button class="bg-blue-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">개인 정보</button>
-            </a>
         </div>
     </header>
     
@@ -79,7 +76,7 @@
                 <h2 class="text-3xl font-semibold text-white">공지사항</h2>
                 <div class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
                     <!-- 공지사항 내용 -->
-                    <p id="noticeText" class="text-gray-600 mt-2">트레이너 공지 사항 내용</p>
+                    <p id="noticeText" class="text-gray-600 mt-2" th:text="${AnnouncementContent}">트레이너 공지 사항 내용</p>
             
                     <!-- 공지사항 수정 입력창 (초기에는 숨김) -->
                     <textarea id="editNotice" class="w-full p-2 border rounded mt-2 hidden"></textarea>
@@ -96,45 +93,25 @@
             </div>
             <!-- 선택된 회원 정보 표시 -->
             <div id="userInfo" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold">회원 정보</h3>
-                <p class="text-gray-600">회원 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
+                <h3 class="text-lg font-semibold" >회원 정보</h3>
+                <p class="text-gray-600" id="user-card">회원 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
+                <button class="text-blue-500 font-semibold mt-2 hidden">운동 게시판 이동</button>
+            </div>
+            <!-- PT 정보 표시 -->
+            <div id="userPTInfo" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold">PT 정보</h3>
             </div>
 
             <!-- 2×2 추가 박스 -->        
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <div id="diet-section" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <p>해당 이용자의 오늘의 식단</p>
-                    <p class="text-blue-500 font-semibold mt-2">클릭하면 이용자 식단 게시판 이동</p>
+                    <div id="diet-card">해당 이용자의 오늘의 식단</div>
+                    <button class="text-blue-500 font-semibold mt-2 hidden">식단 게시판 이동</button>
                 </div>
                 <div id="workout-section" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <p>해당 이용자의 오늘의 운동</p>
-                    <p class="text-blue-500 font-semibold mt-2">클릭하면 이용자 운동 게시판 이동</p>
+                    <div id="workout-card">해당 이용자의 오늘의 운동</div>
+                    <button class="text-blue-500 font-semibold mt-2 hidden">운동 게시판 이동</button>
                 </div>
-                <!-- <div id="pt-status" class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <p class="text-lg font-semibold text-blue-500">이번 달 PT 현황</p>
-                </div>
-                <div class="bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
-                    <table class="w-full border border-gray-300">
-                        <thead>
-
-                            <tr class="bg-gray-800 text-white">
-
-                                <th class="p-2">일</th><th class="p-2">월</th><th class="p-2">화</th>
-                                <th class="p-2">수</th><th class="p-2">목</th><th class="p-2">금</th><th class="p-2">토</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-t border-gray-300">
-                                <td class="p-2 text-gray-400">26</td><td class="p-2 text-gray-400">27</td><td class="p-2 text-gray-400">28</td>
-                                <td class="p-2 text-gray-400">29</td><td class="p-2 text-gray-400">30</td><td class="p-2">1</td><td class="p-2">2</td>
-                            </tr>
-                            <tr class="border-t border-gray-300">
-                                <td class="p-2">3</td><td class="p-2">4</td><td class="p-2 bg-green-500 text-white font-semibold">5</td>
-                                <td class="p-2">6</td><td class="p-2">7</td><td class="p-2">8</td><td class="p-2">9</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div> -->
             </div>
         </main>
 

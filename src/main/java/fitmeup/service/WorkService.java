@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,11 @@ import fitmeup.repository.WorkDataRepository;
 import fitmeup.repository.WorkRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WorkService {
 	
 	private final WorkRepository workRepository;
@@ -84,12 +87,13 @@ public class WorkService {
 	   
 	   //  userId가 null이면 현재 로그인한 사용자 ID로 설정 (새로운 변수로 할당)
 	    final Long targetUserId = (userId == null) ? loginUserId : userId;	    
-
+	    log.info("======================targetUserId{}",targetUserId);
 	    // 일반 사용자는 본인의 기록만 조회 가능
 	    if (!"Trainer".equals(role) && !targetUserId.equals(loginUserId)) {
 	        throw new RuntimeException("본인의 운동 기록만 조회할 수 있습니다.");
 	    }
-
+	    
+	    log.info("======================role{}",role);
 	 // 트레이너인 경우 승인된 회원만 조회 가능
 	    if ("Trainer".equals(role) && !targetUserId.equals(loginUserId)) {
 	        List<UserEntity> trainerMembers = trainerApplicationService.getTrainerMembers(loginUserId);
@@ -99,6 +103,8 @@ public class WorkService {
 	            throw new RuntimeException("🚨 이 회원의 운동 기록을 조회할 권한이 없습니다!");
 	        }
 	    }
+	    log.info("======================targetUserId{}",targetUserId);
+	    log.info("======================workoutDate{}",workoutDate);
 	    return workRepository.findByUserUserIdAndWorkoutDate(targetUserId, workoutDate)
 	            .stream().map(WorkDTO::fromEntity)
 	            .toList();
@@ -367,10 +373,13 @@ public class WorkService {
     	            throw new RuntimeException("🚨 이 회원의 운동 기록을 조회할 권한이 없습니다!");
     	        }
     	    }
-
+    	    // 4. 운동 기록이 있는 날짜 조회 (월 단위)
     	    List<LocalDate> dates = workRepository.findWorkoutDatesByUserAndMonth(user, year, month);
-
-    	    return dates.stream().map(LocalDate::toString).toList();
+    	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    	    
+    	    return dates.stream()
+    	            .map(date -> date.format(formatter))
+    	            .toList();
     	}
 
       

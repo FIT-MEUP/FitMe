@@ -12,4 +12,5 @@ import fitmeup.entity.PTSessionHistoryEntity;
 
 public interface PTSessionHistoryRepository extends JpaRepository<PTSessionHistoryEntity, Long> {
 	List<PTSessionHistoryEntity> findByUserUserId(Long userId, Sort by);
+
 }

@@ -3,10 +3,17 @@ package fitmeup.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fitmeup.dto.ChatUserDTO;
-import fitmeup.dto.UserDTO;
+import fitmeup.dto.HealthDataDTO;
+import fitmeup.dto.WorkDTO;
 import fitmeup.service.ChatUserService;
+import fitmeup.service.HealthDataService;
 import fitmeup.service.UserService;
 import java.util.HashMap;
+import fitmeup.service.WorkService;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.Map;
@@ -17,8 +24,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,9 +31,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.ApproveRequestDTO;
 import fitmeup.dto.LoginUserDetails;
+import fitmeup.dto.MealDTO;
+import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.dto.TrainerApplicationDTO;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.TrainerApplicationEntity;
+import fitmeup.entity.UserEntity;
+import fitmeup.service.AnnouncementService;
 import fitmeup.service.MealService;
+import fitmeup.service.PTSessionHistoryService;
+import fitmeup.service.ScheduleService;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
 import lombok.RequiredArgsConstructor;
@@ -38,21 +50,37 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberManageController {
-    private final TrainerService trainerService;
     private final MealService mealService;
     private final TrainerApplicationService trainerApplicationService;
-    private final UserService userService;
+    private final ScheduleService scheduleService;
+    private final AnnouncementService announcementService;
+    private final PTSessionHistoryService ptSessionHistoryService;
+    private final WorkService workService;
+	private final HealthDataService healthDataService; // ✅ 서비스 주입
+
+    
     private final ChatUserService chatUserService;
 
-    @GetMapping("/trainer/memberManage")
-    public String memberManagePage(@AuthenticationPrincipal LoginUserDetails loginUser, Model model) {
-        // loginUser.getRoles()가 문자열이라면 equals()로 비교합니다.
-        if ("Trainer".equals(loginUser.getRoles())) {
+    @GetMapping("trainer/memberManage")
+    public String memberManagePage(
+                                    @AuthenticationPrincipal LoginUserDetails loginUser,
+                                    Model model) {
+        // findbyId로 대충 특정했다고 가정하고
+        if("Trainer".equals(loginUser.getRoles())){
             Long trainerNum = loginUser.getUserId();
             List<TrainerApplicationDTO> ApprovedList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Approved);
             List<TrainerApplicationDTO> PendingList = trainerApplicationService.getApplicationById(trainerNum, TrainerApplicationEntity.Status.Pending);
+//            for(String role : roleNames) {
+//            	log.info("====================={}",role);
+//            }
+            log.info("=====================ApprovedList:{}", ApprovedList);
+            log.info("=====================PendingList:{}", PendingList);
+
+           
+            // html에 foreach 돌려서 하면 될듯?
             model.addAttribute("ApprovedList", ApprovedList);
             model.addAttribute("PendingList", PendingList);
+            model.addAttribute("AnnouncementContent",  announcementService.sendAnnouncement(trainerNum));
 
             // (2) ApprovedList의 각 applicationId별 userId를 통해 user.isOnline을 조회
             //     userOnlineMap: key=applicationId, value=(true/false)
@@ -104,7 +132,6 @@ public class MemberManageController {
     @PostMapping("/trainer/approve")
     @ResponseBody
     public ResponseEntity<String> approveApplication(@RequestBody ApproveRequestDTO approveRequestDTO) {
-    	log.info("===============수락:{}",approveRequestDTO.getApplicationId());
         trainerApplicationService.updateApplicationStatus(approveRequestDTO.getApplicationId(), TrainerApplicationEntity.Status.Approved);
         return ResponseEntity.ok("Application approved successfully.");
     }
@@ -112,19 +139,129 @@ public class MemberManageController {
     // 신청 거절 API
     @PostMapping("/trainer/reject")
     @ResponseBody
+    
     public ResponseEntity<String> rejectApplication(@RequestBody ApproveRequestDTO approveRequestDTO) {
         trainerApplicationService.updateApplicationStatus(approveRequestDTO.getApplicationId(), TrainerApplicationEntity.Status.Rejected);
         return ResponseEntity.ok("Application rejected successfully.");
     }
 
-    // 회원 선택 API
-    @GetMapping("/trainer/select")
+    // 회원 PT 선택 API
+    @GetMapping("/trainer/selectPT")
     @ResponseBody
-    public String selectApplication(@RequestParam(name="applicationId") Long applicationId) {
-    	String name = trainerApplicationService.selectOne(applicationId);
+    public PTSessionHistoryDTO selectApplication(@RequestParam(name="userId") Long userId, Model model) {
+        PTSessionHistoryDTO dto = new PTSessionHistoryDTO();
+        dto.setUserId(userId);
+        dto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
+        dto.setChangeAmount(0L);
+        dto.setReason("새로운 PT계약 생성");
 
-        return name;
+        
+        return PTSessionHistoryDTO.fromEntity(scheduleService.selectfirstByUserDTO(dto)); 
     }
+    
+    // 회원 PT 업데이트 API
+    @PostMapping("/trainer/updatePT")
+    @ResponseBody
+    public boolean updateApplication(@RequestBody  PTSessionHistoryDTO ptSessionHistoryDTO) {
+    	PTSessionHistoryDTO PTdto = new PTSessionHistoryDTO();
+    	PTdto.setUserId(ptSessionHistoryDTO.getUserId());
+    	PTdto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
+    	PTdto.setChangeAmount(ptSessionHistoryDTO.getChangeAmount());
+        PTdto.setReason(ptSessionHistoryDTO.getReason());
+        
+        
+        ptSessionHistoryService.savePT(PTdto);
+        
+        return true; 
+    }
+    
+//    // 트레이너 공지사항 API
+//    @PostMapping("/trainer/saveAnnouncement")
+//    public boolean saveTrainerAnnouncement(@RequestBody String announcement,@AuthenticationPrincipal LoginUserDetails loginUser) {
+//        announcementService.saveAnnouncement(announcement, loginUser.getUserId());
+//        
+//        return true;
+//        
+//    }
+        @PostMapping("/trainer/saveAnnouncement")
+        @ResponseBody
+        public ResponseEntity<Boolean> saveTrainerAnnouncement(
+            @RequestBody Map<String, String> requestData, 
+            @AuthenticationPrincipal LoginUserDetails loginUser) {
+
+            String announcement = requestData.get("announcement");
+            announcementService.saveAnnouncement(announcement, loginUser.getUserId());
+
+            return ResponseEntity.ok(true); // ResponseEntity로 감싸서 반환
+        }
+    
+
+
+    // 오늘의 식단 미리보기 API
+    @GetMapping("/trainer/mealPreview")
+    @ResponseBody
+    public MealDTO mealPreview(@RequestParam(name="userId") Long userId) {
+        List<MealDTO> meals = Collections.emptyList(); // ✅ 기본값: 빈 리스트
+        String currentDate = LocalDate.now().toString();
+
+        Long loggedInUserId = userId;
+
+        meals = mealService.getMealsByUserAndDate(userId, LocalDate.parse(currentDate), loggedInUserId, UserEntity.Role.Trainer.name());
+
+        
+
+        if (meals.isEmpty()) {
+            return null; // 또는 적절한 예외 처리
+        }
+        
+        return meals.get(0);
+        
+    }
+
+    // 오늘의 운동 미리보기 API
+    @GetMapping("/trainer/workPreview")
+    @ResponseBody
+    public WorkDTO workPreview(@RequestParam(name="userId") Long userId) {
+        String currentDate = LocalDate.now().toString();
+        Long loggedInUserId = userId;
+
+        // 운동 기록 조회
+        List<WorkDTO> workouts = workService.getUserWorkoutsByDate(userId, LocalDate.parse(currentDate), loggedInUserId,UserEntity.Role.Trainer.name());
+        
+        if (workouts.isEmpty()) {
+        	
+            return null; // 또는 적절한 예외 처리
+        }
+        
+        return workouts.get(0);
+        
+    }
+
+    // 회원정보 미리보기 API
+    @GetMapping("/trainer/userPreview")
+    @ResponseBody
+    public HealthDataDTO userPreview(@RequestParam(name="userId") Long userId) {
+        Long loggedInUserId = userId;
+
+        HealthDataDTO latestData = healthDataService.getLatestHealthData(loggedInUserId);
+    	log.info("===============latestData:{}", latestData);
+        
+	    if (latestData == null) {
+	        // 데이터가 없으면 기본값 세팅
+	        latestData = new HealthDataDTO();
+	        latestData.setHeight(BigDecimal.ZERO);
+	        latestData.setWeight(BigDecimal.ZERO);
+	        latestData.setMuscleMass(BigDecimal.ZERO);
+	        latestData.setFatMass(BigDecimal.ZERO);
+	        latestData.setBmi(BigDecimal.ZERO);
+	        latestData.setBasalMetabolicRate(BigDecimal.ZERO);
+	    }
+        
+        return latestData;
+        
+    }
+    
+    
 
 //    // 로그인한 사용자의 정보를 데이터베이스에서 조회하여 UserDTO로 반환하는 엔드포인트
 //    @PostMapping("/trainer/selectLoginUser")

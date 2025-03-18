@@ -16,7 +16,6 @@
             <button class="back-button">로고</button>
             <h1>나의 신체 데이터</h1>
             <div class="header-right">
-<!--                 <button class="back-button">돌아가기</button> -->
                  <a th:href="@{/mypage(userId=${userId})}" class="button">돌아가기</a>
             </div>
         </div>
@@ -70,9 +69,9 @@
    
             
             //  삭제 버튼 클릭 이벤트 추가
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".delete-btn").forEach(button => {
-        button.addEventListener("click", function() {
+		 document.addEventListener("DOMContentLoaded", function() {
+   		 document.querySelectorAll(".delete-btn").forEach(button => {
+       	 button.addEventListener("click", function() {
             let dataId = this.getAttribute("data-id"); // 버튼의 data-id 속성값 가져오기
             confirmDelete(dataId, this); // 삭제 버튼 요소도 함께 전달
         });
@@ -169,29 +168,9 @@ document.addEventListener("DOMContentLoaded", function() {
                             let formattedDate = new Date(recordDate).toISOString().split('T')[0];
                             
 
-                  /*           //  변경된 값들을 화면에 반영
-                            let row = document.getElementById(`row-${dataId}`);
-                            // let row = button.closest("tr");
-                            row.innerHTML = `
-                                <td>${height} cm</td>
-                                <td>${weight} kg</td>
-                                <td>${bmi}</td>
-                                <td>${fatMass}%</td>
-                                <td>${muscleMass} kg</td>
-                                <td>${bmr} kcal</td>
-                                <td>${row.children[6].innerText}</td>
-                                <td><button onclick="editRow(this)" class="btn btn-warning">수정</button></td>
-                                <td><button onclick="confirmDelete(${dataId}, this)" class="btn btn-danger">삭제</button></td>
-                                log
-                `;
-                        }
-                    },
-                    error: function() {
-                        console.error("수정 요청 실패"); //  콘솔 로그만 남김 (사용자 알람 X)
-                    }
-                });
-            } */
+           
             
+         // ✅ 기존 행을 새로운 행으로 교체 (Thymeleaf 데이터 유지)
             let newRow = `
                 <tr id="row-${dataId}">
                     <td>${height} cm</td>
@@ -205,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <td><button onclick="confirmDelete(${dataId}, this)" class="btn btn-danger">삭제</button></td>
                 </tr>`;
 
-            $(row).replaceWith(newRow); // ✅ 기존 행을 새로운 행으로 교체 (Thymeleaf 데이터 유지)
+            $(row).replaceWith(newRow); 
         } else {
             alert("수정 실패! 다시 시도해주세요.");
         }
