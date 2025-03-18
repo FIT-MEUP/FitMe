@@ -34,6 +34,7 @@ import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.MealDTO;
 import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.dto.TrainerApplicationDTO;
+import fitmeup.dto.UserDTO;
 import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.UserEntity;
@@ -60,6 +61,7 @@ public class MemberManageController {
 
     
     private final ChatUserService chatUserService;
+    private final UserService userService;
 
     @GetMapping("trainer/memberManage")
     public String memberManagePage(
