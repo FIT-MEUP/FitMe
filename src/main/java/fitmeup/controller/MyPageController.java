@@ -16,6 +16,7 @@ import fitmeup.dto.HealthDataDTO;
 import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.service.HealthDataService;
+import fitmeup.service.PTSessionHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MyPageController {
 
 	private final HealthDataService healthDataService; // ✅ 서비스 주입
+	private final PTSessionHistoryService ptSessionHistoryService;
 
 	/**
 	 * 마이페이지에서 사용자 데이터 조회
@@ -83,28 +85,18 @@ public class MyPageController {
 	}
 	
 	@GetMapping("/user/ptData")
-	public String userPtData(
-			Model model	
-			,LoginUserDetails loginUser
-			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
-			) 
-	{
-		Long userId=0L;
-		if(userIdRequest==0) {
-			userId=loginUser.getUserId();
-		}else {
-		 userId=userIdRequest;	
-		}
-		
-		List<PTSessionHistoryDTO> list = PTSessionHistoryService.getPTSessionHistory(userId);
-		model.addAttribute("list",list);
-		
-		
-	
-		return"/user/ptData";
-		
-	}
-	
+    public String userPtData(
+        Model model,
+        LoginUserDetails loginUser,
+        @RequestParam(name="userId", defaultValue="0") Long userIdRequest
+    ) {
+        Long userId = (userIdRequest == 0) ? loginUser.getUserId() : userIdRequest;
 
+        // ✅ 인스턴스 메서드로 호출
+        List<PTSessionHistoryDTO> list = ptSessionHistoryService.getPTSessionHistory(userId);
 
+        model.addAttribute("list", list);
+
+        return "/user/ptData";
+    }
 }

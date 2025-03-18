@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.HealthDataDTO;
+import fitmeup.dto.LoginUserDetails;
 import fitmeup.service.HealthDataService;
 
 import lombok.RequiredArgsConstructor;
