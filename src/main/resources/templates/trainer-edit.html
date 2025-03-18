@@ -1,91 +1,107 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>프로필 수정 | Fit Me</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-
-    <style>
-        .font-title { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; }
-        .font-body { font-family: 'Montserrat', sans-serif; font-weight: 400; }
-        .bg-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
-        .fade-in { animation: fadeIn 0.7s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>프로필 수정</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
+<body>
+  <div class="container mt-5">
+    <h2>프로필 수정</h2>
+    <form th:action="@{/trainer/edit}" method="post" enctype="multipart/form-data">
+      <input type="hidden" th:value="${trainer.trainerId}" name="trainerId">
+      
+      <!-- 트레이너 이름 (읽기 전용) -->
+      <div class="mb-3">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-control" th:value="${trainer.user.userName}" readonly>
+      </div>
+      
+      <!-- 프로필 사진 영역 -->
+      <div class="mb-3">
+        <label class="form-label">프로필 사진</label>
+        <div>
+          <!-- 사진이 등록되어 있으면: 사진과 삭제 버튼 표시 -->
+          <div th:if="${trainer.photos != null and !#lists.isEmpty(trainer.photos)}">
+            <img th:src="${trainer.photos[0].photoUrl}" class="img-thumbnail" width="200">
+            <button type="button" class="btn btn-danger btn-sm"
+                    th:attr="onclick=|deletePhoto('${trainer.photos[0].photoId}')|">
+              삭제
+            </button>
+          </div>
+          <!-- 사진이 없으면: 파일 입력 필드 표시 -->
+          <div th:if="${trainer.photos == null or #lists.isEmpty(trainer.photos)}">
+            <input type="file" class="form-control" name="profileImages" accept="image/*">
+          </div>
+        </div>
+      </div>
+      
+      <!-- 짧은 소개 -->
+      <div class="mb-3">
+        <label class="form-label">짧은 소개</label>
+        <input type="text" class="form-control" name="shortIntro" th:value="${trainer.shortIntro}" required>
+      </div>
+      
+      <!-- 전문 분야 -->
+      <div class="mb-3">
+        <label class="form-label">전문 분야</label>
+        <input type="text" class="form-control" name="specialization" th:value="${trainer.specialization}" required>
+      </div>
+      
+      <!-- 경력 -->
+      <div class="mb-3">
+        <label class="form-label">경력 (년)</label>
+        <input type="number" class="form-control" name="experience" th:value="${trainer.experience}" required>
+      </div>
+      
+      <!-- 비용 -->
+      <div class="mb-3">
+        <label class="form-label">회당 비용 (원)</label>
+        <input type="number" class="form-control" name="fee" th:value="${trainer.fee}" required>
+      </div>
+      
+      <!-- 자기소개 -->
+      <div class="mb-3">
+        <label class="form-label">자기소개</label>
+        <textarea class="form-control" name="bio" rows="5" required th:text="${trainer.bio}"></textarea>
+      </div>
+      
+      <!-- 버튼 그룹 -->
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100">저장</button>
+        <a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" class="btn btn-secondary w-100">취소</a>
+      </div>
+    </form>
+  </div>
+  
+  <!-- AJAX: 사진 삭제 처리 -->
+  <script>
+    function deletePhoto(photoId) {
+      if (!confirm("정말 삭제하시겠습니까?")) return;
+      fetch('/api/trainer/photo/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ "photoId": photoId })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("사진이 삭제되었습니다.");
+          window.location.reload();
+        } else {
+          alert("사진 삭제에 실패했습니다.");
+        }
+      })
+      .catch(error => {
+        console.error("사진 삭제 오류:", error);
+        alert("오류가 발생했습니다.");
+      });
+    }
+  </script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
-
-    <div class="relative z-10 flex flex-col w-full max-w-lg fade-in">
-        <header class="flex justify-center py-4">
-            <a href="/">
-                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit Me Logo" class="w-36">
-            </a>
-        </header>
-
-        <section class="bg-overlay p-8 py-10 shadow-lg rounded-lg w-full text-center">
-            <h1 class="text-3xl font-title text-white tracking-widest">프로필 수정</h1>
-            <p class="text-gray-300 mt-1 font-body">트레이너 정보를 업데이트하세요.</p>
-
-            <form th:action="@{/trainer/edit}" method="post" class="mt-6 space-y-4">
-                <input type="hidden" th:value="${trainer.trainerId}" name="trainerId">
-
-                <!-- ✅ 이름 (읽기 전용) -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">이름</label>
-                    <input type="text" class="w-full p-3 rounded-lg bg-gray-800 text-gray-300 border border-gray-700" 
-                           th:value="${trainer.user.userName}" readonly>
-                </div>
-
-                <!-- ✅ 짧은 소개 -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">짧은 소개</label>
-                    <input type="text" name="shortIntro" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
-                           th:value="${trainer.shortIntro}" required>
-                </div>
-
-                <!-- ✅ 전문 분야 -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">전문 분야</label>
-                    <input type="text" name="specialization" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
-                           th:value="${trainer.specialization}" required>
-                </div>
-
-                <!-- ✅ 경력 (년) -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">경력 (년)</label>
-                    <input type="number" name="experience" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
-                           th:value="${trainer.experience}" required>
-                </div>
-
-                <!-- ✅ 회당 비용 -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">회당 비용 (원)</label>
-                    <input type="number" name="fee" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
-                           th:value="${trainer.fee}" required>
-                </div>
-
-                <!-- ✅ 자기소개 -->
-                <div>
-                    <label class="block text-gray-400 font-semibold text-left mb-1">자기소개</label>
-                    <textarea name="bio" rows="5" class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700"
-                              required th:text="${trainer.bio}"></textarea>
-                </div>
-
-                <!-- ✅ 저장 버튼 -->
-                <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-title uppercase">
-                    저장하기
-                </button>
-            </form>
-        </section>
-    </div>
 </body>
 </html>

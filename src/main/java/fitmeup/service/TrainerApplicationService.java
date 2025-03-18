@@ -199,6 +199,10 @@ public class TrainerApplicationService {
 
   
   public Long findApplicationIdByUserId(Long userId) {
-    return trainerApplicationRepository.findByUserUserId(userId).get().getApplicationId();
+    List<TrainerApplicationEntity> temp = trainerApplicationRepository.findByUserUserId(userId);
+    return	temp.get(0).getApplicationId();
+	  
+	 
+//	  return trainerApplicationRepository.findByUserUserId(userId).get().getApplicationId();
   }
 }

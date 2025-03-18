@@ -119,10 +119,11 @@ console.log("Merged calendarEvents:", calendarEvents);
 	
   <div id="page-container">
     <!-- 왼쪽 사이드바 -->
-    <div id="left-sidebar">
+    <div id="left-sidebar" class="items-center">
       <button id="diet-board">식단 게시판</button>
       <button id="exercise-board">운동 게시판</button>
-      <div id="left-placeholder">여기에 나중에 글을 작성할 예정입니다.</div>
+      <div id="left-placeholder" th:text="${AdminAnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</div>
+      <div id="left-placeholder" th:text="${AnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</div>
     </div>
     <!-- 중앙 캘린더 -->
     <div id="calendar"></div>

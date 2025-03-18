@@ -79,7 +79,16 @@
     <input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
 
     <nav class="navbar navbar-light bg-light p-3">
-        <button class="btn btn-primary" onclick="history.back();">← 뒤로 가기</button>
+        <!-- 트레이너일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
+            onclick="location.href='/trainer/memberManage';">
+          ← 뒤로 가기
+        </button>
+        <!-- 일반 사용자일 경우 -->
+        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
+                onclick="location.href='/firstUserCalendar';">
+          ← 뒤로 가기
+        </button>
         <h3 class="text-center flex-grow-1">
             <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">운동 게시판</a>
         </h3>
@@ -140,7 +149,7 @@
                 <input type="hidden" id="selectedDate">
                 <!-- 기본 운동 기록 테이블 -->
                 <table class="table table-bordered text-center" id="workoutTable">
-                    <thead class="table-dark">
+                    <thead class="table-dark ">
                         <tr>
                             <th>부위</th>
                             <th>운동 이름</th>

@@ -1,9 +1,11 @@
 package fitmeup.service;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerEntity;
@@ -109,4 +111,33 @@ public class TrainerService {
         return trainer.getTrainerId() != null;
     }
     
+    // ✅ 트레이너 사진 업로드 처리 (추가)
+    @Transactional
+    public void saveTrainerPhotos(TrainerEntity trainer, List<MultipartFile> profileImages) {
+        String uploadDir = "C:/uploadPath/"; // 실제 파일 저장 경로
+        for (MultipartFile file : profileImages) {
+            // 빈 파일(파일 선택이 안 된 경우)은 건너뜁니다.
+            if (file.isEmpty() || file.getOriginalFilename() == null || file.getOriginalFilename().trim().isEmpty()) {
+                continue;
+            }
+            try {
+                String originalFileName = file.getOriginalFilename().trim();
+                // 공백을 언더바로 변환해서 URL 인코딩 문제 예방
+                originalFileName = originalFileName.replaceAll("[\\s\\u00A0]+", "_");
+                String fileName = System.nanoTime() + "_" + originalFileName;
+                File destinationFile = new File(uploadDir + fileName);
+                file.transferTo(destinationFile);
+
+                TrainerPhotoEntity photo = TrainerPhotoEntity.builder()
+                        .trainer(trainer)
+                        .photoUrl("/uploads/" + fileName)  // 클라이언트가 접근할 URL
+                        .build();
+
+                trainerPhotoRepository.save(photo);
+                log.info("✅ 사진 저장 완료: {}", fileName);
+            } catch (Exception e) {
+                log.error("❌ 사진 저장 실패: {}", e.getMessage());
+            }
+        }
+    }
 }

@@ -3,7 +3,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var miniCalendarEl = document.getElementById('mini-calendar');
     var miniCalendarWrapper = document.getElementById('mini-calendar-wrapper');
     var monthPlaceholder = document.getElementById('month-placeholder');
-    
+
+    // 식단, 운동 게시판 버튼 클릭 리스너
+    document.getElementById("diet-board").addEventListener("click", function(){
+        window.location.href = "/meals";
+    });
+    document.getElementById("exercise-board").addEventListener("click", function(){
+        window.location.href = "/work";
+    });
+
     // 오른쪽 영역의 요소들
     var ptButton = document.getElementById('pt-button');
     var deleteButton = document.getElementById('delete-button');
@@ -11,11 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var scheduleForm = document.getElementById('schedule-form');
     var startDateInput = document.getElementById('start-date');
     var chatBox = document.getElementById('chat-box');
-    
+
     // 사용자 일정 선택 모드 관련 변수
     var userSelectionMode = false;
     var userCreatedEvents = [];
-    
+
     function formatLocalDateTime(date) {
         var yyyy = date.getFullYear();
         var MM = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -25,32 +33,24 @@ document.addEventListener('DOMContentLoaded', function () {
         var ss = ("0" + date.getSeconds()).slice(-2);
         return yyyy + "-" + MM + "-" + dd + "T" + hh + ":" + mm + ":" + ss;
     }
-    
-    var miniCalendar = new FullCalendar.Calendar(miniCalendarEl, {
-        initialView: 'dayGridMonth',
-        selectable: true,
-        height: '300px',
-        headerToolbar: false,
-        dateClick: function(info) {
-            mainCalendar.changeView('timeGridWeek', info.dateStr);
-        }
-    });
-    
+
+    // 기본 뷰를 주간 뷰로 설정 ("timeGridWeek")
     var mainCalendar = new FullCalendar.Calendar(mainCalendarEl, {
         timeZone: 'UTC', // 서버와 DB의 타임존이 UTC라면 그대로 사용
+        initialView: 'timeGridWeek',  // 기본 뷰를 주간 뷰로 변경
         eventOverlap: true,
         customButtons: {
             logout: {
                 text: '로그아웃',
-				click: function () {
-				                window.location.href = '/user/logout?userId=' + userId;
-				            }
+                click: function () {
+                    window.location.href = '/user/logout?userId=' + userId;
+                }
             },
             personalInfo: {
                 text: '개인정보',
-				click: function () {
-				               window.location.href = '/userbodyData';
-				           }
+                click: function () {
+                    window.location.href = '/userbodyData';
+                }
             }
         },
         headerToolbar: {
@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
             right: 'logout personalInfo dayGridMonth,timeGridWeek,timeGridDay'
         },
         initialDate: new Date(),
-        initialView: 'dayGridMonth',
         navLinks: true,
         selectable: true,
         selectMirror: true,
@@ -162,10 +161,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-    
+
+    var miniCalendar = new FullCalendar.Calendar(miniCalendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        height: '300px',
+        headerToolbar: false,
+        dateClick: function(info) {
+            mainCalendar.changeView('timeGridWeek', info.dateStr);
+        }
+    });
+
     mainCalendar.render();
     miniCalendar.render();
-    
+
     ptButton.addEventListener('click', function() {
         if (!userSelectionMode) {
             userSelectionMode = true;
@@ -203,6 +212,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 color: 'yellow',
                 isUserCreated: true
             };
+            // 여기서 사용자에게 확인하기 전에 이벤트를 추가하지 않고, 확인 후 추가하도록 할 수도 있지만,
+            // 기존 구조를 유지하면서, 저장 전 AJAX 호출 시 eventInstance.remove()로 이벤트를 숨깁니다.
             var addedEvent = mainCalendar.addEvent(newEventData);
             userCreatedEvents.push({ data: newEventData, instance: addedEvent });
             if (confirm("선택한 이벤트를 저장하시겠습니까?")) {
@@ -222,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteButton.style.display = 'none';
         }
     });
-    
+
     function sendUserEventToServer(eventData, eventInstance) {
         $.ajax({
             url: '/calendar',
@@ -237,18 +248,16 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             dataType: 'text',
             success: function(response) {
+                // 이벤트를 미리 제거하여 alert 동안 캘린더에 표시되지 않도록 합니다.
+                eventInstance.remove();
                 if(response === 'success'){
-					eventInstance.remove();
                     alert('저장이 완료되었습니다.');
-					window.location.href = '/firstUserCalendar?userId=' + userId;
+                    window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
-                    eventInstance.remove();
                     alert('이용가능한 시간이 아닙니다.');
                 } else if(response === "alreadySchedule"){
-                    eventInstance.remove();
                     alert('이미 다른사람의 예약이 있습니다.');
                 } else if(response === "alreadyHaveSchedule"){
-                    eventInstance.remove();
                     alert('이미 예약이 있습니다.');
                 }
             },
