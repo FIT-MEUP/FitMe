@@ -1,7 +1,6 @@
 package fitmeup.controller;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fitmeup.dto.HealthDataDTO;
+import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.PTSessionHistoryDTO;
-import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.service.HealthDataService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +31,21 @@ public class MyPageController {
 	 * 마이페이지에서 사용자 데이터 조회
 	 */
 
-	@GetMapping({ "/mypage","","/" })
+	@GetMapping({"/mypage"})
 	public String index(
-			Model model	) {Long userId=1L;
-		model.addAttribute("userId",userId);
+			Model model	
+			,LoginUserDetails loginUser
+			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
+			) 
+	{
+		Long userId=0L;
+		if(userIdRequest==0) {
+			userId=loginUser.getUserId();
+		}else {
+		 userId=userIdRequest;	
+		}
+			
+			model.addAttribute("userId",userId);
 		
 	    // 최신 데이터 가져오기
 	    HealthDataDTO latestData = healthDataService.getLatestHealthData(userId);
@@ -75,9 +84,22 @@ public class MyPageController {
 	
 	@GetMapping("/user/ptData")
 	public String userPtData(
-			@RequestParam(name="userId")Long userId
-			,Model model) {
-		log.info("userId ===============",userId);
+			Model model	
+			,LoginUserDetails loginUser
+			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
+			) 
+	{
+		Long userId=0L;
+		if(userIdRequest==0) {
+			userId=loginUser.getUserId();
+		}else {
+		 userId=userIdRequest;	
+		}
+		
+		List<PTSessionHistoryDTO> list = PTSessionHistoryService.getPTSessionHistory(userId);
+		model.addAttribute("list",list);
+		
+		
 	
 		return"/user/ptData";
 		

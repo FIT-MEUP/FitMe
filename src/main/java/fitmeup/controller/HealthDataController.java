@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fitmeup.dto.HealthDataDTO;
 import fitmeup.service.HealthDataService;
@@ -32,9 +31,20 @@ public class HealthDataController {
 	 */
 	
 	  @GetMapping("/userbodyData") 
-	  public String userbodyData(@RequestParam(name="userId") Long userId ,Model model ) {
-	  List <HealthDataDTO> list=healthDataService.listFindByUserId(userId);
-	 
+	  public String userbodyData(
+			Model model	
+			,LoginUserDetails loginUser
+			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
+			) 
+	{
+		Long userId=0L;
+		if(userIdRequest==0) {
+			userId=loginUser.getUserId();
+		}else {
+		 userId=userIdRequest;	
+		}  
+		  
+		List <HealthDataDTO> list=healthDataService.listFindByUserId(userId);
 	  model.addAttribute("list",list); // model.addAttribute("userId",userId);
 	
 	 
