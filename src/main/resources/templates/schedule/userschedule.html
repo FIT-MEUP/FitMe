@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../../static/css/usercalendar.css" th:href="@{/css/userschedule.css}">
   <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <script src="../../static/js/userschedule.js" th:src="@{/js/userschedule.js}"></script>
-
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <script src="../../static/JS/userChat.js" th:src="@{/JS/userChat.js}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
@@ -101,30 +101,28 @@ console.log("Merged calendarEvents:", calendarEvents);
     </div>
 </header>
 
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
 	
   <div id="page-container">
     <!-- 왼쪽 사이드바 -->
-    <div id="left-sidebar" class="items-center">
-      <button id="diet-board">식단 게시판</button>
-      <button id="exercise-board">운동 게시판</button>
-      <div id="left-placeholder" th:text="${AdminAnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</div>
-      <div id="left-placeholder" th:text="${AnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</div>
+    <div id="left-sidebar" class="flex flex-col items-center w-64 p-4 bg-gray-800 text-white">
+    <button id="diet-board">식단 게시판</button>
+    <button id="exercise-board">운동 게시판</button>
+
+  <div class="grid grid-cols-2 gap-4 w-full">
+    <!-- 관리자 공지 -->
+    <div class="p-4 bg-gray-700 rounded">
+      <h3 class="text-lg font-bold mb-2">헬스장 공지</h3>
+      <p th:text="${AdminAnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</p>
     </div>
+
+    <!-- 일반 공지 -->
+    <div class="p-4 bg-gray-700 rounded">
+      <h3 class="text-lg font-bold mb-2">일반 공지</h3>
+      <p th:text="${AnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</p>
+    </div>
+  </div>
+</div>
     <!-- 중앙 캘린더 -->
     <div id="calendar"></div>
     <!-- 오른쪽 미니 캘린더 영역 -->
@@ -176,6 +174,3 @@ console.log("Merged calendarEvents:", calendarEvents);
 </html>
 
 
-
-</body>
-</html>

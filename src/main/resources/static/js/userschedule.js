@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personalInfo: {
                 text: '개인정보',
                 click: function () {
-                    window.location.href = '/userbodyData';
+                    window.location.href = '/mypage';
                 }
             }
         },
@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 이벤트를 미리 제거하여 alert 동안 캘린더에 표시되지 않도록 합니다.
                 eventInstance.remove();
                 if(response === 'success'){
+					eventInstance.remove();
                     alert('저장이 완료되었습니다.');
                     window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
@@ -313,3 +314,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+
+    // 클릭 외부 감지하여 닫기
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("dropdownMenu");
+        var button = document.getElementById("userMenu");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });

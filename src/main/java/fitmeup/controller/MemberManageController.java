@@ -136,6 +136,9 @@ public class MemberManageController {
     @ResponseBody
     public ResponseEntity<String> approveApplication(@RequestBody ApproveRequestDTO approveRequestDTO) {
         trainerApplicationService.updateApplicationStatus(approveRequestDTO.getApplicationId(), TrainerApplicationEntity.Status.Approved);
+
+
+        
         return ResponseEntity.ok("Application approved successfully.");
     }
 
@@ -152,14 +155,9 @@ public class MemberManageController {
     @GetMapping("/trainer/selectPT")
     @ResponseBody
     public PTSessionHistoryDTO selectApplication(@RequestParam(name="userId") Long userId, Model model) {
-        PTSessionHistoryDTO dto = new PTSessionHistoryDTO();
-        dto.setUserId(userId);
-        dto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
-        dto.setChangeAmount(0L);
-        dto.setReason("새로운 PT계약 생성");
 
         
-        return PTSessionHistoryDTO.fromEntity(scheduleService.selectfirstByUserDTO(dto)); 
+        return PTSessionHistoryDTO.fromEntity(scheduleService.selectfirstByUserId(userId)); 
     }
     
     // 회원 PT 업데이트 API
@@ -203,7 +201,7 @@ public class MemberManageController {
     // 오늘의 식단 미리보기 API
     @GetMapping("/trainer/mealPreview")
     @ResponseBody
-    public MealDTO mealPreview(@RequestParam(name="userId") Long userId) {
+    public List<MealDTO> mealPreview(@RequestParam(name="userId") Long userId) {
         List<MealDTO> meals = Collections.emptyList(); // ✅ 기본값: 빈 리스트
         String currentDate = LocalDate.now().toString();
 
@@ -211,20 +209,18 @@ public class MemberManageController {
 
         meals = mealService.getMealsByUserAndDate(userId, LocalDate.parse(currentDate), loggedInUserId, UserEntity.Role.Trainer.name());
 
-        
-
         if (meals.isEmpty()) {
             return null; // 또는 적절한 예외 처리
         }
         
-        return meals.get(0);
+        return meals;
         
     }
 
     // 오늘의 운동 미리보기 API
     @GetMapping("/trainer/workPreview")
     @ResponseBody
-    public WorkDTO workPreview(@RequestParam(name="userId") Long userId) {
+    public List<WorkDTO> workPreview(@RequestParam(name="userId") Long userId) {
         String currentDate = LocalDate.now().toString();
         Long loggedInUserId = userId;
 
@@ -236,7 +232,7 @@ public class MemberManageController {
             return null; // 또는 적절한 예외 처리
         }
         
-        return workouts.get(0);
+        return workouts;
         
     }
 
@@ -250,14 +246,8 @@ public class MemberManageController {
     	log.info("===============latestData:{}", latestData);
         
 	    if (latestData == null) {
-	        // 데이터가 없으면 기본값 세팅
-	        latestData = new HealthDataDTO();
-	        latestData.setHeight(BigDecimal.ZERO);
-	        latestData.setWeight(BigDecimal.ZERO);
-	        latestData.setMuscleMass(BigDecimal.ZERO);
-	        latestData.setFatMass(BigDecimal.ZERO);
-	        latestData.setBmi(BigDecimal.ZERO);
-	        latestData.setBasalMetabolicRate(BigDecimal.ZERO);
+	    	return null;
+	    	
 	    }
         
         return latestData;

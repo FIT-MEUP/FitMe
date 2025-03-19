@@ -1,0 +1,106 @@
+/* =========================
+   기본 폰트 및 색상 설정
+========================= */
+body {
+  background-color: #0f172a;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 100px;
+}
+
+/* -------------------------
+   Container & 공통 스타일
+------------------------- */
+.profile-edit-container {
+  max-width: 650px;
+  min-width: 650px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #1f2937; /* 어두운 회색 */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.profile-edit-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #f1f1f1;
+}
+
+/* -------------------------
+   폼 요소 스타일
+------------------------- */
+.profile-edit-form .form-label {
+  font-weight: bold;
+  color: #f1f1f1;
+}
+
+.profile-edit-form .form-control {
+  background-color: #0f172a;
+  border: 1px solid #4a5568;
+  color: #fff;
+}
+
+.profile-edit-form .form-control:focus {
+  border-color: #facc15;
+  box-shadow: 0 0 0 0.2rem rgba(250, 204, 21, 0.25);
+}
+
+/* 여백 조정 */
+.profile-edit-form .mb-3 {
+  margin-bottom: 1rem;
+}
+
+/* -------------------------
+   프로필 사진 영역
+------------------------- */
+.profile-photo-section .photo-display {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-photo-section .profile-photo {
+  border: 2px solid #facc15;
+  border-radius: 8px;
+}
+
+.delete-photo-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.8rem;
+}
+
+/* -------------------------
+   버튼 스타일 (추가 개선)
+------------------------- */
+.profile-edit-form .btn {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.profile-edit-form .btn-primary {
+  background-color: #facc15;
+  border: none;
+  color: #1f2937;
+}
+
+.profile-edit-form .btn-primary:hover {
+  background-color: #eab308;
+  transform: translateY(-2px);
+}
+
+.profile-edit-form .btn-secondary {
+  background-color: #4a5568;
+  border: none;
+  color: #fff;
+}
+
+.profile-edit-form .btn-secondary:hover {
+  background-color: #2d3748;
+  transform: translateY(-2px);
+}
