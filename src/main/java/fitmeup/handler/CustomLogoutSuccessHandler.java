@@ -19,30 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
-	private final UserService userService;
-
-	private final SimpMessagingTemplate messagingTemplate;
 
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
-
-
-		if (authentication != null) {
-			Long userId = ((LoginUserDetails) authentication.getPrincipal()).getUserId();
-
-			// (1) DB isOnline = false
-			userService.setOnline(userId, false);
-			log.info("유저({}) 로그아웃 -> isOnline=false", userId);
-
-			// (2) STOMP 브로드캐스트 알림
-			messagingTemplate.convertAndSend("/topic/onlineStatus",
-					"LOGOUT:" + userId);
-		}
-
 
 		String refererUrl = request.getHeader("Referer");
 		if (refererUrl != null) {

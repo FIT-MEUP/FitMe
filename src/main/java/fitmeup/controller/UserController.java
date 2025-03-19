@@ -172,16 +172,6 @@ public class UserController {
             return "redirect:/user/logout";
         }
 
-  // forceLogout 엔드포인트: 사용자 ID를 받아서 online 상태를 false로 설정
-  // 강제 로그아웃 처리 메소드 추가
-  @PostMapping("/forceLogout")
-  @ResponseBody
-  public ResponseEntity<String> forceLogout(@RequestParam("userId") Long userId) {
-    userService.setOnline(userId, false);
-    // STOMP로 로그아웃 브로드캐스팅
-    messagingTemplate.convertAndSend("/topic/onlineStatus", "LOGOUT:" + userId);
-    return ResponseEntity.ok("OK");
-  }
 }
 
     

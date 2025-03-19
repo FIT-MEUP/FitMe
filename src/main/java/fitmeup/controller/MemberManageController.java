@@ -67,6 +67,7 @@ public class MemberManageController {
     public String memberManagePage(
                                     @AuthenticationPrincipal LoginUserDetails loginUser,
                                     Model model) {
+
         // findbyId로 대충 특정했다고 가정하고
         if("Trainer".equals(loginUser.getRoles())){
             Long trainerNum = loginUser.getUserId();
