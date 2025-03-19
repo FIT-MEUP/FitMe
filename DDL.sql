@@ -236,20 +236,23 @@ CREATE TABLE chat (
 
 
 
-  ALTER TABLE meal ADD COLUMN meal_type VARCHAR(10) NOT NULL;
+ALTER TABLE meal ADD COLUMN meal_type VARCHAR(10) NOT NULL;
 
 DROP TABLE if EXISTS health_data;
 
 -- 7. 건강 데이터 (HealthData)
 CREATE TABLE health_data (
-    data_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    weight DECIMAL(5,2) NOT NULL,
-    muscle_mass DECIMAL(5,2) NOT NULL,
-    fat_mass DECIMAL(5,2) NOT NULL,
-    height DECIMAL(5,2) NOT NULL,
-    bmi DECIMAL(5,2) NOT NULL,
-    basal_metabolic_rate DECIMAL(6,2) NOT NULL,
-    record_date DATE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
-); 
+                           data_id INT PRIMARY KEY AUTO_INCREMENT,
+                           user_id INT NOT NULL,
+                           weight DECIMAL(5,2) NOT NULL,
+                           muscle_mass DECIMAL(5,2) NOT NULL,
+                           fat_mass DECIMAL(5,2) NOT NULL,
+                           height DECIMAL(5,2) NOT NULL,
+                           bmi DECIMAL(5,2) NOT NULL,
+                           basal_metabolic_rate DECIMAL(6,2) NOT NULL,
+                           record_date DATE NOT NULL,
+                           FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+);
+
+
+ALTER TABLE schedule MODIFY attendance_status VARCHAR(10);
