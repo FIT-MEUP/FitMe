@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var scheduleManagementButton = document.getElementById('schedule-management');
     var resetButton = document.getElementById('reset-button');
-    var leftPlaceholder = document.getElementById('left-placeholder');
 	var ptButton=document.getElementById('pt-button');
     var editingEnabled = false;
     var pendingCreations = [];
@@ -184,12 +183,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 miniCalendarWrapper.style.display = 'none';
                 monthPlaceholder.style.display = 'block';
                 scheduleManagementButton.style.display = 'none';
-                leftPlaceholder.style.display = 'block';
                 editingEnabled = false;
             } else if (viewType === 'timeGridWeek' || viewType === 'timeGridDay') {
                 miniCalendarWrapper.style.display = 'block';
                 monthPlaceholder.style.display = 'none';
-                leftPlaceholder.style.display = 'none';
                 if (viewType === 'timeGridWeek') {
                     scheduleManagementButton.style.display = 'block';
                     editingEnabled = false;

@@ -15,12 +15,6 @@ body {
     align-items: flex-start;
 }
 
-/* ✅ 좌우 margin-top 조정 */
-#left-sidebar,
-#mini-calendar-container {
-    margin-top: 60px;
-}
-
 /* ✅ 좌측 사이드바 디자인 */
 #left-sidebar {
     width: 15%;
@@ -40,14 +34,11 @@ body {
     cursor: pointer;
     border-radius: 6px;
     border: none;
-    background: linear-gradient(135deg, #4f46e5, #9333ea); /* Tailwind indigo-600 to purple-600 */
-    color: white;
-    transition: transform 0.2s, box-shadow 0.2s;
+    background: #E63649CC;
 }
 
 #left-sidebar button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5);
+    transform: translateY(-1px);
 }
 
 /* ✅ 초기화 버튼 & 일정관리 버튼 숨김 */
@@ -59,7 +50,7 @@ body {
 #left-placeholder {
     width: 100%;
     height: 250px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #DBEAFE;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-sizing: border-box;
     padding: 10px;
@@ -67,6 +58,7 @@ body {
     display: none;
     text-align: center;
     font-weight: bold;
+    color: black;
 }
 
 /* ✅ 중앙 캘린더 */
@@ -96,7 +88,7 @@ body {
 
 /* ✅ FullCalendar 버튼 스타일 */
 .fc .fc-button {
-    background: #6366f1; /* Tailwind indigo-500 */
+    background: #E63649CC; /* Tailwind indigo-500 */
     color: white;
     border: none;
     font-size: 0.9rem;
@@ -116,7 +108,7 @@ body {
 
 /* ✅ "오늘" 버튼 */
 .fc .fc-button.fc-today-button {
-    background: #facc15;
+    background: #f7ff16;
     color: black;
 }
 
@@ -128,7 +120,7 @@ body {
 #mini-calendar-container {
     width: 20%;
     padding: 15px;
-    background: #1e40af; /* Tailwind blue-900 */
+    background: #1f2937; /* Tailwind blue-900 */
     border-radius: 10px;
     text-align: center;
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
@@ -148,14 +140,11 @@ body {
     cursor: pointer;
     border-radius: 8px;
     border: none;
-    background: linear-gradient(135deg, #ef4444, #f97316); /* Tailwind red-500 to orange-500 */
-    color: white;
-    transition: transform 0.2s, box-shadow 0.2s;
+    background: #E63649CC;
 }
 
 #pt-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+    transform: translateY(-1px);
 }
 
 /* ✅ 네온 효과 */

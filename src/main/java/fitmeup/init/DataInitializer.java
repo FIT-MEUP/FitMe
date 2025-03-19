@@ -415,7 +415,7 @@ public class DataInitializer implements CommandLineRunner {
 							.savedFileName("meal_" + mealType + "_saved.jpg")
 							.mealType(mealType)
 							.build();
-					mealRepository.save(밥);
+					mealRepository.save(meal);
 				}
 			}
 		}
@@ -440,7 +440,7 @@ public class DataInitializer implements CommandLineRunner {
 			for (int i = 0; i < numComments; i++) {
 				CommentEntity comment = CommentEntity.builder()
 						.user(admin)
-						.meal(밥)
+						.meal(meal)
 						.content("Meal comment " + (i + 1) + " on mealId " + meal.getMealId())
 						.createdAt(LocalDateTime.now().minusMinutes(random.nextInt(60)))
 						.build();

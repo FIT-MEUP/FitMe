@@ -46,13 +46,6 @@ public class TrainerApplicationService {
     log.info("==========userId:{}", trainerEntity.get().getTrainerId());
     List<TrainerApplicationEntity> entityList = trainerApplicationRepository.findByTrainerTrainerId(trainerEntity.get().getTrainerId());
 
- /*  
- public List<TrainerApplicationDTO> getApplicationById(Long trainerNum, TrainerApplicationEntity.Status status) {
-        Optional<TrainerEntity> trainerEntity = trainerRepository.findByUser_UserId(trainerNum);
-
-        List<TrainerApplicationEntity> entityList = trainerApplicationRepository.findByTrainerTrainerId(trainerNum); 
-        */
-
 
     List<TrainerApplicationDTO> dtoList = new ArrayList<>();
 
@@ -92,20 +85,7 @@ public class TrainerApplicationService {
                 .orElseThrow(() -> new RuntimeException("Application not found with ID: " + applicationId));
     }
 
-  
-
- /* public String selectOne(Long applicationId) {
-
-    Optional<TrainerApplicationEntity> applicationOptional = trainerApplicationRepository.findById(applicationId);
-
-    if (applicationOptional.isPresent()) {
-      TrainerApplicationEntity application = applicationOptional.get();
-      return application.getUser().getUserName();
-    } else {
-      throw new RuntimeException("Application not found with ID: " + applicationId);
-    }
-  }
-  */
+ 
 
 
   public void createApplication(Long userId, Long trainerId) {
