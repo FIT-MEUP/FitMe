@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personalInfo: {
                 text: '개인정보',
                 click: function () {
-                    window.location.href = '/userbodyData';
+                    window.location.href = '/mypage';
                 }
             }
         },
@@ -251,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 이벤트를 미리 제거하여 alert 동안 캘린더에 표시되지 않도록 합니다.
                 eventInstance.remove();
                 if(response === 'success'){
+					eventInstance.remove();
                     alert('저장이 완료되었습니다.');
                     window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
