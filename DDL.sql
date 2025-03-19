@@ -253,3 +253,6 @@ CREATE TABLE health_data (
     record_date DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 ); 
+
+
+ALTER TABLE schedule MODIFY attendance_status VARCHAR(10);

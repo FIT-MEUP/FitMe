@@ -1,65 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>로그인 | Fit Gym</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body {
-    background-color: black; /* 배경 블랙 처리 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden; /* 스크롤 방지 */
-}
-
-/* 🎥 비디오 컨테이너 */
-.video-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: -1;
-}
-
-/* 📽️ 비디오 스타일 */
-.video-container video {
-    width: 100%;
-    max-width: 1200px; /* 최대 가로 크기 설정 */
-    max-height: 90vh; /* 최대 높이 90%로 설정 (작업 표시줄 안 가리도록) */
-    object-fit: contain; /* 비율 유지하며 축소 */
-}
-
-/* 🏋️‍♂️ 유리 패널 효과 */
-.glass {
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-    border-radius: 10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>로그인 | Fit Gym</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: black; /* 배경 블랙 처리 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* 스크롤 방지 */
+        }
+        
+        /* 🎥 비디오 컨테이너 */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: -1;
+        }
+        
+        /* 📽️ 비디오 스타일 */
+        .video-container video {
+            width: 100%;
+            max-width: 1200px; /* 최대 가로 크기 설정 */
+            max-height: 90vh; /* 최대 높이 90%로 설정 (작업 표시줄 안 가리도록) */
+            object-fit: contain; /* 비율 유지하며 축소 */
+        }
+        
+        /* 🏋️‍♂️ 유리 패널 효과 */
+        .glass {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body class="min-h-screen flex items-center justify-center">
 
-
-	 <!-- 🎥 배경 비디오 -->
+    <!-- 🎥 배경 비디오 -->
     <div class="video-container">
         <video autoplay muted loop playsinline>
-            <source src="../../static/videos/login.mp4" th:src="@{/videos/login.mp4}"type="video/mp4">
+            <source src="../../static/videos/login.mp4" th:src="@{/videos/login.mp4}" type="video/mp4">
             브라우저가 비디오 태그를 지원하지 않습니다.
         </video>
     </div>
-	<div class="absolute inset-0 bg-black opacity-50"></div>
-	<!-- 어두운 오버레이 추가 -->
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+    <!-- 어두운 오버레이 추가 -->
 
-
-	<div class="relative z-10 flex flex-col w-full max-w-md py-8 fade-in">
+    <div class="relative z-10 flex flex-col w-full max-w-md py-8 fade-in">
         <!-- 🏋️‍♂️ 네비게이션 -->
         <header class="flex justify-center py-4">
             <a href="/">
@@ -67,54 +65,50 @@ body {
             </a>
         </header>
 
-		<!-- 로그인 박스 -->
-		<section class="glass p-6 rounded-lg shadow-lg w-full text-white">
-			<h2 class="text-3xl font-bold text-center mb-6">Welcome Back!</h2>
-			<p class="text-sm text-center mb-4 text-gray-300">운동 기록을 관리하고,
-				트레이너와 연결하세요!</p>
+        <!-- 로그인 박스 -->
+        <section class="glass p-6 rounded-lg shadow-lg w-full text-white">
+            <h2 class="text-3xl font-bold text-center mb-6">Welcome Back!</h2>
+            <p class="text-sm text-center mb-4 text-gray-300">운동 기록을 관리하고, 트레이너와 연결하세요!</p>
 
-			<!-- 🚨 로그인 실패 메시지 (로그인 실패 시 1회만 표시됨) -->
-			<div th:if="${errorMessage}"
-				class="text-red-500 font-bold text-center mb-3">
-				<p th:text="${errorMessage}"></p>
-			</div>
+            <!-- 🚨 로그인 실패 메시지 (로그인 실패 시 1회만 표시됨) -->
+            <div th:if="${errorMessage}" class="text-red-500 font-bold text-center mb-3">
+                <p th:text="${errorMessage}"></p>
+            </div>
 
-			<form th:action="@{/user/loginProc}" method="post" class="space-y-4">
-				<div>
-					<label for="userEmail" class="block text-sm font-semibold">아이디
-						(이메일)</label> <input type="email" id="userEmail" name="userEmail" required
-						placeholder="이메일을 입력하세요"
-						class="w-full p-3 mt-1 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none">
-				</div>
+            <form th:action="@{/user/loginProc}" method="post" class="space-y-4" id="loginForm">
+                <div>
+                    <label for="userEmail" class="block text-sm font-semibold">아이디 (이메일)</label>
+                    <input type="email" id="userEmail" name="userEmail" required placeholder="이메일을 입력하세요"
+                        class="w-full p-3 mt-1 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
 
-				<div>
-					<label for="password" class="block text-sm font-semibold">비밀번호</label>
-					<input type="password" id="password" name="password" required
-						placeholder="비밀번호를 입력하세요"
-						class="w-full p-3 mt-1 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none">
-				</div>
+                <div>
+                    <label for="password" class="block text-sm font-semibold">비밀번호</label>
+                    <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요"
+                        class="w-full p-3 mt-1 rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
 
-				<button type="submit"
-					class="w-full p-3 bg-red-600 rounded-lg text-white font-semibold hover:bg-red-700 transition">
-					로그인</button>
-			</form>
+                <button type="submit"
+                    class="w-full p-3 bg-red-600 rounded-lg text-white font-semibold hover:bg-red-700 transition">
+                    로그인
+                </button>
+            </form>
 
-			<!-- 추가 링크 -->
-			<div class="flex justify-between text-sm mt-4">
-				<a th:href="@{/user/findId}" class="hover:underline text-gray-300">아이디
-					찾기</a> <a th:href="@{/user/findPassword}"
-					class="hover:underline text-gray-300">비밀번호 찾기</a> <a
-					th:href="@{/user/roleSelection}"
-					class="hover:underline text-red-400">회원가입</a>
-			</div>
-		</section>
+            <!-- 추가 링크 -->
+            <div class="flex justify-between text-sm mt-4">
+                <a th:href="@{/user/findId}" class="hover:underline text-gray-300">아이디 찾기</a>
+                <a th:href="@{/user/findPassword}" class="hover:underline text-gray-300">비밀번호 찾기</a>
+                <a th:href="@{/user/roleSelection}" class="hover:underline text-red-400">회원가입</a>
+            </div>
+        </section>
 
-		<!-- 헬스 명언 -->
-		<section class="glass p-4 rounded-lg shadow-lg text-center">
-			<p class="text-xl font-semibold text-white">"Pain is temporary,
-				pride is forever!"</p>
-		</section>
-	</div>
+        <!-- 명언 API 영역 -->
+        <section class="glass p-4 rounded-lg shadow-lg text-center mt-4">
+            <p id="motivational-quote" class="text-xl font-semibold text-white">명언 로딩 중...</p>
+        </section>
+    </div>
 
+    <!-- login.js 스크립트 포함: 이 파일에서 명언 API 호출 등 필요한 로직을 처리합니다 -->
+    <script src="../../static/js/login.js" th:src="@{/js/login.js}"></script>
 </body>
 </html>
