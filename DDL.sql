@@ -242,6 +242,7 @@ DROP TABLE if EXISTS health_data;
 
 -- 7. 건강 데이터 (HealthData)
 CREATE TABLE health_data (
+
                            data_id INT PRIMARY KEY AUTO_INCREMENT,
                            user_id INT NOT NULL,
                            weight DECIMAL(5,2) NOT NULL,
@@ -253,6 +254,7 @@ CREATE TABLE health_data (
                            record_date DATE NOT NULL,
                            FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 );
+
 
 
 ALTER TABLE schedule MODIFY attendance_status VARCHAR(10);

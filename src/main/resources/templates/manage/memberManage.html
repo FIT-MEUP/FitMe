@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -12,10 +14,19 @@
     <!-- SockJS와 Stomp.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+      
+    body{
+     -ms-overflow-style: none;
+     }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    </style>
 
 
 </head>
-<body class="bg-gray-900">
+<body class="bg-gray-900 text-black">
     <!-- 헤더 -->
     <header class="relative flex items-center justify-between bg-black text-white p-4 shadow-lg h-28">
 
@@ -82,7 +93,7 @@
                 </div>
             </section>
             <!-- 선택된 회원 정보 표시 -->
-                <h2 id="userinfoname" class="text-3xl font-semibold text-white pt-3 px-2">회원 정보</h2>
+                <h2 id="userinfoname" class="text-3xl font-semibold text-white pt-5 px-2">회원 정보</h2>
              <section class="grid grid-cols-2 gap-4 mt-2">
                 <div id="userInfo" class="flex flex-col items-center justify-center mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
                     <p class="text-gray-600" id="user-card">회원 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
@@ -135,7 +146,7 @@
                 </tbody>
             </table>
 
-            <div id="chatFragmentContainer" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md" style="display: none;"></div>
+            <div id="chatFragmentContainer" style="display: none;" class="mt-6"></div>
 
         </nav>
     </div>

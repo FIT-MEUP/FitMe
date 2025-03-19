@@ -250,6 +250,17 @@ $(".select-btn").click(function () {
             $("#chatFragmentContainer").html(htmlFragment);
             $("#chatFragmentContainer").show();
 
+
+        // 채팅창이 렌더링되고 나서 스크롤 이동
+            setTimeout(function() {
+                const conversationArea = document.getElementById("conversationArea");
+                if (conversationArea) {
+                    conversationArea.scrollTop = conversationArea.scrollHeight;
+                }
+            }, 1); 
+
+            conversationArea.scrollTop = conversationArea.scrollHeight;
+
             if (typeof initChat === "function") {
                 initChat();
             }

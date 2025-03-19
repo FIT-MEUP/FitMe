@@ -24,8 +24,10 @@ import fitmeup.dto.TrainerDTO;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.TrainerPhotoEntity;
+import fitmeup.entity.UserEntity;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerPhotoRepository;
+import fitmeup.repository.TrainerRepository;
 import fitmeup.service.FileStorageService;
 import fitmeup.service.TrainerApplicationService;
 import fitmeup.service.TrainerService;
@@ -44,12 +46,19 @@ public class TrainerController {
 	private final FileStorageService fileStorageService;
 	private final TrainerApplicationRepository trainerApplicationRepository;
 	private final TrainerPhotoRepository trainerPhotoRepository;
+	private final TrainerRepository trainerRepository;
 
 	@GetMapping({ "/", "", "/trainers" })
 	public String trainers(@AuthenticationPrincipal LoginUserDetails loginUser, Model model) {
 		List<TrainerEntity> trainers = trainerService.getAllTrainers();
 
 		String roles = (loginUser != null) ? checkRoles(loginUser) : "";
+		if("Trainer".equals(roles)) {
+			Optional<TrainerEntity>  trainer = trainerRepository.findByUser_UserId(loginUser.getUserId());
+			
+			log.info("trainerId1234: {}", trainer.get().getTrainerId());
+			model.addAttribute("trainerId",trainer.get().getTrainerId()) ;
+		}
 		
 		model.addAttribute("roles", roles);
 		model.addAttribute("trainers", trainers);
