@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class MyPageController {
 	@GetMapping({"/mypage"})
 	public String index(
 			Model model	
-			,LoginUserDetails loginUser
+			,@AuthenticationPrincipal  LoginUserDetails loginUser
 			 , @RequestParam(name="userId", defaultValue="0") Long userIdRequest
 			) 
 	{
@@ -46,7 +47,7 @@ public class MyPageController {
 		}else {
 		 userId=userIdRequest;	
 		}
-			
+		log.info("userId ======{}",userId);	
 			model.addAttribute("userId",userId);
 		
 	    // 최신 데이터 가져오기
