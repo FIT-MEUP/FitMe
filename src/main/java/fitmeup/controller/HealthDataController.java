@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HealthDataController {
 	private final HealthDataService healthDataService;
+	
 	/**
 	 * 신체 데이터 수정 화면 요청
 	 * 
