@@ -5,201 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나의 신체 데이터</title>
+    <link rel="stylesheet" th:href="@{/css/userbodyData.css}">
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+    <script th:src="@{/js/userbodyData.js}" defer></script>
 </head>
 
-<body>
-    <div class="container">
+<body class="bg-gray-900 text-white font-body">
+    <div class="max-w-6xl mx-auto py-10 px-6">
         <!-- 상단 메뉴 -->
-        <div class="header">
-            <button class="back-button">로고</button>
-            <h1>나의 신체 데이터</h1>
-            <div class="header-right">
-                 <a th:href="@{/mypage(userId=${userId})}" class="button">돌아가기</a>
-            </div>
+        <div class="flex justify-between items-center bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-title">MY BODY RECORD</h1>
+            <a th:href="@{/mypage(userId=${userId})}" class="btn">돌아가기</a>
+        </div>
+        
+        <div class="mt-10 text-center">
+            <h2 class="text-2xl font-title border-b-4 border-red-500 inline-block pb-2" th:text="${userName} + ' 님'">사용자 이름</h2>
         </div>
 
-        <div class="content">
-            <h2 th:text="${userName} + ' 님'">사용자 이름</h2>
-            
-   
-
-            <table class="user-info">
-                <thead>
+        <!-- 신체 데이터 테이블 -->
+        <div class="mt-8">
+            <table class="w-full text-left border-collapse rounded-lg overflow-hidden shadow-lg">
+                <thead class="bg-red-600 text-white">
                     <tr>
-                        <th>키</th>
-                        <th>체중</th>
-                        <th>BMI</th>
-                        <th>체지방률</th>
-                        <th>골격근</th>
-                        <th>기초대사량</th>
-                        <th>날짜</th>
-                        <th>수정</th>
-                        <th>삭제</th>
+                        <th class="py-3 px-6">키</th>
+                        <th class="py-3 px-6">체중</th>
+                        <th class="py-3 px-6">BMI</th>
+                        <th class="py-3 px-6">체지방률</th>
+                        <th class="py-3 px-6">골격근</th>
+                        <th class="py-3 px-6">기초대사량</th>
+                        <th class="py-3 px-6">날짜</th>
+                        <th class="py-3 px-6">수정</th>
+                        <th class="py-3 px-6">삭제</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- 데이터가 없을 때 메시지 출력 -->
+                <tbody class="bg-gray-800">
                     <tr th:if="${list.isEmpty()}">
-                        <td colspan="9" style="text-align:center;">신체 데이터가 없습니다.</td>
+                        <td colspan="9" class="py-4 text-center">신체 데이터가 없습니다.</td>
                     </tr>
-                    <!-- 건강 데이터 반복 출력 -->
-                    <tr th:each="data : ${list}" th:id="'row-' + ${data.dataId}">
+                    <tr th:each="data : ${list}" th:id="'row-' + ${data.dataId}" class="hover:bg-gray-700 transition-all">
                         <td th:text="${data.height} + ' cm'"></td>
                         <td th:text="${data.weight} + ' kg'"></td>
                         <td th:text="${data.bmi}"></td>
                         <td th:text="${data.fatMass} + '%' "></td>
                         <td th:text="${data.muscleMass} + ' kg'"></td>
                         <td th:text="${data.basalMetabolicRate} + ' kcal'"></td>
-                       <!--    <td th:text="${data.recordDate}"></td> -->
-                       <td th:text="${#temporals.format(data.recordDate, 'yyyy-MM-dd')}"></td>
-                        <td>
-                            <button onclick="editRow(this)" class="btn btn-warning">수정</button>
-                        </td>
-                        <td>
-                           <button class="btn btn-danger delete-btn" th:attr="data-id=${data.dataId}">삭제</button>
-                        </td>
+                        <td th:text="${#temporals.format(data.recordDate, 'yyyy-MM-dd')}"></td>
+                        <td><button onclick="editRow(this)" class="btn-warning">수정</button></td>
+                        <td><button class="btn-danger delete-btn" th:attr="data-id=${data.dataId}">삭제</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
-        <script>
-   
-            
-            //  삭제 버튼 클릭 이벤트 추가
-		 document.addEventListener("DOMContentLoaded", function() {
-   		 document.querySelectorAll(".delete-btn").forEach(button => {
-       	 button.addEventListener("click", function() {
-            let dataId = this.getAttribute("data-id"); // 버튼의 data-id 속성값 가져오기
-            confirmDelete(dataId, this); // 삭제 버튼 요소도 함께 전달
-        });
-    });
-});
-            
-            //  삭제 확인 메시지 + Ajax 요청
-        function confirmDelete(dataId, button) {
-        	console.log(dataId)
-            if (confirm("정말 삭제하시겠습니까?")) {
-                $.ajax({
-                    type: "POST",
-                    url: "/user/deleteHealthData",
-                    data: { dataId: dataId },
-                    success: function(response) {
-                        if (response === "OK") {
-                            alert("삭제 완료!");
-                            
-                            
-                            let row = button.closest("tr");
-                            if (row) {
-                                row.remove();
-                            }
-                        } else {
-                            alert("삭제 실패! 다시 시도해주세요.");
-                        }
-                    },
-                    error: function() {
-                        alert("삭제 요청에 실패했습니다.");
-                        console.log(data)
-                    }
-                });
-            }
-        }
-
-            // 행 수정 기능
-            function editRow(button) {
-                let row = button.closest('tr');
-                let cells = row.querySelectorAll('td');
-                
-                let dataId = row.getAttribute("id").replace("row-", ""); // dataId 가져오기
-                let height = cells[0].innerText.replace(' cm', '');
-                let weight = cells[1].innerText.replace(' kg', '');
-                let bmi = cells[2].innerText;
-                let fatMass = cells[3].innerText.replace('%', '');
-                let muscleMass = cells[4].innerText.replace(' kg', '');
-                let bmr = cells[5].innerText.replace(' kcal', '');
-                let date = cells[6].innerText;
-
-                row.innerHTML = `
-                	<td><input type="number" value="${height}" id="height-${dataId}" /></td>
-                    <td><input type="number" value="${weight}" id="weight-${dataId}" /></td>
-                    <td><input type="number" step="0.1" value="${bmi}" id="bmi-${dataId}" /></td>
-                    <td><input type="number" step="0.1" value="${fatMass}" id="fatMass-${dataId}" /></td>
-                    <td><input type="number" step="0.1" value="${muscleMass}" id="muscleMass-${dataId}" /></td>
-                    <td><input type="number" value="${bmr}" id="bmr-${dataId}" /></td>
-                    <td><input type="date" value="${date}" id="date-${dataId}" /></td>
-                    
-                    <td><button onclick="saveRow(${dataId}, this)" class="btn btn-success">저장</button></td>
-                    <td><button onclick="cancelEdit(${dataId})" class="btn btn-secondary">취소</button></td>
-                `;
-            }
-
-            // 저장 버튼 클릭 시 Ajax 요청
-            function saveRow(dataId ,button) {
-            	let row = document.getElementById(`row-${dataId}`);
-            	
-                let height = document.getElementById(`height-${dataId}`).value;
-                let weight = document.getElementById(`weight-${dataId}`).value;
-                let bmi = document.getElementById(`bmi-${dataId}`).value;
-                let fatMass = document.getElementById(`fatMass-${dataId}`).value;
-                let muscleMass = document.getElementById(`muscleMass-${dataId}`).value;
-                let bmr = document.getElementById(`bmr-${dataId}`).value;
-                let recordDate = document.getElementById(`date-${dataId}`).value;
-               
-                
-
-                $.ajax({
-                    type: "POST",
-                    url: "/user/updateHealthData",
-                    data: {
-                        dataId: dataId,
-                        height: height,
-                        weight: weight,
-                        bmi: bmi,
-                        fatMass: fatMass,
-                        muscleMass: muscleMass,
-                        basalMetabolicRate: bmr,
-                        recordDate: recordDate
-                    },
-                    success: function(response) {
-                        if (response === "OK") {
-                        	 // ✅ 날짜 포맷 변환 (YYYY-MM-DD)
-                            let formattedDate = new Date(recordDate).toISOString().split('T')[0];
-                            
-
-           
-            
-         // ✅ 기존 행을 새로운 행으로 교체 (Thymeleaf 데이터 유지)
-            let newRow = `
-                <tr id="row-${dataId}">
-                    <td>${height} cm</td>
-                    <td>${weight} kg</td>
-                    <td>${bmi}</td>
-                    <td>${fatMass}%</td>
-                    <td>${muscleMass} kg</td>
-                    <td>${bmr} kcal</td>
-                    <td>${formattedDate}</td> <!-- ✅ 날짜 포맷 유지 -->
-                    <td><button onclick="editRow(this)" class="btn btn-warning">수정</button></td>
-                    <td><button onclick="confirmDelete(${dataId}, this)" class="btn btn-danger">삭제</button></td>
-                </tr>`;
-
-            $(row).replaceWith(newRow); 
-        } else {
-            alert("수정 실패! 다시 시도해주세요.");
-        }
-    },
-    error: function() {
-        console.error("수정 요청 실패");
-    }
-});
-}
-
-            // ✅ 수정 취소 기능
-            function cancelEdit(dataId) {
-                location.reload();
-            }
-        </script>
     </div>
 </body>
 </html>

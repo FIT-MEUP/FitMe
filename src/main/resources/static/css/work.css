@@ -182,9 +182,7 @@ body {
     margin-left: 10px;
 }
 
-.hidden {
-    display: none !important;
-}
+
 
 /* 수정/삭제 버튼 숨김용 클래스 */
 .hidden-action-buttons {
