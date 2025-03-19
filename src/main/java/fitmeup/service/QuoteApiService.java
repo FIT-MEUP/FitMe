@@ -22,7 +22,7 @@ public class QuoteApiService {
         String requestBody = "{\n" +
                 "  \"model\": \"gpt-3.5-turbo\",\n" +
                 "  \"messages\": [\n" +
-                "    {\"role\": \"user\", \"content\": \"운동 동기부여 명언을 만들어줘.\"}\n" +
+                "    {\"role\": \"user\", \"content\": \"30자로 운동 동기부여 명언을 만들어줘.\"}\n" +
                 "  ],\n" +
                 "  \"temperature\": 0.7,\n" +
                 "  \"max_tokens\": 60\n" +

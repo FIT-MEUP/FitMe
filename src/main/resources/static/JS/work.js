@@ -13,8 +13,6 @@ let selectedUserId = urlParams.get("userId") || loggedInUserId;
 
 let calendar;
 
-let editModeWorkoutId = null;
-
 document.addEventListener("DOMContentLoaded", function () {
 
     highlightSelectedDate(selectedDate);
@@ -43,8 +41,8 @@ document.addEventListener("DOMContentLoaded", function () {
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         selectable: true,
-        aspectRatio: 1.0,
-        height: "700px",
+        aspectRatio: 1.2,
+        height: "auto",
         headerToolbar: {
             left: "prev,next",
             center: "title",
@@ -302,7 +300,6 @@ function updateWorkoutTable(workouts, videoMap) {
 // 수정 버튼 클릭 시, 입력 필드에 기존 데이터 채우고 버튼 상태 전환
 function editWorkout(id) {
     selectedWorkoutId = id;
-    editModeWorkoutId = id; // 수정 모드 활성화
 
     $.ajax({
         url: `/workout/${id}`,
@@ -345,22 +342,27 @@ function loadWorkoutVideo(workoutId) {
             videoSection.innerHTML = "";
 
             if (videoFileName && videoFileName !== "null") {
-                // 수정 모드일 때 → 삭제 버튼만
-                if (editModeWorkoutId === workoutId) {
+                if (selectedWorkoutId === workoutId) {
+                    // 수정 모드 (삭제 버튼)
                     videoSection.innerHTML = `
                         <button class="btn btn-sm btn-danger" onclick="deleteWorkoutVideo(${workoutId})">❌ 삭제</button>
                     `;
                 } else {
-                    // 수정 모드 아닐 때 → 영상 열기 버튼만
+                    // 일반 모드 (영상 열기)
                     videoSection.innerHTML = `
                         <button class="btn btn-sm btn-success" onclick="openVideo('${videoFileName}')">🎥 영상 열기</button>
                     `;
                 }
-            } else {
-                // 영상 없을 때는 삽입 버튼
-                videoSection.innerHTML = `
-                    <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
-                `;
+
+                // ✅ 삭제 후 파일 업로드 필드를 재생성
+                let fileInput = document.getElementById("videoFileForWorkout");
+                if (fileInput) fileInput.remove(); // 기존 input 삭제
+
+                fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.id = "videoFileForWorkout"; // 새로 추가
+                fileInput.style.display = "none"; // UI에서 숨기기
+                document.body.appendChild(fileInput);
             }
         },
         error: function () {
@@ -477,7 +479,6 @@ function updateWorkout() {
 // 입력 폼 초기화 및 버튼 상태 복구
 function resetForm() {
     selectedWorkoutId = null;
-    editModeWorkoutId = null; // 수정 모드 비활성화
     $("#part").val("");
     $("#exercise").val("");
     $("#sets").val("");
@@ -586,7 +587,6 @@ function uploadVideoForWorkout(workoutId) {
             contentType: false,
             success: function () {
                 alert("✅ 영상이 업로드되었습니다.");
-
                 loadWorkoutVideo(workoutId);
 
                 // ✅ 수정 버튼을 누르지 않은 경우
@@ -872,3 +872,16 @@ function deleteWorkoutComment(commentId) {
         }
     });
 }
+function toggleDropdown() {
+    var dropdown = document.getElementById("dropdownMenu");
+    dropdown.classList.toggle("hidden");
+}
+
+// 클릭 외부 감지하여 닫기
+document.addEventListener("click", function(event) {
+    var dropdown = document.getElementById("dropdownMenu");
+    var button = document.getElementById("userMenu");
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add("hidden");
+    }
+});

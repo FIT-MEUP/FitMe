@@ -76,6 +76,9 @@ function updateDays() {
 	daySelect.innerHTML = dayOptions;
 }
 
+
+
+
 // 저장 버튼 클릭 시 동작
 function saveChanges() {
 	const height = document.getElementById("editHeight").value;
@@ -87,7 +90,8 @@ function saveChanges() {
 	const year = document.getElementById("editYear").value;
 	const month = document.getElementById("editMonth").value;
 	const day = document.getElementById("editDay").value;
-	const userId = 1;
+	const userId = loggedInUserId;
+//	const userId = 1;
 
 	// 입력받은 연,월,일을 사용해 "YYYY-MM-DD" 형식의 문자열 생성 (타임존 문제 회피)
 	const formattedMonth = month.toString().padStart(2, '0');
@@ -241,32 +245,32 @@ function changeMonth(offset) {
 ////////////////////////////////////////////////////////////달력끝/////////////////////////////////////////////////////////
 
 
-function showGraph(type) {
-	if (isEditMode) {
-		console.log("❌ 수정 모드에서는 그래프를 표시하지 않음!");
-		return;
-	}
-	$("#graph-container").show();
-	console.log("📢 showGraph 실행됨! type:", type);  // ✅ 함수 실행 확인
-
-	$.ajax({
-		url: "/user/healthDataHistory", // 📌 DB에서 건강 데이터 가져오기
-		type: "GET",
-		data: { userId: 1 },  // 현재는 userId=1로 가정
-		success: function(data) {
-			console.log("📢 AJAX 응답:", data); // ✅ 데이터 정상 수신 확인
-
-			if (data.length > 0) {
-				updateGraph(data, type); // ✅ 버튼에 따라 적절한 데이터만 출력
-			} else {
-				console.log("❌ 데이터 없음! 그래프 그릴 수 없음.");
-			}
-		},
-		error: function(xhr, status, error) {
-			console.error("🔥 그래프 데이터 가져오기 실패:", error);
+	function showGraph(type) {
+		if (isEditMode) {
+			console.log("❌ 수정 모드에서는 그래프를 표시하지 않음!");
+			return;
 		}
-	});
-}
+		$("#graph-container").show();
+		console.log("📢 showGraph 실행됨! type:", type);  // ✅ 함수 실행 확인
+	
+		$.ajax({
+			url: "/user/healthDataHistory", // 📌 DB에서 건강 데이터 가져오기
+			type: "GET",
+			data: { userId: loggedInUserId},  // 현재는 userId=1로 가정
+			success: function(data) {
+				console.log("📢 AJAX 응답:", data); // ✅ 데이터 정상 수신 확인
+	
+				if (data.length > 0) {
+					updateGraph(data, type); // ✅ 버튼에 따라 적절한 데이터만 출력
+				} else {
+					console.log("❌ 데이터 없음! 그래프 그릴 수 없음.");
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error("🔥 그래프 데이터 가져오기 실패:", error);
+			}
+		});
+	}
 
 
 
@@ -360,7 +364,7 @@ function fetchLatestData() {
 	$.ajax({
 		url: "/user/latestHealthData",
 		type: "GET",
-		data: { userId: 1 },  // ✅ userId 추가
+		data: { userId: loggedInUserId },  // ✅ userId 추가
 		success: function(data) {
 			if (data) {
 				console.log("📢 최신 데이터 응답:", data);
@@ -384,7 +388,7 @@ function fetchGraphData() {
 	$.ajax({
 		url: "/user/healthDataHistory",
 		type: "GET",
-		data: { userId: 1 },  // 현재는 userId=1로 가정
+		data: { userId: loggedInUserId },  // 현재는 userId=1로 가정
 		success: function(data) {
 			if (data.length > 0) {
 				updateGraph(data);

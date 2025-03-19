@@ -2,269 +2,228 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>운동 게시판</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/work.css">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<meta charset="UTF-8">
+<title>운동 게시판</title>
+
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="/css/work.css">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
 
-<body class="bg-gray-900 text-white" style="
-    margin-top: 100px;">
-
-	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
-    <div class="flex justify-between items-center px-6 py-4">
-        <!-- 로고 -->
-        <a href="/" class="text-3xl font-title">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-        </a>
-
-        <!-- 네비게이션 메뉴 -->
-        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
-            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
-            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
-            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-        </nav>
-
-        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
-        <div class="flex gap-6">
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/user/login}"
-                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-                    로그인
-                </a>
-            </th:block>
-
-            <th:block sec:authorize="isAuthenticated()">
-                <div class="relative">
-                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
-                            id="userMenu" onclick="toggleDropdown()">
-                        [[${#authentication.principal.displayName}]]
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
-                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
-                    </div>
-                </div>
-            </th:block>
-        </div>
-    </div>
-</header>
-
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
-
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
-
-    <input type="hidden" id="loggedInUserId" th:value="${userId}">
-    <input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
-
-    <nav class="navbar navbar-light bg-light p-3">
-        <!-- 트레이너일 경우 -->
-        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
-            onclick="location.href='/trainer/memberManage';">
-
-            ← 뒤로 가기
-        </button>
-        <!-- 일반 사용자일 경우 -->
-        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
-            onclick="location.href='/firstUserCalendar';">
-            ← 뒤로 가기
-
-        </button>
-        <h3 class="text-center flex-grow-1">
-            <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">운동 게시판</a>
-        </h3>
+<body class="bg-gray-900 text-white" style="margin-top: 100px;">
+	<!-- 헤더 포함 -->
+	<div th:replace="~{fragment/header :: header}" ></div>
 
 
-    </nav>
+	<input type="hidden" id="loggedInUserId" th:value="${userId}">
+	<input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
+	<div class="gaduriContainer" style="margin-top: 100px">
+		<nav class="navbar navbar-light bg-light p-3">
+			<h3 class="text-center flex-grow-1">
+				<a href="/work?workoutDate=" id="mainPageLink"
+					class="text-dark text-decoration-none">TODAY'S WORK OUT</a>
+			</h3>
+		</nav>
 
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="calendar-sidebar">
-                    <div id="calendar"></div>
-                    <div class="mt-3">
-                        <h6>🔍 검색</h6>
-                        <div class="search-container">
-                            <input type="text" id="search" class="form-control" placeholder="운동 검색...">
-                            <button id="searchBtn" class="btn btn-primary search">검색</button>
-                        </div>
-                        <div class="mt-2">
-                            <input type="checkbox" id="videoFilter">
-                            <label for="videoFilter">동영상 체크</label>
-                        </div>
-                    </div>
-                </div>
+		<div class="container mt-3">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="calendar-sidebar">
+						<div id="calendar"></div>
+						<div class="mt-3">
+							<h6>🔍 검색</h6>
+							<div class="search-container">
+								<input type="text" id="search" class="form-control"
+									placeholder="운동 검색...">
+								<button id="searchBtn" class="btn btn-primary search">검색</button>
+							</div>
+							<div class="mt-2">
+								<input type="checkbox" id="videoFilter"> <label
+									for="videoFilter">동영상 체크</label>
+							</div>
+						</div>
+					</div>
 
-            </div>
+				</div>
 
-            <div class="col-md-9">
-                <h4>운동 기록 입력</h4>
-                <hr class="custom-divider">
-                <!-- 트레이너만 보이는 회원 선택 dropdown -->
-                <div class="mb-3 d-flex align-items-center gap-2" th:if="${role == 'Trainer'}"
-                    style="width: fit-content;">
-                    <select id="trainerMemberSelect" class="form-select" style="width: 150px;"
-                        onchange="handleTrainerMemberChange(this.value)">
-                        <option value="" th:selected="${userId == null}">회원 선택하기</option>
-                        <option th:each="member : ${trainerMembers}" th:value="${member.userId}"
-                            th:text="${member.userName}" th:selected="${userId == member.userId}"></option>
-                    </select>
-                </div>
+				<div class="col-md-9">
+					<h4>운동 기록 입력</h4>
+					<hr class="custom-divider">
+					<!-- 트레이너만 보이는 회원 선택 dropdown -->
+					<div class="mb-3 d-flex align-items-center gap-2"
+						th:if="${role == 'Trainer'}" style="width: fit-content;">
+						<select id="trainerMemberSelect" class="form-select"
+							style="width: 150px;"
+							onchange="handleTrainerMemberChange(this.value)">
+							<option value="" th:selected="${userId == null}">회원 선택하기</option>
+							<option th:each="member : ${trainerMembers}"
+								th:value="${member.userId}" th:text="${member.userName}"
+								th:selected="${userId == member.userId}"></option>
+						</select>
+					</div>
 
-                <div class="row mb-3">
-                    <!-- ✅ 숨겨진 input으로 userId 포함 -->
-                    <input type="hidden" id="selectedUserId" th:value="${userId}">
-                    <div class="col-2">
-                        <select id="part" class="form-select" style="min-width: 100px;">
-                            <option value="">운동 부위</option>
-                            <option value="등">등</option>
-                            <option value="어깨">어깨</option>
-                            <option value="가슴">가슴</option>
-                            <option value="팔">팔</option>
-                            <option value="하체">하체</option>
-                        </select>
-                    </div>
-
-
-                    <div class="col-2"><input type="text" id="exercise" class="form-control" placeholder="운동 이름"></div>
-                    <div class="col-2"><input type="number" id="sets" class="form-control" placeholder="세트"></div>
-                    <div class="col-2"><input type="number" id="reps" class="form-control" placeholder="횟수"></div>
-                    <div class="col-2"><input type="number" id="weight" class="form-control" placeholder="무게 (KG)">
-                    </div>
-                    <div class="col-2 d-grid">
-                        <button id="addWorkoutBtn" class="btn btn-primary" onclick="addWorkout()">추가</button>
-
-                        <button id="updateWorkoutBtn" class="btn btn-success hidden" onclick="updateWorkout()">수정
-                            완료</button>
-                    </div>
-                </div>
+					<div class="row mb-3">
+						<!-- ✅ 숨겨진 input으로 userId 포함 -->
+						<input type="hidden" id="selectedUserId" th:value="${userId}">
+						<div class="col-2">
+							<select id="part" class="form-select" style="min-width: 100px;">
+								<option value="">운동 부위</option>
+								<option value="등">등</option>
+								<option value="어깨">어깨</option>
+								<option value="가슴">가슴</option>
+								<option value="팔">팔</option>
+								<option value="하체">하체</option>
+							</select>
+						</div>
 
 
-                <input type="hidden" id="selectedDate">
-                <!-- 기본 운동 기록 테이블 -->
-                <table class="table table-bordered text-center" id="workoutTable">
-                    <thead class="table-dark ">
-                        <tr>
-                            <th>부위</th>
-                            <th>운동 이름</th>
-                            <th>세트</th>
-                            <th>횟수</th>
-                            <th>무게 (KG)</th>
-                            <th>동영상</th>
-                            <th>수정/삭제</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="workout : ${workouts}" th:data-workout-id="${workout.workoutId}">
-                            <td th:text="${workout.part}"></td>
-                            <td th:text="${workout.exercise}"></td>
-                            <td th:text="${workout.sets}"></td>
-                            <td th:text="${workout.reps}"></td>
-                            <td th:text="${workout.weight}"></td>
+						<div class="col-2">
+							<input type="text" id="exercise" class="form-control"
+								placeholder="운동 이름">
+						</div>
+						<div class="col-2">
+							<input type="number" id="sets" class="form-control"
+								placeholder="세트">
+						</div>
+						<div class="col-2">
+							<input type="number" id="reps" class="form-control"
+								placeholder="횟수">
+						</div>
+						<div class="col-2">
+							<input type="number" id="weight" class="form-control"
+								placeholder="무게 (KG)">
+						</div>
+						<div class="col-2 d-grid">
+							<button id="addWorkoutBtn" class="btn btn-primary"
+								onclick="addWorkout()">추가</button>
 
-                            <!-- ✅ Thymeleaf를 사용해 비디오 버튼을 동적으로 설정 -->
-                            <td th:id="'videoSection-' + ${workout.workoutId}">
-                                <th:block th:if="${videoMap[workout.workoutId] != null}">
-                                    <button class="btn btn-sm btn-success"
-                                        th:onclick="|openVideo('${videoMap[workout.workoutId]}')|">🎥 영상
-                                        열기</button>
-                                    <button class="btn btn-sm btn-danger"
-                                        th:onclick="|deleteWorkoutVideo(${workout.workoutId})|">❌ 삭제</button>
-                                </th:block>
-                                <th:block th:if="${videoMap[workout.workoutId] == null}">
-                                    <button class="btn btn-sm btn-info"
-                                        th:onclick="|uploadVideoForWorkout(${workout.workoutId})|">📂
-                                        삽입</button>
-                                </th:block>
-                            </td>
-
-                            <td>
-                                <button class="btn btn-sm btn-warning"
-                                    th:onclick="|editWorkout(${workout.workoutId})|">수정</button>
-                                <button class="btn btn-sm btn-danger"
-                                    th:onclick="|deleteWorkout(${workout.workoutId})|">삭제</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <!-- 검색 결과 테이블 -->
-                <div class="mt-4">
-                    <table class="table table-bordered text-center hidden" id="searchResultsTable">
-                        <h5 id="searchResultsTitle" class="hidden"> 검색 결과</h5>
-                        <thead class="table-dark">
-                            <tr>
-                                <th>날짜</th>
-                                <th>부위</th>
-                                <th>운동 이름</th>
-                                <th>세트/횟수/KG</th>
-                                <th>동영상</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="workout : ${workouts}" th:data-workout-id="${workout.workoutId}">
-                                <td>
-                                    <a th:href="@{/work(workoutDate=${workout.workoutDate}, userId=${workout.userId})}"
-                                        class="text-primary">
-                                        <span th:text="${workout.workoutDate}"></span>
-                                    </a>
-                                </td>
-                                <td th:text="${workout.part}"></td>
-                                <td th:text="${workout.exercise}"></td>
-                                <td th:text="${workout.sets} + '/' + ${workout.reps} + '/' + ${workout.weight}"></td>
-                                <td>
-                                    <button th:if="${videoMap[workout.workoutId] != null}"
-                                        class="btn btn-sm btn-success"
-                                        th:onclick="|openVideo('${videoMap[workout.workoutId]}')|">
-                                        🎥 영상 열기
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!--  운동 기록이 있을 때만 댓글 입력 가능 (JS에서 제어) -->
-                <div class="comment-section mt-4" id="commentSection" style="display: none;">
-                    <h4>댓글</h4>
-                    <ul id="commentList"></ul> <!--  댓글 목록 -->
-
-                    <!--  댓글 입력 폼 -->
-                    <form id="commentForm" onsubmit="submitCommentForm(event)">
-                        <textarea id="commentInput" class="form-control" placeholder="댓글을 입력하세요..."></textarea>
-                        <button type="submit" class="btn btn-primary comments">댓글 작성</button>
-                    </form>
-                </div>
+							<button id="updateWorkoutBtn" class="btn btn-success hidden"
+								onclick="updateWorkout()">수정 완료</button>
+						</div>
+					</div>
 
 
-            </div>
-        </div>
-    </div>>
+					<input type="hidden" id="selectedDate">
+					<!-- 기본 운동 기록 테이블 -->
+					<table class="table table-bordered text-center" id="workoutTable">
+						<thead class="table-dark ">
+							<tr>
+								<th>부위</th>
+								<th>운동 이름</th>
+								<th>세트</th>
+								<th>횟수</th>
+								<th>무게 (KG)</th>
+								<th>동영상</th>
+								<th>수정/삭제</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="workout : ${workouts}"
+								th:data-workout-id="${workout.workoutId}">
+								<td th:text="${workout.part}"></td>
+								<td th:text="${workout.exercise}"></td>
+								<td th:text="${workout.sets}"></td>
+								<td th:text="${workout.reps}"></td>
+								<td th:text="${workout.weight}"></td>
+
+								<!-- ✅ Thymeleaf를 사용해 비디오 버튼을 동적으로 설정 -->
+								<td th:id="'videoSection-' + ${workout.workoutId}"><th:block
+										th:if="${videoMap[workout.workoutId] != null}">
+										<button class="btn btn-sm btn-success"
+											th:onclick="|openVideo('${videoMap[workout.workoutId]}')|">🎥
+											영상 열기</button>
+										<button class="btn btn-sm btn-danger"
+											th:onclick="|deleteWorkoutVideo(${workout.workoutId})|">❌
+											삭제</button>
+									</th:block> <th:block th:if="${videoMap[workout.workoutId] == null}">
+										<button class="btn btn-sm btn-info"
+											th:onclick="|uploadVideoForWorkout(${workout.workoutId})|">📂
+											삽입</button>
+									</th:block></td>
+
+								<td>
+									<button class="btn btn-sm btn-warning"
+										th:onclick="|editWorkout(${workout.workoutId})|">수정</button>
+									<button class="btn btn-sm btn-danger"
+										th:onclick="|deleteWorkout(${workout.workoutId})|">삭제</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 검색 결과 테이블 -->
+					<div class="mt-4">
+						<table class="table table-bordered text-center hidden"
+							id="searchResultsTable">
+							<h5 id="searchResultsTitle" class="hidden">검색 결과</h5>
+							<thead class="table-dark">
+								<tr>
+									<th>날짜</th>
+									<th>부위</th>
+									<th>운동 이름</th>
+									<th>세트/횟수/KG</th>
+									<th>동영상</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="workout : ${workouts}"
+									th:data-workout-id="${workout.workoutId}">
+									<td><a
+										th:href="@{/work(workoutDate=${workout.workoutDate}, userId=${workout.userId})}"
+										class="text-primary"> <span
+											th:text="${workout.workoutDate}"></span>
+									</a></td>
+									<td th:text="${workout.part}"></td>
+									<td th:text="${workout.exercise}"></td>
+									<td
+										th:text="${workout.sets} + '/' + ${workout.reps} + '/' + ${workout.weight}"></td>
+									<td>
+										<button th:if="${videoMap[workout.workoutId] != null}"
+											class="btn btn-sm btn-success"
+											th:onclick="|openVideo('${videoMap[workout.workoutId]}')|">
+											🎥 영상 열기</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!--  운동 기록이 있을 때만 댓글 입력 가능 (JS에서 제어) -->
+					<div class="comment-section mt-4" id="commentSection"
+						style="display: none;">
+						<h4>댓글</h4>
+						<ul id="commentList"></ul>
+						<!--  댓글 목록 -->
+
+						<!--  댓글 입력 폼 -->
+						<form id="commentForm" onsubmit="submitCommentForm(event)">
+							<textarea id="commentInput" class="form-control"
+								placeholder="댓글을 입력하세요..."></textarea>
+							<button type="submit" class="btn btn-primary comments">댓글
+								작성</button>
+						</form>
+					</div>
 
 
+				</div>
+			</div>
+		</div>
+		>
+	</div>
 
-    <script src="/js/work.js"></script>
+
+	<script src="/js/work.js"></script>
 </body>
 
 </html>

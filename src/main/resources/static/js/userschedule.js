@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             personalInfo: {
                 text: '개인정보',
                 click: function () {
-                    window.location.href = '/userbodyData';
+                    window.location.href = '/mypage';
                 }
             }
         },
@@ -218,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userCreatedEvents.push({ data: newEventData, instance: addedEvent });
             if (confirm("선택한 이벤트를 저장하시겠습니까?")) {
                 userCreatedEvents.forEach(function(item) {
+					item.instance.remove();
                     sendUserEventToServer(item.data, item.instance);
                 });
             } else {
@@ -251,13 +252,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 이벤트를 미리 제거하여 alert 동안 캘린더에 표시되지 않도록 합니다.
                 eventInstance.remove();
                 if(response === 'success'){
+					eventInstance.remove();
                     alert('저장이 완료되었습니다.');
                     window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
+					eventInstance.remove();
                     alert('이용가능한 시간이 아닙니다.');
                 } else if(response === "alreadySchedule"){
+					eventInstance.remove();
                     alert('이미 다른사람의 예약이 있습니다.');
                 } else if(response === "alreadyHaveSchedule"){
+					eventInstance.remove();
                     alert('이미 예약이 있습니다.');
                 }
             },
@@ -313,3 +318,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+
+    // 클릭 외부 감지하여 닫기
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("dropdownMenu");
+        var button = document.getElementById("userMenu");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });

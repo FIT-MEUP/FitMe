@@ -1,65 +1,100 @@
-<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
-    <div class="flex justify-between items-center px-6 py-4">
-        <!-- 로고 -->
-        <a href="/" class="text-3xl font-title">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-        </a>
+<header
+		class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+		<div class="flex justify-between items-center px-6 py-4">
+			<!-- 로고 -->
+			<a href="/" class="text-3xl font-title"> <img
+				src="../../static/images/logo.png" th:src="@{/images/logo.png}"
+				alt="Logo" class="h-12">
+			</a>
+			<!-- 네비게이션 메뉴 -->
+			<nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+			
+				<th:block th:switch="${roles ?: ''}">
+					<!-- 1. 미로그인 사용자 -->
+					<div th:case="''" class="flex space-x-12">
+						<a href="/" class="text-white hover:text-blue-400 transition">
+							홈</a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-blue-400 transition">
+					운동영상</a>
+					</div>
 
-        <!-- ✅ 네비게이션 메뉴 -->
-        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-            <a href="/" class="text-white hover:text-blue-400 transition">홈</a>
-            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition">트레이너 찾기</a>
-            <a href="#" class="text-white hover:text-blue-400 transition">식단 플래너</a>
-            <a href="#" class="text-white hover:text-blue-400 transition">운동 다이어리</a>
-            <a href="#" class="text-white hover:text-blue-400 transition">예약 및 일정</a>
-            <a href="/videos" class="text-white hover:text-blue-400 transition">운동영상</a>
-            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-        </nav>
+					<!-- 2. 트레이너 -->
+					<div th:case="'Trainer'" class="flex space-x-12">
+						<a href="/" class="text-white hover:text-blue-400 transition">홈</a> 
+						<a th:href="@{/meals}" class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> 
+						<a th:href="@{/work}" class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> 
+					    <a th:href="@{/firstTrainerSchedule}"class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> 
+					    <a th:href="@{/trainer/{trainerId}(trainerId=${trainerId})}" class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
+						<a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+					</div>
 
-        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
-        <div class="flex gap-6">
-            <!-- 로그인하지 않은 경우 -->
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/user/login}"
-                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-                    로그인
-                </a>
-            </th:block>
 
-            <!-- 로그인한 경우 -->
-            <th:block sec:authorize="isAuthenticated()">
-                <div class="relative">
-                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
-                            id="userMenu">
-                        <span th:text="${#authentication.principal.displayName}"></span> ▼
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}">로그아웃</a>
-                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}">회원 탈퇴</a>
-                    </div>
-                </div>
-            </th:block>
-        </div>
-    </div>
-</header>
+					<!-- 3. 트레이너 승인된 회원 -->
+					<div th:case="'UserNowPt'" class="flex space-x-12">
+						<a href="/" class="text-white hover:text-blue-400 transition">
+							홈</a> <a
+							th:href="@{/meals}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/work}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/firstUserCalendar}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> <a
+							th:href="@{/mypage}"
+							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-blue-400 transition">
+					운동영상</a>
+					</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const userMenu = document.getElementById("userMenu");
-        const dropdownMenu = document.getElementById("dropdownMenu");
+					<!-- 4. 트레이너 매칭되지 않은 회원 -->
+					<div th:case="'UserNotPt'" class="flex space-x-12">
+						<a href="/" class="text-white hover:text-blue-400 transition">
+							홈</a> <a
+							th:href="@{/}" class="text-white hover:text-blue-400 transition">
+							식단 플래너 </a> <a th:href="@{/}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/}" class="text-white hover:text-blue-400 transition">
+							예약 및 일정 </a> <a th:href="@{/}"
+							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-blue-400 transition">
+					운동영상</a>
+					</div>
+				</th:block>
 
-        if (userMenu && dropdownMenu) {
-            userMenu.addEventListener("click", function(event) {
-                dropdownMenu.classList.toggle("hidden");
-                event.stopPropagation(); // 부모 요소 클릭 방지
-            });
-
-            // 외부 클릭 시 닫기
-            document.addEventListener("click", function(event) {
-                if (!userMenu.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                    dropdownMenu.classList.add("hidden");
-                }
-            });
-        }
-    });
-</script>
+				
+			</nav>
+			<!-- 로그인 상태 체크 -->
+			<div class="flex gap-6">
+				<th:block sec:authorize="isAnonymous()">
+					<a th:href="@{/user/login}"
+						class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+						로그인 </a>
+				</th:block>
+				<th:block sec:authorize="isAuthenticated()">
+					<div class="relative">
+						<button
+							class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
+							id="userMenu" onclick="toggleDropdown()">
+							[[${#authentication.principal.displayName}]]</button>
+						<div id="dropdownMenu"
+							class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+							<a
+								class="block px-4 py-2 text-white hover:bg-gray-700 transition"
+								th:href="@{/user/logout}"> 로그아웃</a> <a
+								class="block px-4 py-2 text-white hover:bg-gray-700 transition"
+								th:href="@{/user/changePassword}"> 비밀번호 변경</a> <a
+								class="block px-4 py-2 text-red-400 hover:bg-red-600 transition"
+								th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+						</div>
+					</div>
+				</th:block>
+			</div>
+		</div>
+	</header>

@@ -25,13 +25,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 			throws IOException, ServletException {
-
-		String refererUrl = request.getHeader("Referer");
-		if (refererUrl != null) {
-			response.sendRedirect(refererUrl); // 이전 페이지로 리다이렉트
-		} else {
-			response.sendRedirect("/"); // Referer가 없을 경우 기본 URL로 리다이렉트
-		}
+				response.sendRedirect("/");
+		
 	}
 
 }
