@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../../static/css/usercalendar.css" th:href="@{/css/userschedule.css}">
   <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <script src="../../static/js/userschedule.js" th:src="@{/js/userschedule.js}"></script>
-
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <script src="../../static/JS/userChat.js" th:src="@{/JS/userChat.js}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
@@ -101,21 +101,7 @@ console.log("Merged calendarEvents:", calendarEvents);
     </div>
 </header>
 
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
 	
   <div id="page-container">
     <!-- 왼쪽 사이드바 -->

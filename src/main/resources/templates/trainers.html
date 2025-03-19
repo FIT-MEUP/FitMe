@@ -1,122 +1,119 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://thymeleaf.org"
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>트레이너 목록</title>
+
+<link rel="stylesheet" href="../../static/css/trainers.css"
+	th:href="@{/css/trainers.css}">
+
+<!-- Tailwind CSS & AlpineJS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script
 	src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="../../static/js/jquery-3.7.1.min.js"
+	th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script src="../../static/js/trainers.js" th:src="@{/js/trainers.js}"></script>
 
-<!-- ✅ Google Fonts (스포티하고 강렬한 폰트 적용) -->
+<!-- Google Fonts -->
 <link
 	href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap"
 	rel="stylesheet">
 
-<style>
-/* 🏋️‍♂️ 강한 타이틀 스타일 (강제 적용) */
-.font-title {
-	font-family: 'Oswald', sans-serif !important;
-	font-weight: 600;
-	text-transform: uppercase;
-}
 
-/* 📌 네비게이션 & 주요 버튼 */
-.font-nav {
-	font-family: 'Oswald', sans-serif !important;
-	font-weight: 400;
-	text-transform: uppercase;
-}
-
-/* 💎 설명 문구 & 본문 */
-.font-body {
-	font-family: 'Montserrat', sans-serif !important;
-	font-weight: 400;
-}
-
-/* 🎥 배경 비디오 스타일 */
-.video-container {
-	position: relative;
-	width: 100%;
-	height: 75vh;
-	overflow: hidden;
-}
-
-.video-container video {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	transform: translate(-50%, -50%);
-}
-</style>
 </head>
+<body class="bg-gray-900 text-white" style="margin-top: 100px;">
+	<header
+		class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+		<div class="flex justify-between items-center px-6 py-4">
+			<!-- 로고 -->
+			<a href="/" class="text-3xl font-title"> <img
+				src="../../static/images/logo.png" th:src="@{/images/logo.png}"
+				alt="Logo" class="h-12">
+			</a>
+			<!-- 네비게이션 메뉴 -->
+			<nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+				<a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+				<a href="javascript:void(0);" onclick="scrollToTrainers()"
+					class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
 
-<body class="bg-gray-900 text-white" style="
-    margin-top: 100px;">
 
-	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
-    <div class="flex justify-between items-center px-6 py-4">
-        <!-- 로고 -->
-        <a href="/" class="text-3xl font-title">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-        </a>
+				<th:block th:switch="${roles}">
+					<!-- 1. 미로그인 사용자 -->
+					<div th:case="''">
+						<a th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/user/login}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a>
+					</div>
 
-        <!-- 네비게이션 메뉴 -->
-        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
-            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
-            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
-            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-        </nav>
+					<!-- 2. 트레이너 -->
+					<div th:case="'Trainer'">
+						<a th:href="@{/meals}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/work}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/firstTrainerSchedule}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a>
+					</div>
 
-        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
-        <div class="flex gap-6">
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/user/login}"
-                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-                    로그인
-                </a>
-            </th:block>
+					<!-- 3. 트레이너 승인된 회원 -->
+					<div th:case="'UserNowPt'">
+						<a th:href="@{/meals}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/work}"
+							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/firstUserCalendar}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a>
+					</div>
 
-            <th:block sec:authorize="isAuthenticated()">
-                <div class="relative">
-                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
-                            id="userMenu" onclick="toggleDropdown()">
-                        [[${#authentication.principal.displayName}]]
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
-                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
-                    </div>
-                </div>
-            </th:block>
-        </div>
-    </div>
-</header>
+					<!-- 4. 트레이너 매칭되지 않은 회원 -->
+					<div th:case="'UserNotPt'">
+						<a th:href="@{/}"
+							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							th:href="@{/}" class="text-white hover:text-blue-400 transition">
+							운동 다이어리 </a> <a th:href="@{/}"
+							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a>
+					</div>
+				</th:block>
 
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
+				<a href="/videos" class="text-white hover:text-blue-400 transition">
+					운동영상</a> <a href="/BMI"
+					class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+			</nav>
+			<!-- 로그인 상태 체크 -->
+			<div class="flex gap-6">
+				<th:block sec:authorize="isAnonymous()">
+					<a th:href="@{/user/login}"
+						class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+						로그인 </a>
+				</th:block>
+				<th:block sec:authorize="isAuthenticated()">
+					<div class="relative">
+						<button
+							class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
+							id="userMenu" onclick="toggleDropdown()">
+							[[${#authentication.principal.displayName}]]</button>
+						<div id="dropdownMenu"
+							class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+							<a
+								class="block px-4 py-2 text-white hover:bg-gray-700 transition"
+								th:href="@{/user/logout}"> 로그아웃</a> <a
+								class="block px-4 py-2 text-white hover:bg-gray-700 transition"
+								th:href="@{/user/changePassword}"> 비밀번호 변경</a> <a
+								class="block px-4 py-2 text-red-400 hover:bg-red-600 transition"
+								th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+						</div>
+					</div>
+				</th:block>
+			</div>
+		</div>
+	</header>
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
-
-	<!-- 🏋️ 메인 컨텐츠 문구 -->
+	<!-- 메인 컨텐츠 -->
 	<section class="flex flex-col items-center text-center mt-28">
 		<h1
 			class="text-6xl font-title text-white drop-shadow-lg tracking-widest">
@@ -125,16 +122,17 @@
 			최고의 트레이너를 만나보세요.</p>
 	</section>
 
-	<!-- ✅ Intro.mp4 파일을 백그라운드 비디오로 적용 -->
+	<!-- 배경 비디오 -->
 	<div class="video-container mt-10">
 		<video autoplay muted loop playsinline
 			class="absolute inset-0 w-full h-full object-cover">
-			<source src="../../static/videos/Intro.mp4" th:src="@{/videos/Intro.mp4}"type="video/mp4">
+			<source src="../../static/videos/Intro.mp4"
+				th:src="@{/videos/Intro.mp4}" type="video/mp4">
 			브라우저가 비디오 태그를 지원하지 않습니다.
 		</video>
 	</div>
 
-	<!-- 🏋️ 트레이너 목록 -->
+	<!-- 트레이너 목록 -->
 	<main id="trainer-list"
 		class="relative z-10 flex flex-col items-center text-center mt-16">
 		<h2 class="text-4xl font-title text-white mb-6 tracking-widest">TRAINER
@@ -142,28 +140,35 @@
 
 		<div
 			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 w-full max-w-6xl mx-auto">
-			<div
-				class="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg text-gray-900 font-body"
-				th:each="trainer : ${trainers}">
-				<!-- 트레이너 대표 이미지 -->
-				<img
-					th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
-					alt="Trainer Image" class="w-full h-56 object-cover">
+			<!-- 반복문 시작 -->
+			<div th:each="trainer : ${trainers}"
+				class="trainer-card group bg-gray-800 rounded-lg overflow-hidden shadow-lg text-white font-body relative 
+         transition-transform transform hover:-translate-y-1 hover:shadow-2xl">
+				<!-- 상단 이미지 영역 -->
+				<div class="relative overflow-hidden">
+					<img
+						th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
+						alt="Trainer Image"
+						class="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-110">
+				</div>
+
+				<!-- 하단 텍스트 영역 -->
 
 				<div class="p-6 text-center">
-					<h5 class="text-2xl font-title" th:text="${trainer.user.userName}">트레이너
-						이름</h5>
-					<p class="text-gray-700 mt-2 font-body"
+					<h5 class="text-2xl font-title mb-2"
+						th:text="${trainer.user.userName}">트레이너 이름</h5>
+					<p class="text-white-700 font-body"
 						th:text="${trainer.specialization}">전문 분야</p>
+
 					<a th:href="@{/trainer/{id}(id=${trainer.trainerId})}"
-						class="inline-block mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-nav">
-						자세히 보기 </a>
+						class="btn-detail"> 자세히 보기 </a>
 				</div>
 			</div>
+			<!-- 반복문 끝 -->
 		</div>
 	</main>
 
-	<!-- ✅ 명언 API -->
+	<!-- 명언 API -->
 	<section class="relative z-10 flex justify-center items-center mt-10">
 		<div
 			class="bg-gray-900 bg-opacity-80 p-6 rounded-lg w-full max-w-4xl text-center">
@@ -172,26 +177,6 @@
 		</div>
 	</section>
 
-	<!-- 🎯 명언 API 스크립트 -->
-	<script>
-        function loadMotivationalQuote() {
-            fetch('/api/quote')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("motivational-quote").innerText = data.quote;
-                })
-                .catch(error => {
-                    console.error("명언 호출 중 오류:", error);
-                    document.getElementById("motivational-quote").innerText = "명언을 불러오는 중 오류 발생.";
-                });
-        }
-        window.onload = loadMotivationalQuote;
-        
-        function scrollToTrainers() {
-            document.getElementById("trainer-list").scrollIntoView({ behavior: "smooth" });
-        }
-        
-    </script>
 
 </body>
 </html>

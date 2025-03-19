@@ -28,7 +28,46 @@
 </head>
 
 
+
 <body>
+<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+    <div class="flex justify-between items-center px-6 py-4">
+      <!-- 로고 -->
+      <a href="/" class="text-3xl font-title">
+        <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+      </a>
+      <!-- 네비게이션 메뉴 -->
+      <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+        <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+        <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
+        <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+        <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+      </nav>
+      <!-- 로그인 상태 체크 -->
+      <div class="flex gap-6">
+        <th:block sec:authorize="isAnonymous()">
+          <a th:href="@{/user/login}" class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+            로그인
+          </a>
+        </th:block>
+        <th:block sec:authorize="isAuthenticated()">
+          <div class="relative">
+            <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav" id="userMenu" onclick="toggleDropdown()">
+              [[${#authentication.principal.displayName}]]
+            </button>
+            <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
+              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/changePassword}"> 비밀번호 변경</a>
+              <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+            </div>
+          </div>
+        </th:block>
+      </div>
+    </div>
+  </header>
     <nav class="navbar navbar-light bg-light p-3">
         <!-- 트레이너일 경우 -->
         <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
@@ -75,24 +114,24 @@
     <!-- ✅ 캘린더 영역 -->
     <div class="calendar-container">
         <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
-            <h5 class="text-white text-center mb-4 font-bold text-lg">📅 식단 캘린더</h5>
+            <h5 class="text-white text-center mb-4 font-bold text-lg">📅 My calendar</h5>
             <div id="calendar" class="bg-light rounded p-3 shadow"></div>
         </div>
     </div>
 
       <!-- ✅ 식단 기록 -->
     <div class="meal-record-container">
-        <div class="bg-dark p-4 rounded shadow-lg">
-            <h4 class="text-white fw-bold text-center mb-3">🍽 식단 기록</h4>
+        <div class="bg-dark p-4 rounded shadow-lg meal-container-title">
+            <span><h4 class="text-white fw-bold text-center mb-3 sikdangirok">🍽 식단 보고서 🍽</h4></span>
             
              <!-- ✅ "식단 추가 버튼" (우측 끝으로 정렬) -->
     <button id="addMealButton" 
-        class="btn btn-success px-4 py-2 fw-bold shadow-sm"
+        class="btn btn-success px-4 py-2 fw-bold shadow-sm sikdanchooga"
         data-bs-toggle="modal" data-bs-target="#mealModal" 
         th:if="${role != 'Trainer'}">
         + 식단 추가
     </button>
-</div>
+		</div>
 
             <!-- 식단이 없는 경우 -->
             <th:block th:if="${meals == null or #lists.isEmpty(meals)}">
