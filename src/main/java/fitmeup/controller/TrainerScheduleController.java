@@ -33,6 +33,7 @@ public class TrainerScheduleController {
 				,@AuthenticationPrincipal LoginUserDetails loginUser
 				) {
 			Long userId= loginUser.getUserId();
+			Long trainerId = scheduleService.findTrainertrainerId(userId);
 			log.info("userId ===== {}",userId);
 			
 //			List<TrainerScheduleDTO> list = scheduleService.selectTrainerScheduleAll(1L);
@@ -40,13 +41,14 @@ public class TrainerScheduleController {
 		    model.addAttribute("list", list);
 		    log.info(list.toString());
 //		    model.addAttribute("trainerId",1);
-		    model.addAttribute("trainerId",userId);
+		    model.addAttribute("trainerId",trainerId);
+		    log.info("trainerId4321{}",trainerId);
 		  
 
 //		    List<ScheduleDTO> userlist = scheduleService.selectAll(1L);
 		    
 		    //이건 trainerEntity의 trainerId를 넣어야함를 넣어야함
-		    Long trainerId = scheduleService.findTrainertrainerId(userId);
+		    
 		    log.info("트레이너 입장 trainerId = {}",trainerId);
 		     List<ScheduleDTO> userlist = scheduleService.selectAll(trainerId);
 		     log.info("userlist.size()userlist.size()       {}",userlist.size());

@@ -55,6 +55,7 @@ private final ScheduleService scheduleService;
 		  //즉 trainerId를 통해 UserId를 찾는 작업을 해야함
 		  Long trainerId= scheduleService.findTrainerUserId(apptrainerId);		// trainer의 userId
 
+		  log.info("trainerId1234: {} -", trainerId);
 		// 트레이너 현재 온라인 상태 추가 (이 부분이 필수 ★★★)
 		boolean isTrainerOnline = userService.getUserById(trainerId).getIsOnline();
 		model.addAttribute("isTrainerOnline", isTrainerOnline);

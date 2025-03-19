@@ -6,143 +6,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
     <link rel="stylesheet" th:href="@{/css/mypage.css}">
-    <script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-<script th:inline="javascript">
-    let loggedInUserId = [[${userId}]]; // Thymeleaf에서 받은 userId를 JavaScript 변수로 저장
-    console.log("로그인한 사용자 ID:", loggedInUserId);
-</script>
-
-
-
-</head>
-
-<body class="bg-gray-900 text-black" style="
-    margin-top: 100px;">
-    <header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
-    <div class="flex justify-between items-center px-6 py-4">
-      <!-- 로고 -->
-      <a href="/" class="text-3xl font-title">
-        <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-      </a>
-      <!-- 네비게이션 메뉴 -->
-      <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-        <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
-        <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
-        <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
-        <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
-        <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
-        <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
-        <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-      </nav>
-      <!-- 로그인 상태 체크 -->
-      <div class="flex gap-6">
-        <th:block sec:authorize="isAnonymous()">
-          <a th:href="@{/user/login}" class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-            로그인
-          </a>
-        </th:block>
-        <th:block sec:authorize="isAuthenticated()">
-          <div class="relative">
-            <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav" id="userMenu" onclick="toggleDropdown()">
-              [[${#authentication.principal.displayName}]]
-            </button>
-            <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
-              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/changePassword}"> 비밀번호 변경</a>
-              <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
-            </div>
-          </div>
-        </th:block>
-      </div>
-    </div>
-  </header>
-
-    <div class="container">
-        <!-- 상단 메뉴 -->
-        <div class="header">
-            <!-- 기존 로고 버튼 수정 -->
-				<button class="back-button" onclick="location.href='/user/home'">로고 
-    			<!-- 	<img src="/images/logo.png" alt="로고" style="width: 50px; height: 50px;"> -->
-				</button>
-            <h1>마이페이지</h1>
-            <div class="header-right">
-                <button class="edit-button" onclick="toggleEditMode()">수정</button>
-            </div>
-        </div>
-
-        <!-- 메인 콘텐츠 -->
-        <div class="main-content">
-            <!-- 왼쪽: 캘린더 및 PT 이력 -->
-            <div class="sidebar">
-                <div class="date-display" id="date-display"></div>
-                <div class="calendar-navigation">
-                    <button class="prev-month-button" onclick="changeMonth(-1)">◀</button>
-                    <button class="next-month-button" onclick="changeMonth(1)">▶</button>
-                </div>
-                <table class="calendar" id="calendar"></table>
-                <div class="menu-buttons">
-				  <a th:href="@{/user/ptData(userId=${userId})}" class="button">PT 이력</a>
-   				  <a th:href="@{/user/userbodyData(userId=${userId})}" class="button">신체정보 내역 조회</a>
-				</div>
-
-            </div>
-
-            <!-- 오른쪽: 사용자 정보 및 그래프 -->
-            <div class="content">
-            <h2 th:text="${userName} + ' 님'">사용자 이름</h2>
-               
-                <table class="user-info">
-                    <tr>
-                        <th>키</th>
-                        <th>체중</th>
-                        <th>BMI</th>
-                        <th>체지방률</th>
-                        <th>골격근</th>
-                        <th>기초대사량</th>
-                        <th>날짜</th>
-                    </tr>
-                    <tr>
-                    <tr id="userInfoRow">
-   					 <td id="height" th:text="${latestData.height} + ' cm'">0 cm</td>
-   					 <td id="weight" th:text="${latestData.weight} + ' kg'">0 kg</td>
-   					 <td id="bmi" th:text="${latestData.bmi}">0</td>
-   					 <td id="fatMass" th:text="${latestData.fatMass} + '%'">0%</td>
-   					 <td id="muscleMass" th:text="${latestData.muscleMass} + 'kg'">0kg</td>
-   					 <td id="basalMetabolicRate" th:text="${latestData.basalMetabolicRate} + ' kcal'">0 kcal</td>
-   					 <td id="current-date" th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
-					</tr>
-	
-                </table>
-                <!-- 저장 및 취소 버튼 (수정 모드에서만 표시) -->
-                <div id="editButtons" style="display: none; margin-top: 10px;">
-                    <button onclick="saveChanges()">저장</button>&nbsp;
-                    <button onclick="cancelEdit()">취소</button>
-                </div>
-
-
-
-                <!-- 그래프 버튼들 -->
-                <div class="graphs">
-                    <div class="graph" id="weight-graph" onclick="showGraph('weight')">체중 그래프</div>
-                    <div class="graph" id="muscle-graph" onclick="showGraph('muscle')">골격근 그래프</div>
-                    <div class="graph" id="bodyFat-graph" onclick="showGraph('fat')">체지방 그래프</div>
-                </div>
-
-                <!-- 그래프 표시 영역 -->
-                <div id="graph-container">
-                    <canvas id="graphCanvas"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- JavaScript 연결 -->
-    <script src="../static/js/mypage.js" defer th:src="@{/js/mypage.js}"></script>
-    <!-- JavaScript 연결 -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</body>
+    <script th:inline="javascript">
+        let loggedInUserId = [[${userId}]];
+        console.log("로그인한 사용자 ID:", loggedInUserId);
+    </script>
+</head>
 
+<body class="bg-gray-900 text-white font-body">
+    <div th:replace="~{fragment/header :: header}"></div>
+    
+    <div class="max-w-6xl mx-auto py-10 px-6" style="margin-top:100px">
+        <!-- 상단 메뉴 -->
+        <div class="flex justify-between items-center bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-title">MY BODY RECORD</h1>
+            <button class="bg-red-600 px-4 py-2 text-white rounded-lg hover:bg-red-700 transition-all" onclick="toggleEditMode()">수정</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
+            <!-- 캘린더 및 메뉴 -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div id="date-display" class="text-xl font-semibold text-center"></div>
+                <div class="flex justify-between mt-4">
+                    <button class="bg-gray-700 px-3 py-1 rounded" onclick="changeMonth(-1)">◀</button>
+                    <button class="bg-gray-700 px-3 py-1 rounded" onclick="changeMonth(1)">▶</button>
+                </div>
+                <table id="calendar" class="w-full border-collapse mt-4 text-center bg-gray-700 rounded-lg"></table>
+                <div class="flex flex-col gap-4 mt-6">
+                    <a th:href="@{/user/ptData(userId=${userId})}" class="btn">PT 이력</a>
+                    <a th:href="@{/user/userbodyData(userId=${userId})}" class="btn">신체정보 내역 조회</a>
+                </div>
+            </div>
+            
+            <!-- 사용자 정보 -->
+            <div class="col-span-2 bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-title border-b-4 border-red-500 inline-block pb-2" th:text="${userName} + ' 님'">사용자 이름</h2>
+                <table class="w-full border-collapse mt-6">
+                    <thead class="bg-red-600 text-white">
+                        <tr>
+                            <th class="py-2">키</th>
+                            <th>체중</th>
+                            <th>BMI</th>
+                            <th>체지방률</th>
+                            <th>골격근</th>
+                            <th>기초대사량</th>
+                            <th>날짜</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-gray-700 text-center">
+                        <tr>
+                            <td th:text="${latestData.height} + ' cm'"></td>
+                            <td th:text="${latestData.weight} + ' kg'"></td>
+                            <td th:text="${latestData.bmi}"></td>
+                            <td th:text="${latestData.fatMass} + '%' "></td>
+                            <td th:text="${latestData.muscleMass} + ' kg'"></td>
+                            <td th:text="${latestData.basalMetabolicRate} + ' kcal'"></td>
+                            <td th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 그래프 -->
+        <div class="mt-10 bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="grid grid-cols-3 gap-6 text-center">
+                <button class="btn" onclick="showGraph('weight')">체중 그래프</button>
+                <button class="btn" onclick="showGraph('muscle')">골격근 그래프</button>
+                <button class="btn" onclick="showGraph('fat')">체지방 그래프</button>
+            </div>
+            <div class="mt-6">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script th:src="@{/js/mypage.js}" defer></script>
+</body>
 </html>

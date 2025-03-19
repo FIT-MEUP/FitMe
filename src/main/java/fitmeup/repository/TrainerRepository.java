@@ -32,6 +32,10 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
     
     // ✅ UserEntity를 기반으로 TrainerEntity 찾기
     Optional<TrainerEntity> findByUser(UserEntity user);
+
+
+
+	//List<TrainerEntity> findByUserId(Long userId);
     
 //  List<TrainerEntity> findByTrainerIdAndStatus(Long trainerId, String status);
 }
