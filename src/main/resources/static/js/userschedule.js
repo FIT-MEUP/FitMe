@@ -218,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userCreatedEvents.push({ data: newEventData, instance: addedEvent });
             if (confirm("선택한 이벤트를 저장하시겠습니까?")) {
                 userCreatedEvents.forEach(function(item) {
+					item.instance.remove();
                     sendUserEventToServer(item.data, item.instance);
                 });
             } else {
@@ -255,10 +256,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('저장이 완료되었습니다.');
                     window.location.href = '/firstUserCalendar?userId=' + userId;
                 } else if(response === "noRange"){
+					eventInstance.remove();
                     alert('이용가능한 시간이 아닙니다.');
                 } else if(response === "alreadySchedule"){
+					eventInstance.remove();
                     alert('이미 다른사람의 예약이 있습니다.');
                 } else if(response === "alreadyHaveSchedule"){
+					eventInstance.remove();
                     alert('이미 예약이 있습니다.');
                 }
             },

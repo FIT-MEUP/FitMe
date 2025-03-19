@@ -38,137 +38,94 @@
 </style>
 </head>
 
-<body class="bg-gray-900 text-white" style="
-    margin-top: 100px;">
-
-	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
-    <div class="flex justify-between items-center px-6 py-4">
-        <!-- 로고 -->
-        <a href="/" class="text-3xl font-title">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-        </a>
-
-        <!-- 네비게이션 메뉴 -->
-        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
-            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
-            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
-            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-        </nav>
-
-        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
-        <div class="flex gap-6">
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/user/login}"
-                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-                    로그인
-                </a>
-            </th:block>
-
-            <th:block sec:authorize="isAuthenticated()">
-                <div class="relative">
-                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
-                            id="userMenu" onclick="toggleDropdown()">
-                        [[${#authentication.principal.displayName}]]
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
-                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
-                    </div>
-                </div>
-            </th:block>
-        </div>
-    </div>
-</header>
+<body class="bg-gray-900 text-white" style="margin-top: 100px;">
+	 	 <!-- 헤더 포함 -->
+    <div th:replace="~{fragment/header :: header}"></div>
 
 <script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
+	function toggleDropdown() {
+		var dropdown = document.getElementById("dropdownMenu");
+		dropdown.classList.toggle("hidden");
+	}
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
+	// 클릭 외부 감지하여 닫기
+	document.addEventListener("click",
+			function(event) {
+				var dropdown = document.getElementById("dropdownMenu");
+				var button = document.getElementById("userMenu");
+				if (!button.contains(event.target)
+						&& !dropdown.contains(event.target)) {
+					dropdown.classList.add("hidden");
+				}
+			});
 </script>
 
-	<!-- 🏋️‍♂️ 운동 영상 페이지 메인 문구 -->
-	<section class="text-center mt-24">
-		<h1 class="text-6xl font-title text-white tracking-widest">WORKOUT
-			VIDEOS</h1>
-		<p class="mt-4 text-2xl text-gray-300 font-body">유용한 운동 가이드 영상을
-			확인하세요!</p>
-	</section>
+<!-- 🏋️‍♂️ 운동 영상 페이지 메인 문구 -->
+<section class="text-center mt-24">
+	<h1 class="text-6xl font-title text-white tracking-widest">WORKOUT
+		VIDEOS</h1>
+	<p class="mt-4 text-2xl text-gray-300 font-body">유용한 운동 가이드 영상을
+		확인하세요!</p>
+</section>
 
-	<!-- 📹 운동 영상 리스트 -->
-	<main class="flex justify-center mt-10">
-		<div
-			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl px-6">
+<!-- 📹 운동 영상 리스트 -->
+<main class="flex justify-center mt-10">
+	<div
+		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl px-6">
 
-			<a th:href="'https://www.youtube.com/watch?v=OpRMRhr0Ycc'"
-				target="_blank" class="video-card shadow-lg"> <img
-				src="https://img.youtube.com/vi/OpRMRhr0Ycc/hqdefault.jpg"
-				alt="운동 영상 1" class="w-full h-56 object-cover">
-				<div class="p-4 text-center">
-					<h3 class="text-xl font-title text-white">삼두 운동 티어리스트</h3>
-				</div>
-			</a> <a th:href="'https://www.youtube.com/watch?v=jLvqKgW-_G8'"
-				target="_blank" class="video-card shadow-lg"> <img
-				src="https://img.youtube.com/vi/jLvqKgW-_G8/hqdefault.jpg"
-				alt="운동 영상 2" class="w-full h-56 object-cover">
-				<div class="p-4 text-center">
-					<h3 class="text-xl font-title text-white">등 운동 티어리스트</h3>
-				</div>
-			</a> <a th:href="'https://www.youtube.com/watch?v=GNO4OtYoCYk&t=512s'"
-				target="_blank" class="video-card shadow-lg"> <img
-				src="https://img.youtube.com/vi/GNO4OtYoCYk/hqdefault.jpg"
-				alt="운동 영상 3" class="w-full h-56 object-cover">
-				<div class="p-4 text-center">
-					<h3 class="text-xl font-title text-white">이두 운동 티어리스트</h3>
-				</div>
-			</a> <a th:href="'https://www.youtube.com/watch?v=fGm-ef-4PVk'"
-				target="_blank" class="video-card shadow-lg"> <img
-				src="https://img.youtube.com/vi/fGm-ef-4PVk/hqdefault.jpg"
-				alt="운동 영상 5" class="w-full h-56 object-cover">
-				<div class="p-4 text-center">
-					<h3 class="text-xl font-title text-white">가슴 운동 티어리스트</h3>
-				</div>
-			</a> <a th:href="'https://www.youtube.com/watch?v=Pok0Jg2JAkE'"
-				target="_blank" class="video-card shadow-lg"> <img
-				src="https://img.youtube.com/vi/Pok0Jg2JAkE/hqdefault.jpg"
-				alt="운동 영상 4" class="w-full h-56 object-cover">
-				<div class="p-4 text-center">
-					<h3 class="text-xl font-title text-white">가장 효율적인 프로틴 섭취 방법</h3>
-				</div>
-			</a>
-			<a th:href="'https://www.youtube.com/watch?v=kIXcoivzGf8&t=2s'" target="_blank"
-                class="video-card shadow-lg">
-                <img src="https://img.youtube.com/vi/kIXcoivzGf8/hqdefault.jpg" alt="운동 영상 6"
-                    class="w-full h-56 object-cover">
-                <div class="p-4 text-center">
-                    <h3 class="text-xl font-title text-white">대퇴사두근 운동 티어리스트</h3>
-                </div>
-            </a>
+		<a th:href="'https://www.youtube.com/watch?v=OpRMRhr0Ycc'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/OpRMRhr0Ycc/hqdefault.jpg"
+			alt="운동 영상 1" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">삼두 운동 티어리스트</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=jLvqKgW-_G8'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/jLvqKgW-_G8/hqdefault.jpg"
+			alt="운동 영상 2" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">등 운동 티어리스트</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=GNO4OtYoCYk&t=512s'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/GNO4OtYoCYk/hqdefault.jpg"
+			alt="운동 영상 3" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">이두 운동 티어리스트</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=fGm-ef-4PVk'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/fGm-ef-4PVk/hqdefault.jpg"
+			alt="운동 영상 5" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">가슴 운동 티어리스트</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=Pok0Jg2JAkE'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/Pok0Jg2JAkE/hqdefault.jpg"
+			alt="운동 영상 4" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">가장 효율적인 프로틴 섭취 방법</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=kIXcoivzGf8&t=2s'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/kIXcoivzGf8/hqdefault.jpg"
+			alt="운동 영상 6" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">대퇴사두근 운동 티어리스트</h3>
+			</div>
+		</a> <a th:href="'https://www.youtube.com/watch?v=PM8kiHcAD7Q'"
+			target="_blank" class="video-card shadow-lg"> <img
+			src="https://img.youtube.com/vi/PM8kiHcAD7Q/hqdefault.jpg"
+			alt="운동 영상 7" class="w-full h-56 object-cover">
+			<div class="p-4 text-center">
+				<h3 class="text-xl font-title text-white">이상적인 식단 관리 방법</h3>
+			</div>
+		</a>
 
-            <a th:href="'https://www.youtube.com/watch?v=PM8kiHcAD7Q'" target="_blank"
-                class="video-card shadow-lg">
-                <img src="https://img.youtube.com/vi/PM8kiHcAD7Q/hqdefault.jpg" alt="운동 영상 7"
-                    class="w-full h-56 object-cover">
-                <div class="p-4 text-center">
-                    <h3 class="text-xl font-title text-white">이상적인 식단 관리 방법</h3>
-                </div>
-            </a>
-            
-		</div>
-	</main>
+	</div>
+</main>
 
 </body>
 </html>

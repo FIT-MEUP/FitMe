@@ -37,7 +37,7 @@ public class SecurityConfig {
             .requestMatchers("/admin/**").hasAuthority("Admin")
             .requestMatchers("/user/mypage/**").hasAnyAuthority("Admin", "User")
             .requestMatchers("/user/deleteAccount").authenticated()
-            .anyRequest().authenticated()
+            .anyRequest().permitAll() 
         );
 
         // ✅ 로그인 설정 (세션 유지)
