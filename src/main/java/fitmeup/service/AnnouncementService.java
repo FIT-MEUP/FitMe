@@ -12,9 +12,11 @@ import fitmeup.entity.UserEntity;
 import fitmeup.repository.AnnouncementRepository;
 import fitmeup.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AnnouncementService {
 	private final AnnouncementRepository announcementRepository;
 	private final UserRepository userRepository;
@@ -43,11 +45,9 @@ public class AnnouncementService {
 
 	public String sendAdminAnnouncement() {
 		List<UserEntity> user = userRepository.findByRole(UserEntity.Role.Admin);
-		
 		 List<AnnouncementEntity> list =announcementRepository.findByUserUserId(user.get(0).getUserId(), Sort.by(Sort.Direction.DESC, "createdAt"));
 		 if(list.isEmpty()) {
-			 return "트레이너 공지 사항 내용";
-
+			 return "헬스장 공지 사항 내용";
 		 }
 		 return list.get(0).getContent();
 	}

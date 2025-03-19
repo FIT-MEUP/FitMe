@@ -1,11 +1,12 @@
 package fitmeup.service;
 
-import fitmeup.dto.UserDTO;
-import fitmeup.dto.ApproveRequestDTO;
+import fitmeup.dto.PTSessionHistoryDTO;
 import fitmeup.dto.TrainerApplicationDTO;
+import fitmeup.entity.PTSessionHistoryEntity;
 import fitmeup.entity.TrainerApplicationEntity;
 import fitmeup.entity.TrainerEntity;
 import fitmeup.entity.UserEntity;
+import fitmeup.repository.PTSessionHistoryRepository;
 import fitmeup.repository.TrainerApplicationRepository;
 import fitmeup.repository.TrainerRepository;
 import fitmeup.repository.UserRepository;
@@ -27,6 +28,7 @@ public class TrainerApplicationService {
   private final UserRepository userRepository;
   private final TrainerRepository trainerRepository;
   private final TrainerApplicationRepository trainerApplicationRepository;
+  private final PTSessionHistoryRepository ptSessionHistoryRepository;
 
   public boolean isAlreadyApplied(String userEmail, Long trainerId) {
     return trainerApplicationRepository.existsByUserUserEmailAndTrainerTrainerId(userEmail, trainerId);
@@ -71,6 +73,14 @@ public class TrainerApplicationService {
       TrainerApplicationEntity application = applicationOptional.get();
       application.setStatus(status);
       trainerApplicationRepository.save(application);
+      
+      PTSessionHistoryDTO dto = new PTSessionHistoryDTO();
+      dto.setUserId(application.getUser().getUserId());
+      dto.setChangeType(PTSessionHistoryEntity.ChangeType.Added.name());
+      dto.setChangeAmount(0L);
+      dto.setReason("새로운 PT계약 생성");
+	  ptSessionHistoryRepository.save(PTSessionHistoryEntity.toEntity(dto));
+
     } else {
       throw new RuntimeException("Application not found with ID: " + applicationId);
     }
