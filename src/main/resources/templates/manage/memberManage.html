@@ -48,16 +48,6 @@
                     th:data-id="${ApprovedItem.applicationId}" th:data-user-id="${ApprovedItem.userId}">
                         <span class="username" th:text="${ApprovedItem.name}">유저이름</span>
 
-
-
-                        <!-- userOnlineMap[ApprovedItem.applicationId]가 true면 ● 표시 -->
-<!--                        <span th:if="${userOnlineMap != null and userOnlineMap[ApprovedItem.applicationId] eq true}" style="color:green;"> ● </span>-->
-                        <!-- ApprovedItem.userId 기준으로 online 상태 출력 -->
-                        <span th:if="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].online}"
-                              style="color:green;"> ● </span>
-
-
-
                         <span class="unread-count"
                               th:text="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0 ? ChatUserMap[ApprovedItem.userId].unreadCount : ''}"></span>
                     </a>
@@ -142,12 +132,8 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- 채팅창 공간!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
-            <!-- 최상위 컨테이너에 로그인 사용자 이름을 data-user-name 속성으로 설정 (JS에서 사용) -->
-            <div class="container" th:data-user-name="${loginUserId}" style="display:none;"></div>
             <div id="chatFragmentContainer" class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md" style="display: none;"></div>
-
 
         </nav>
     </div>

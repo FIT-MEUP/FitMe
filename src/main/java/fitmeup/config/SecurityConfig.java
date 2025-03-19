@@ -15,21 +15,19 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomLogoutSuccessHandler logoutSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
+    private final LoginSuccessHandler loginSuccessHandler;
 
-    // LoginFailureHandler만 생성자 주입(예시)
-    public SecurityConfig(LoginFailureHandler loginFailureHandler) {
-        this.loginFailureHandler = loginFailureHandler;
-    }
+
 
     // ★ Method Injection: LoginSuccessHandler, CustomLogoutSuccessHandler를
     //   이 filterChain() 메서드의 파라미터로 주입받는다
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-        LoginSuccessHandler loginSuccessHandler,
-        CustomLogoutSuccessHandler logoutHandler)
+    public SecurityFilterChain filterChain(HttpSecurity http)
         throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers(
@@ -48,7 +46,7 @@ public class SecurityConfig {
             .loginProcessingUrl("/user/loginProc")
             .usernameParameter("userEmail")
             .passwordParameter("password")
-            .successHandler(loginSuccessHandler)  
+            .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler)  
             .permitAll()
         );
@@ -62,7 +60,7 @@ public class SecurityConfig {
         // 로그아웃 설정
         http.logout(auth -> auth
             .logoutUrl("/user/logout")
-            .logoutSuccessHandler(logoutHandler)
+            .logoutSuccessHandler(logoutSuccessHandler)
             .invalidateHttpSession(true)
             .clearAuthentication(true)
             .deleteCookies("JSESSIONID", "remember-me")

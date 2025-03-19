@@ -27,9 +27,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final TrainerApplicationRepository trainerApplicationRepository;
 
 
-    private final UserService userService;
-    private final SimpMessagingTemplate messagingTemplate;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, 
                                         HttpServletResponse response,
@@ -38,12 +35,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
         Long userId = ((LoginUserDetails) authentication.getPrincipal()).getUserId();
-        userService.setOnline(userId, true);
-
-        // STOMP 브로드캐스트: "/topic/onlineStatus"에 userId 전달
-        // 다른 화면에서 이 userId가 온라인임을 실시간으로 반영 가능
-        messagingTemplate.convertAndSend("/topic/onlineStatus",
-            "LOGIN:" + userId);
 
         // 세션에 사용자 이메일 저장
         request.getSession().setAttribute("userEmail", authentication.getName());
@@ -62,7 +53,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect("/firstTrainerSchedule");
         } else if (roleNames.contains("ROLE_USER") || roleNames.contains("User")) {
             // Approved 상태의 TrainerApplicationEntity 리스트를 조회합니다.
-            List<TrainerApplicationEntity> applications = 
+            List<TrainerApplicationEntity> applications =
                     trainerApplicationRepository.findByUserUserIdAndStatus(userId, TrainerApplicationEntity.Status.Approved);
             if (!applications.isEmpty()) {
                 response.sendRedirect("/firstUserCalendar");
