@@ -81,6 +81,15 @@ $(document).ready(function() {
           // 받은 프래그먼트( chat.html )를 floatingChatContainer에 삽입
           $("#floatingChatContainer").html(htmlFragment);
 
+          
+                // ✅ 채팅창이 로드된 직후 스크롤을 가장 아래로 이동
+                setTimeout(function() {
+                  const conversationArea = document.getElementById("conversationArea");
+                  if (conversationArea) {
+                      conversationArea.scrollTop = conversationArea.scrollHeight;
+                  }
+              }, 1); // 100ms 딜레이를 주어 렌더링 완료를 기다림
+
           // chat.html 내부의 initChat() 호출
           if (typeof initChat === "function") {
             initChat();
