@@ -6,7 +6,7 @@ body {
     font-size: 14px;
     background: #111827; /* Tailwind bg-gray-900 */
     color: white;
-    padding-top: 80px; /* 헤더 높이만큼 추가 */
+    
 }
 
 /* ✅ 네온 효과 (타이틀 및 강조 텍스트) */
@@ -206,4 +206,5 @@ body {
     position: relative;
     /* 기준점 */
 }
+
 

@@ -4,98 +4,69 @@
 <head>
     <meta charset="UTF-8">
     <title>운동 게시판</title>
+ 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/work.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+	
 </head>
 
-<body class="bg-gray-900 text-white" style="
-    margin-top: 100px;">
-
+<body class="bg-gray-900 text-white">
 	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
     <div class="flex justify-between items-center px-6 py-4">
-        <!-- 로고 -->
-        <a href="/" class="text-3xl font-title">
-            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
-        </a>
-
-        <!-- 네비게이션 메뉴 -->
-        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
-            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
-            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
-            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
-            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
-            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
-        </nav>
-
-        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
-        <div class="flex gap-6">
-            <th:block sec:authorize="isAnonymous()">
-                <a th:href="@{/user/login}"
-                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
-                    로그인
-                </a>
-            </th:block>
-
-            <th:block sec:authorize="isAuthenticated()">
-                <div class="relative">
-                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
-                            id="userMenu" onclick="toggleDropdown()">
-                        [[${#authentication.principal.displayName}]]
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
-                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
-                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
-                    </div>
-                </div>
-            </th:block>
-        </div>
+      <!-- 로고 -->
+      <a href="/" class="text-3xl font-title">
+        <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+      </a>
+      <!-- 네비게이션 메뉴 -->
+      <nav class="md:flex gap-10 text-lg font-nav pl-55">
+        <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+        <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
+        <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
+        <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+        <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+      </nav>
+      <!-- 로그인 상태 체크 -->
+      <div class="flex gap-6">
+        <th:block sec:authorize="isAnonymous()">
+          <a th:href="@{/user/login}" class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+            로그인
+          </a>
+        </th:block>
+        <th:block sec:authorize="isAuthenticated()">
+          <div class="relative">
+            <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav" id="userMenu" onclick="toggleDropdown()">
+              [[${#authentication.principal.displayName}]]
+            </button>
+            <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
+              <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/changePassword}"> 비밀번호 변경</a>
+              <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+            </div>
+          </div>
+        </th:block>
+      </div>
     </div>
-</header>
+  </header>
 
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
+	
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
+
 
     <input type="hidden" id="loggedInUserId" th:value="${userId}">
     <input type="hidden" id="isTrainer" th:value="${role == 'Trainer'}">
-
+<div class="gaduriContainer" style="margin-top:100px">
     <nav class="navbar navbar-light bg-light p-3">
-        <!-- 트레이너일 경우 -->
-        <button class="btn btn-primary" sec:authorize="hasAuthority('Trainer')"
-            onclick="location.href='/trainer/memberManage';">
-
-            ← 뒤로 가기
-        </button>
-        <!-- 일반 사용자일 경우 -->
-        <button class="btn btn-primary" sec:authorize="hasAuthority('User')"
-            onclick="location.href='/firstUserCalendar';">
-            ← 뒤로 가기
-
-        </button>
         <h3 class="text-center flex-grow-1">
-            <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">운동 게시판</a>
+            <a href="/work?workoutDate=" id="mainPageLink" class="text-dark text-decoration-none">TODAY'S WORK OUT</a>
         </h3>
-
-
     </nav>
 
     <div class="container mt-3">
@@ -261,7 +232,7 @@
             </div>
         </div>
     </div>>
-
+</div>
 
 
     <script src="/js/work.js"></script>
