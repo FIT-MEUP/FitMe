@@ -29,4 +29,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // ❗ 여기에 Ajax 연동을 할 경우, fetch("/user/loginProc", { method: "POST", ... }) 로직 추가 가능
     });
+	// 페이지 로드 시 명언 API 호출
+	loadMotivationalQuote();
 });
+
+	// 명언 API 호출 및 출력
+	function loadMotivationalQuote() {
+	  fetch('/api/quote')
+	    .then(response => response.json())
+	    .then(data => {
+	      document.getElementById("motivational-quote").innerText = data.quote;
+	    })
+	    .catch(error => {
+	      console.error("명언 호출 중 오류:", error);
+	      document.getElementById("motivational-quote").innerText = "명언을 불러오는 중 오류 발생.";
+	    });
+	}
