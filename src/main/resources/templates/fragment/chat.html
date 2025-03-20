@@ -100,7 +100,7 @@
 
           <!-- 메시지 말풍선 -->
           <div th:class="${(msg.senderId eq currentUser.userId) ?
-                         'bg-green-400 text-white rounded-lg p-2 w-auto max-w-[150px] break-words whitespace-normal ml-auto inline-block text-left' :
+                         'bg-green-400 text-white rounded-lg p-2 w-fit max-w-[150px] break-words whitespace-normal ml-auto inline-block text-left' :
                          'bg-white text-gray-900 rounded-lg p-2 w-fit max-w-[150px] border break-words whitespace-normal inline-block text-left'}">
             <!-- 파일 메시지인 경우 -->
             <th:block th:if="${msg.fileUrl != null}">

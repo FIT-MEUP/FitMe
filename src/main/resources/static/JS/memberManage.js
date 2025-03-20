@@ -465,8 +465,6 @@ function updateUnreadCount(senderId) {
     const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
     const unreadSpan = $(sel);
     if (unreadSpan.length) {
-        let val = parseInt(unreadSpan.text()) || 0;
-        unreadSpan.text(val + 1).show();
     }
 }
 

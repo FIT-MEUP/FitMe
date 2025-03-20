@@ -187,7 +187,7 @@ $(document).ready(function() {
     const messageBubble = document.createElement("div");
     if (chat.senderId === window.currentUser.userId) {
       messageBubble.className =
-          "bg-green-400 text-white rounded-lg p-2 w-auto max-w-[150px] break-words whitespace-normal rightbox ml-auto inline-block text-left";
+          "bg-green-400 text-white rounded-lg p-2 w-fit max-w-[150px] break-words whitespace-normal rightbox ml-auto inline-block text-left";
       // 발신자 이름 추가
       const messageSender = document.createElement("strong");
       messageSender.textContent = window.currentUser.userName;
