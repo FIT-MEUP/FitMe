@@ -193,7 +193,7 @@ public class ScheduleService {
 
 			    // 현재 시간과 10분 후 시간 계산
 			    LocalDateTime now = LocalDateTime.now();
-			    LocalDateTime tenMinutesLater = now.plusMinutes(10);
+			    LocalDateTime tenMinutesLater = now.plusMinutes(30);
 			  
 			    log.info("현재 시각: {}", now);
 			    log.info("10분 후 시각: {}", tenMinutesLater);
