@@ -24,104 +24,92 @@
 <script th:src="@{/js/admin.js}"></script>
 </head>
 
-<body class="bg-gray-900 text-black" style="margin-top: 10px;">
 
-<script>
-    function toggleDropdown() {
-        var dropdown = document.getElementById("dropdownMenu");
-        dropdown.classList.toggle("hidden");
-    }
+<div>
+	<h2 class="text-center">관리자 페이지</h2>
+	
+	<div class="d-flex justify-content-end mb-3">
+		<a th:href="@{/user/logout}" class="btn btn-danger">로그아웃</a>
 
-    // 클릭 외부 감지하여 닫기
-    document.addEventListener("click", function(event) {
-        var dropdown = document.getElementById("dropdownMenu");
-        var button = document.getElementById("userMenu");
-        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add("hidden");
-        }
-    });
-</script>
-
-
-		<h2 class="text-center">관리자 페이지</h2>
-
-		<!-- 트레이너 목록 -->
-		<h3 class="mt-4">트레이너 목록</h3>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>번호</th>
-					<th>이름</th>
-					<th>프로필 확인</th>
-					<th>삭제</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="trainer : ${trainerList}">
-					<td th:text="${trainer.userId}"></td>
-					<td th:text="${trainer.userName}"></td>
-					<td><button class="btn btn-primary">O</button></td>
-					<td><button class="btn btn-danger"
-							th:onclick="deleteTrainer([[${trainer.userId}]])">삭제</button></td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- 트레이너 승인 -->
-		<h3 class="mt-4">트레이너 승인</h3>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>이름</th>
-					<!-- ✅ "프로필 확인" 대신 "이름"으로 변경 -->
-					<th>승인</th>
-					<th>거절</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="trainer : ${pendingTrainerList}">
-					<td th:text="${trainer.userName}"></td>
-					<!-- ✅ 트레이너 이름 출력 -->
-
-					<td>
-						<button class="btn btn-success"
-							th:onclick="|approveTrainer(${trainer.userId})|">✔</button>
-					</td>
-					<td>
-						<button class="btn btn-danger"
-							th:onclick="|rejectTrainer(${trainer.userId})|">✘</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- 회원 목록 (수정 버튼 제거) -->
-		<h3 class="mt-4">회원 목록</h3>
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>번호</th>
-					<th>이름</th>
-					<th>삭제</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="user : ${userList}">
-					<td th:text="${user.userId}"></td>
-					<td th:text="${user.userName}"></td>
-					<td><button class="btn btn-danger"
-							th:onclick="deleteUser([[${user.userId}]])">삭제</button></td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- 헬스장 공지사항 -->
-		<h3 class="mt-4">헬스장 공지사항</h3>
-		<textarea class="form-control" id="noticeText" rows="3"
-			placeholder="공지사항을 입력하세요..."></textarea>
-		<button class="btn btn-success mt-2" onclick="updateNotice()">공지사항
-			반영</button>
 	</div>
+
+	<!-- 트레이너 목록 -->
+	<h3 class="mt-4">트레이너 목록</h3>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>번호</th>
+				<th>이름</th>
+				<th>프로필 확인</th>
+				<th>삭제</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="trainer : ${trainerList}">
+				<td th:text="${trainer.userId}"></td>
+				<td th:text="${trainer.userName}"></td>
+				<td><button class="btn btn-primary">O</button></td>
+				<td><button class="btn btn-danger"
+						th:onclick="deleteTrainer([[${trainer.userId}]])">삭제</button></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- 트레이너 승인 -->
+	<h3 class="mt-4">트레이너 승인</h3>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>이름</th>
+				<!-- ✅ "프로필 확인" 대신 "이름"으로 변경 -->
+				<th>승인</th>
+				<th>거절</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="trainer : ${pendingTrainerList}">
+				<td th:text="${trainer.userName}"></td>
+				<!-- ✅ 트레이너 이름 출력 -->
+
+				<td>
+					<button class="btn btn-success"
+						th:onclick="|approveTrainer(${trainer.userId})|">✔</button>
+				</td>
+				<td>
+					<button class="btn btn-danger"
+						th:onclick="|rejectTrainer(${trainer.userId})|">✘</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- 회원 목록 (수정 버튼 제거) -->
+	<h3 class="mt-4">회원 목록</h3>
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>번호</th>
+				<th>이름</th>
+				<th>삭제</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="user : ${userList}">
+				<td th:text="${user.userId}"></td>
+				<td th:text="${user.userName}"></td>
+				<td><button class="btn btn-danger"
+						th:onclick="deleteUser([[${user.userId}]])">삭제</button></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- 헬스장 공지사항 -->
+	<h3 class="mt-4">헬스장 공지사항</h3>
+	<textarea class="form-control" id="noticeText" rows="3"
+		placeholder="공지사항을 입력하세요..."></textarea>
+	<button class="btn btn-success mt-2" onclick="updateNotice()">공지사항
+		반영</button>
+</div>
 
 </body>
 </html>

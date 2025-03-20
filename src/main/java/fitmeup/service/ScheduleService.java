@@ -191,9 +191,11 @@ public class ScheduleService {
 			    List<ScheduleEntity> scheduleList = scheduleRepository.findByTrainerTrainerId(trainerId);
 			    log.info("Retrieved schedules: {}", scheduleList.size());
 
-			    // 현재 시간과 10분 후 시간 계산
+			    // 현재 시간과 20분 후 시간 계산
 			    LocalDateTime now = LocalDateTime.now();
-			    LocalDateTime tenMinutesLater = now.plusMinutes(30);
+
+			    LocalDateTime tenMinutesLater = now.plusMinutes(20);
+
 			  
 			    log.info("현재 시각: {}", now);
 			    log.info("10분 후 시각: {}", tenMinutesLater);
@@ -222,9 +224,9 @@ public class ScheduleService {
 			            return "noMore";
 			        }
 
-			        // 최신 내역의 changeDate가 현재 시각 기준 ±10분 범위 내에 있는지 확인
-			        LocalDateTime tenMinutesBefore = now.minusMinutes(10);
-			        LocalDateTime tenMinutesAfter = now.plusMinutes(10);
+			        // 최신 내역의 changeDate가 현재 시각 기준 ±20분 범위 내에 있는지 확인
+			        LocalDateTime tenMinutesBefore = now.minusMinutes(3);
+			        LocalDateTime tenMinutesAfter = now.plusMinutes(3);
 			        log.info("Latest history changeDate: {}", latestHistory.getChangeDate());
 			        log.info("10분 전 시각: {}", tenMinutesBefore);
 			        log.info("10분 후 시각: {}", tenMinutesAfter);

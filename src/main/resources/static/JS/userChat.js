@@ -1,5 +1,23 @@
 // userChat.js
 $(document).ready(function() {
+  // (0) 페이지 로드시 /chat/unreadCount를 AJAX로 호출하여 안읽은 메시지 수 업데이트
+  $.ajax({
+    url: "/chat/unreadCount",
+    type: "GET",
+    success: function(unreadCount) {
+      console.log("AJAX로 받은 unreadCount:", unreadCount);
+      $("#trainerUnreadBadge").text(unreadCount);
+      if (unreadCount > 0) {
+        $("#trainerUnreadBadge").show();
+      } else {
+        $("#trainerUnreadBadge").hide();
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error("unreadCount 가져오기 실패:", error);
+    }
+  });
+
 
   //------------------------------------------------------
   // (1) 알림용 WebSocket 연결 (채팅창이 닫혀 있어도 unread 업데이트)
@@ -182,12 +200,12 @@ $(document).ready(function() {
     } else {
       messageContainer.className = "flex flex-col text-left";
     }
-
     // 말풍선 스타일을 적용할 내부 div 생성
     const messageBubble = document.createElement("div");
     if (chat.senderId === window.currentUser.userId) {
       messageBubble.className =
           "bg-green-400 text-white rounded-lg p-2 w-fit max-w-[150px] break-words whitespace-normal rightbox ml-auto inline-block text-left";
+
       // 발신자 이름 추가
       const messageSender = document.createElement("strong");
       messageSender.textContent = window.currentUser.userName;
@@ -201,6 +219,7 @@ $(document).ready(function() {
 
       messageContainer.appendChild(messageSender);
     }
+
 
     // 파일 메시지 처리: 파일 미리보기와 다운로드 링크 추가
     if (chat.fileUrl && chat.fileType) {

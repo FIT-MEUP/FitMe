@@ -373,6 +373,7 @@ function connectChat() {
             messageContainer.className = "flex flex-col text-right ";
         } else {
             messageContainer.className = "flex flex-col text-left";
+
         }
 
         // 말풍선 스타일을 적용할 내부 div 생성
@@ -380,6 +381,7 @@ function connectChat() {
         if (chat.senderId === window.currentUser.userId) {
             messageBubble.className =
                 "bg-green-400 text-white rounded-lg p-2 w-auto max-w-[150px] break-words whitespace-normal rightbox ml-auto inline-block text-left";
+
             // 발신자 이름 추가
             const messageSender = document.createElement("strong");
             messageSender.textContent = window.currentUser.userName;
@@ -391,6 +393,7 @@ function connectChat() {
             // 수신자 이름 추가
             const messageSender = document.createElement("strong");
             messageSender.textContent = window.targetUser.userName;
+
 
             messageContainer.appendChild(messageSender);
         }
