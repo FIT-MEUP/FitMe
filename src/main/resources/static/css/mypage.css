@@ -358,3 +358,9 @@ select option {
     /* ✅ 수직 정렬 */
     width: 100%;
 }
+
+.userdropdown select,
+.userdropdown option {
+  text-align: center;
+  color: black;
+}
