@@ -49,9 +49,12 @@
 
 					<hr class="custom-divider">
 					<!-- 트레이너만 보이는 회원 선택 dropdown -->
-					<div class="mb-3 d-flex align-items-center gap-2" th:if="${role == 'Trainer'}"
-						style="width: fit-content;">
-						<select id="trainerMemberSelect" class="form-select" style="width: 150px;"
+
+					<div class="mb-3 d-flex align-items-center gap-2"
+						th:if="${role == 'Trainer'}" style="width: fit-content;">
+						<select id="trainerMemberSelect" class="form-select"
+							style="width: 150px; margin-top: 30px;"
+
 							onchange="handleTrainerMemberChange(this.value)">
 							<option value="" th:selected="${userId == null}">회원 선택하기</option>
 							<option th:each="member : ${trainerMembers}" th:value="${member.userId}"

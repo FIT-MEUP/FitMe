@@ -1,4 +1,4 @@
-
+	
 
 // 수정 모드 상태를 관리
 let isEditMode = false;
@@ -405,6 +405,20 @@ function fetchGraphData() {
 document.addEventListener("DOMContentLoaded", function() {
    fetchLatestData();  // 🔥 최신 데이터 불러오기 
 
+});
+
+function toggleDropdown() {
+    var dropdown = document.getElementById("dropdownMenu");
+    dropdown.classList.toggle("hidden");
+}
+
+// 클릭 외부 감지하여 닫기
+document.addEventListener("click", function(event) {
+    var dropdown = document.getElementById("dropdownMenu");
+    var button = document.getElementById("userMenu");
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add("hidden");
+    }
 });
 
 

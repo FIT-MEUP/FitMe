@@ -1,0 +1,97 @@
+/* 🏋️‍♂️ 헤더 스타일 */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.8); /* 반투명 블랙 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+header .flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+/* 🏋️‍♂️ 로고 스타일 */
+header a img {
+  height: 3rem;
+}
+
+/* 📌 네비게이션 메뉴 */
+nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  nav {
+    display: flex;
+    gap: 2.5rem;
+    font-size: 1.125rem; /* text-lg */
+    padding-left: 3.5rem;
+  }
+}
+
+/* 📌 네비게이션 링크 스타일 */
+nav a {
+  color: white;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #60a5fa; /* hover:text-blue-400 */
+}
+
+/* 🏋️‍♂️ 로그인/회원 메뉴 */
+.flex.gap-6 a {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.flex.gap-6 a.bg-blue-600 {
+  background-color: #2563eb; /* 로그인 버튼 기본 색상 */
+}
+
+.flex.gap-6 a.bg-blue-600:hover {
+  background-color: #1d4ed8; /* hover:bg-blue-700 */
+}
+
+/* 🎯 드롭다운 메뉴 */
+.relative {
+  position: relative;
+}
+
+#dropdownMenu {
+  position: absolute;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 10rem;
+  background: #1f2937; /* bg-gray-800 */
+  color: white;
+  border: 1px solid #374151; /* border-gray-700 */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+#dropdownMenu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  transition: background 0.3s ease;
+}
+
+#dropdownMenu a:hover {
+  background: #374151; /* hover:bg-gray-700 */
+}
+
+#dropdownMenu a.text-red-400:hover {
+  background: #dc2626; /* hover:bg-red-600 */
+}
