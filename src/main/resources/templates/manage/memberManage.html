@@ -14,6 +14,8 @@
     <!-- SockJS와 Stomp.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
       
     body{
@@ -22,6 +24,13 @@
     ::-webkit-scrollbar {
       display: none;
     }
+    .unread-count {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: rgb(95, 230, 95);
+    border-radius: 50%;
+}
     </style>
 
 
@@ -46,8 +55,10 @@
         </div>
     </header>
 
+
     <!— 현재 로그인한 트레이너의 userId를 저장하는 숨김 요소 —>
     <div id="trainerInfo" data-user-id="[[${currentUserId}]]" style="display: none;"></div>
+
     
     <div class="flex gap-4 p-4">
         <!-- 왼쪽 네비게이션 -->
@@ -63,7 +74,8 @@
                         <span class="username" th:text="${ApprovedItem.name}">유저이름</span>
 
                         <span class="unread-count"
-                              th:text="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0 ? ChatUserMap[ApprovedItem.userId].unreadCount : ''}"></span>
+                            th:if="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0}">
+                        </span>
                     </a>
                 </li>
             </ul>
@@ -104,7 +116,7 @@
                 </div>
                 <!-- PT 정보 표시 -->
                 <div id="userPTInfo" class="flex flex-col justify-center items-center mt-4 p-4 bg-blue-100 rounded-lg shadow-md py-2">
-                    <p class="text-gray-600" id="user-card">PT 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
+                    <p class="text-gray-600">PT 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
 
                 </div>
              </section>
@@ -136,8 +148,7 @@
                     </tr>
                 </thead>
                 <tbody id="pendingUser" th:each="PendingItem : ${PendingList}">
-
-                    <tr class="border-y-2 border-gray-800">
+                    <tr class="border-t-2 border-gray-800">
                         <td class="p-2 text-black font-semibold text-center border-x-0" th:text="${PendingItem.name}">최용재</td>
                         <td class="p-2 text-center border-x-0">
                             <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800 transition approve-btn" th:data-id="${PendingItem.applicationId}">수락</button>
@@ -145,6 +156,10 @@
                         <td class="p-2 text-center border-x-0">
                             <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition reject-btn" th:data-id="${PendingItem.applicationId}">거절</button>
                         </td>
+                    </tr>
+                    <tr class="border-gray-800">
+                        <td class="p-2 text-black font-semibold text-center border-x-0"><i class="fa-solid fa-phone-volume"></i></td>
+                        <td class="p-2 text-black font-semibold text-center border-x-0 " colspan="2" th:text="${PendingItem.phoneNumber}"> 010-1234  </td>
                     </tr>
                 </tbody>
             </table>

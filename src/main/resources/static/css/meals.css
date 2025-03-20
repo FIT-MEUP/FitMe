@@ -5,8 +5,8 @@ body {
 }
 
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #facc15 !important; /* Tailwind yellow-300 */
-    color: black !important;
+    background-color: #f59e0b !important; /* Tailwind yellow-500 */
+    color: black !important; /* ✅ 검은색 적용 */
     font-weight: bold !important;
     border-radius: 8px;
 }
@@ -17,15 +17,17 @@ body {
 
 /* ✅ 날짜 스타일 - 수정: 날짜 숫자 색상을 밝은 회색(#cbd5e1)로 변경 */
 .fc-daygrid-day-number {
-    font-size: 1.2rem !important;
-    font-weight: bold !important;
-    color: #cbd5e1 !important; /* 이전의 흰색 대신, 더 차분한 회색 */
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: black; /* ✅ 검은색으로 변경 */
 }
 
 /* ✅ 오늘 날짜 강조 */
 .fc-day-today {
-    background-color: #fbbf24 !important; /* Tailwind yellow-400 */
+    background-color: #facc15 !important; /* Tailwind yellow-300 */
     border-radius: 8px;
+    color: black !important; /* ✅ 검은색 적용 */
+    font-weight: bold !important;
 }
 
 /* ✅ 캘린더 전체 배경 색상 */
@@ -374,24 +376,18 @@ nav a:hover {
     margin-top: 10px;
 }
 
-/* ✅ 달력 날짜 가독성 개선 */
-.fc-daygrid-day-number {
-    font-size: 1.2rem !important;
-    font-weight: bold !important;
-    color: #f8fafc !important; /* Tailwind slate-50 */
-}
 
 /* ✅ 오늘 날짜 강조 */
 .fc-day-today {
-    background-color: #facc15 !important; /* Tailwind yellow-300 */
+    background-color: #facc15; /* Tailwind yellow-300 */
     border-radius: 8px;
-    color: black !important;
-    font-weight: bold !important;
+    color: black;
+    font-weight: bold;
 }
 
 /* ✅ 선택된 날짜 스타일 */
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #f59e0b !important; /* Tailwind yellow-500 */
+    background-color: #f59e0b; /* Tailwind yellow-500 */
     color: black !important;
     font-weight: bold !important;
     border-radius: 8px;

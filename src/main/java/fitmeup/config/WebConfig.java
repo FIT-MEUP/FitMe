@@ -13,6 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
     
     @Value("${upload.video.path}")
     private String videoUploadDir;
+    
+    @Value("${upload.chat.path}")
+    private String chatUploadDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -24,11 +27,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:///" + videoUploadDir);
 
         registry.addResourceHandler("/uploads/chat/**")
-            .addResourceLocations("file:///" + videoUploadDir);
+            .addResourceLocations("file:///" + chatUploadDir);
         
-        // "/uploads/**" 요청은 "C:/uploadPath/" 폴더 내의 파일로 매핑
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///C:/uploadPath/");
+//        // "/uploads/**" 요청은 "C:/uploadPath/" 폴더 내의 파일로 매핑
+//        registry.addResourceHandler("/uploads/**")
+//                .addResourceLocations("file:///C:/uploadPath/");
     }
 }
 

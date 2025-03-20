@@ -98,27 +98,35 @@ public class UserController {
 		return "user/findId";
 	}
 
+	// ✅ 비밀번호 찾기 폼 페이지 (GET)
 	@GetMapping("/findPassword")
 	public String findPasswordForm() {
-		return "user/findPassword"; // 📌 templates/user/findPassword.html 페이지 반환
+	    return "user/findPassword"; // 📌 templates/user/findPassword.html 반환
 	}
 
-	// ✅ 개선된 코드 (더 깔끔하게 에러 메시지 전달)
+	// ✅ 비밀번호 찾기 후 임시 비밀번호 표시 페이지로 이동 (POST)
 	@PostMapping("/findPassword")
-	public String findPassword(@RequestParam("userName") String userName, @RequestParam("userEmail") String userEmail,
-			@RequestParam("userContact") String userContact, RedirectAttributes redirectAttributes) {
-		String tempPassword = userService.verifyUserAndGenerateTempPassword(userName, userEmail, userContact);
+	public String findPassword(
+	        @RequestParam("userName") String userName,
+	        @RequestParam("userEmail") String userEmail,
+	        @RequestParam("userContact") String userContact,
+	        RedirectAttributes redirectAttributes,
+	        Model model) {
 
-		if (tempPassword == null) {
-			redirectAttributes.addFlashAttribute("error", "일치하지 않는 회원정보입니다!");
-			return "redirect:/user/findPassword";
-		}
+	    // ✅ 임시 비밀번호 생성 및 검증
+	    String tempPassword = userService.verifyUserAndGenerateTempPassword(userName, userEmail, userContact);
 
-		// 임시 비밀번호 생성 후 메시지 전달
-		redirectAttributes.addFlashAttribute("successMessage",
-				"임시 비밀번호가 정상적으로 발급되었습니다. \n[임시 비밀번호: " + tempPassword + "] \n다시 로그인 하신 후 반드시 비밀번호를 변경해주세요.");
-		return "redirect:/user/login";
+	    if (tempPassword == null) {
+	        // 일치하는 회원 정보가 없는 경우
+	        redirectAttributes.addFlashAttribute("error", "일치하지 않는 회원정보입니다!");
+	        return "redirect:/user/findPassword";
+	    }
+
+	    // ✅ 임시 비밀번호를 모델에 추가하고 새로운 페이지로 이동
+	    model.addAttribute("tempPassword", tempPassword);
+	    return "user/tempPassword"; // 📌 templates/user/tempPassword.html 반환
 	}
+
 
 	// 📌 비밀번호 변경 페이지 이동
 	@GetMapping("/changePassword")
