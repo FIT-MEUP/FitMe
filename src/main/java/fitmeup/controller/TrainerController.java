@@ -289,29 +289,42 @@ public class TrainerController {
 		return "redirect:/trainer/" + trainerId;
 	}
 
-	// AJAX를 위한 사진 삭제 엔드포인트 (URL 변경: /api/trainer/photo/delete)
 	@PostMapping("/api/trainer/photo/delete")
 	@ResponseBody
 	public ResponseEntity<?> deleteTrainerPhotoAjax(@RequestParam("photoId") Long photoId,
-			@AuthenticationPrincipal UserDetails userDetails) {
-		if (userDetails == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-		}
-		TrainerPhotoEntity photo = trainerPhotoRepository.findById(photoId).orElse(null);
-		if (photo == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사진을 찾을 수 없습니다.");
-		}
-		Long loginUserId = Long.parseLong(userDetails.getUsername());
-		if (!photo.getTrainer().getUser().getUserId().equals(loginUserId)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
-		}
-		try {
-			fileStorageService.deleteFile(photo.getPhotoUrl());
-			trainerPhotoRepository.delete(photo);
-			return ResponseEntity.ok("사진이 삭제되었습니다.");
-		} catch (Exception e) {
-			log.error("파일 삭제 실패: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 삭제 중 오류가 발생했습니다.");
-		}
+	        @AuthenticationPrincipal UserDetails userDetails) {
+
+	    if (userDetails == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+	    }
+
+	    TrainerPhotoEntity photo = trainerPhotoRepository.findById(photoId).orElse(null);
+	    if (photo == null) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사진을 찾을 수 없습니다.");
+	    }
+
+	    Long loginUserId = Long.parseLong(userDetails.getUsername());
+	    if (!photo.getTrainer().getUser().getUserId().equals(loginUserId)) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
+	    }
+
+	    try {
+	        // 외부 URL인지 체크 (http로 시작하는 경우는 삭제 로직 제외)
+	        String photoUrl = photo.getPhotoUrl();
+	        if (photoUrl != null && !photoUrl.startsWith("http")) {
+	            fileStorageService.deleteFile(photoUrl);
+	            log.info("로컬 파일 삭제 완료: {}", photoUrl);
+	        } else {
+	            log.info("외부 URL로 삭제 스킵: {}", photoUrl);
+	        }
+
+	        // DB에서 삭제
+	        trainerPhotoRepository.delete(photo);
+	        return ResponseEntity.ok("사진이 삭제되었습니다.");
+	    } catch (Exception e) {
+	        log.error("파일 삭제 실패: {}", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 삭제 중 오류가 발생했습니다.");
+	    }
 	}
+
 }
