@@ -49,22 +49,21 @@ body {
 }
 
 .profile-card {
-  background-color: #808080;
-  color: #fff;
-  width: 380px;
-  height: 380px;
-  padding: 16px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  font-family: 'Rajdhani', sans-serif;
-  margin: 0 auto;
-  /* 추가: 배경 오버레이 효과 (내부 텍스트 대비 강화) */
-  position: relative;
+    width: 380px;
+    height: auto;
+    padding: 16px;
+    background-color: #808080;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    position: absolute; /* ✅ 기본적으로 `absolute` 상태 */
+    right: 10%; /* 오른쪽 배치 */
+    transition: top 0.3s ease-in-out;
 }
+
 
 /* 프로필 이미지 */
 .profile-card .profile-image {
@@ -122,4 +121,13 @@ body {
 .btn-custom:hover {
   background-color: #eab308;
   transform: scale(1.05);
+}
+
+.gaduriContainer {
+	display: flex;
+	position: relative;	
+}
+
+.gaduriContainer > div {
+	width : calc(100%/2-12px);
 }
