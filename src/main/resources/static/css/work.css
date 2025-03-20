@@ -218,6 +218,10 @@ body {
     /* 기준점 */
 }
 
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important; 
+}
 
 /*0320 박노은 */
 .btn.btn-primary.search {
@@ -235,4 +239,6 @@ body {
 /* FullCalendar 요일 헤더 텍스트 색상 변경 */
 .fc .fc-col-header-cell-cushion {
     color: black;
+}.fc-view{
+    font-size: 14px;
 }

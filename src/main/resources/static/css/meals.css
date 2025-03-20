@@ -494,4 +494,7 @@ nav a:hover {
 #editFoodModal .modal-body input::placeholder,
 #editFoodModal .modal-body textarea::placeholder {
     color: #333;
+}.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important; 
 }
