@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>가입 승인 대기 중</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-200 flex justify-center items-center min-h-screen">
+  <div class="flex flex-col w-full max-w-md">
+    <section class="flex flex-col text-center bg-gray-800 p-8 py-10 shadow-lg rounded-lg w-full gap-2">
+      <p class="text-white text-2xl"> 가입 신청이 접수되었습니다 </p>
+      <p class="text-white">트레이너로 가입하기 위한 신청이 접수되었으며 <br> 관리자의 승인을 기다리고 있습니다</p>
+    <!-- 버튼 클릭 시 로그아웃 요청 후 메인 페이지로 이동 -->
+    <button class="btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition" onclick="logoutAndReturn()">메인 페이지로 돌아가기 (로그아웃)</button>
+    </section>
+  </div>
+
+  <script>
+    function logoutAndReturn() {
+      fetch('/user/logout', { method: 'POST' })
+        .then(response => {
+          if (response.ok) {
+            // 로그아웃 성공 시 메인 페이지 (예: /trainers)로 이동
+            window.location.href = '/trainers';
+          } else {
+            alert("로그아웃에 실패했습니다.");
+          }
+        })
+        .catch(error => {
+          console.error("로그아웃 오류:", error);
+          alert("로그아웃 중 오류가 발생했습니다.");
+        });
+    }
+  </script>
+</body>
+</html>

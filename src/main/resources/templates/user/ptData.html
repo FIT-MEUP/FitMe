@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PT 신청 내역</title>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/ptData.css}">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gray-900 text-white font-body">
+    <div class="max-w-5xl mx-auto py-16 px-6">
+        <!-- 상단 메뉴 -->
+        <div class="flex justify-between items-center bg-gray-800 py-4 px-6 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-title text-white">회원님의 PT 신청 내역</h1>
+            <a th:href="@{/mypage(userId=${userId})}" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all">돌아가기</a>
+        </div>
+        
+        <div class="mt-10 text-center">
+            <h2>[[${#authentication.principal.displayName}]] 님</h2>
+        </div>
+
+        <!-- PT 이력 테이블 -->
+        <div class="mt-8">
+            <table class="w-full text-left border-collapse rounded-lg overflow-hidden shadow-lg">
+                <thead class="bg-red-600 text-white">
+                    <tr>
+                        <th class="py-3 px-6">날짜</th>
+                        <th class="py-3 px-6">내용</th>
+                        <th class="py-3 px-6">남은 횟수</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800">
+                    <tr th:if="${list.isEmpty()}">
+                        <td colspan="3" class="py-4 text-center">PT 내역이 없습니다.</td>
+                    </tr>
+                    <tr th:each="data : ${list}" class="hover:bg-gray-700 transition-all">
+                        <td class="py-3 px-6" th:text="${#temporals.format(data.changeDate, 'yyyy-MM-dd')}"></td>
+                        <td class="py-3 px-6" th:text="${data.reason}"></td>
+                        <td class="py-3 px-6" th:text="${data.changeAmount} + ' 회'"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,24 +1,171 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 페이지</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지</title>
 
-    <!-- 부트 스트랩 가져와서 사용한다 선-언! -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- font awesome -->
-    <script src="https://kit.fontawesome.com/def97ee41b.js" crossorigin="anonymous"></script>
+<!-- jQuery -->
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
+
+
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- FontAwesome -->
+<script src="https://kit.fontawesome.com/def97ee41b.js"
+	crossorigin="anonymous"></script>
+
+<script th:src="@{/js/admin.js}"></script>
 </head>
-<body>
-       
-        <h2>관리자 페이지</h2>
-      </div>
-      
-      <h3>
-      		관리자 페이지 초안입니다.
-      </h3>
+
+<body class="bg-gray-900 text-white" style="
+    margin-top: 100px;">
+
+	<header class="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 shadow-lg">
+    <div class="flex justify-between items-center px-6 py-4">
+        <!-- 로고 -->
+        <a href="/" class="text-3xl font-title">
+            <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="h-12">
+        </a>
+
+        <!-- 네비게이션 메뉴 -->
+        <nav class="hidden md:flex gap-10 text-lg font-nav pl-55">
+            <a href="/" class="text-white hover:text-blue-400 transition"> 홈</a>
+            <a href="javascript:void(0);" onclick="scrollToTrainers()" class="text-white hover:text-blue-400 transition"> 트레이너 찾기</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 식단 플래너</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 운동 다이어리</a>
+            <a href="#" class="text-white hover:text-blue-400 transition"> 예약 및 일정</a>
+            <a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+            <a href="/BMI" class="text-white hover:text-blue-400 transition">비만 자가진단</a>
+        </nav>
+
+        <!-- ✅ 로그인 상태 체크 후 UI 변경 -->
+        <div class="flex gap-6">
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/user/login}"
+                   class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+                    로그인
+                </a>
+            </th:block>
+
+            <th:block sec:authorize="isAuthenticated()">
+                <div class="relative">
+                    <button class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition font-nav"
+                            id="userMenu" onclick="toggleDropdown()">
+                        [[${#authentication.principal.displayName}]]
+                    </button>
+                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-gray-800 text-white border border-gray-700 rounded-lg shadow-lg hidden">
+                        <a class="block px-4 py-2 text-white hover:bg-gray-700 transition" th:href="@{/user/logout}"> 로그아웃</a>
+                        <a class="block px-4 py-2 text-red-400 hover:bg-red-600 transition" th:href="@{/user/deleteAccount}"> 회원 탈퇴</a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        dropdown.classList.toggle("hidden");
+    }
+
+    // 클릭 외부 감지하여 닫기
+    document.addEventListener("click", function(event) {
+        var dropdown = document.getElementById("dropdownMenu");
+        var button = document.getElementById("userMenu");
+        if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add("hidden");
+        }
+    });
+</script>
+
+
+		<h2 class="text-center">관리자 페이지</h2>
+
+		<!-- 트레이너 목록 -->
+		<h3 class="mt-4">트레이너 목록</h3>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>이름</th>
+					<th>프로필 확인</th>
+					<th>삭제</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="trainer : ${trainerList}">
+					<td th:text="${trainer.userId}"></td>
+					<td th:text="${trainer.userName}"></td>
+					<td><button class="btn btn-primary">O</button></td>
+					<td><button class="btn btn-danger"
+							th:onclick="deleteTrainer([[${trainer.userId}]])">삭제</button></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- 트레이너 승인 -->
+		<h3 class="mt-4">트레이너 승인</h3>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>이름</th>
+					<!-- ✅ "프로필 확인" 대신 "이름"으로 변경 -->
+					<th>승인</th>
+					<th>거절</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="trainer : ${pendingTrainerList}">
+					<td th:text="${trainer.userName}"></td>
+					<!-- ✅ 트레이너 이름 출력 -->
+
+					<td>
+						<button class="btn btn-success"
+							th:onclick="|approveTrainer(${trainer.userId})|">✔</button>
+					</td>
+					<td>
+						<button class="btn btn-danger"
+							th:onclick="|rejectTrainer(${trainer.userId})|">✘</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- 회원 목록 (수정 버튼 제거) -->
+		<h3 class="mt-4">회원 목록</h3>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>이름</th>
+					<th>삭제</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user : ${userList}">
+					<td th:text="${user.userId}"></td>
+					<td th:text="${user.userName}"></td>
+					<td><button class="btn btn-danger"
+							th:onclick="deleteUser([[${user.userId}]])">삭제</button></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- 헬스장 공지사항 -->
+		<h3 class="mt-4">헬스장 공지사항</h3>
+		<textarea class="form-control" id="noticeText" rows="3"
+			placeholder="공지사항을 입력하세요..."></textarea>
+		<button class="btn btn-success mt-2" onclick="updateNotice()">공지사항
+			반영</button>
+	</div>
+
 </body>
 </html>

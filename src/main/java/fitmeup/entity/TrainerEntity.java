@@ -1,55 +1,50 @@
 package fitmeup.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="trainer")
 public class TrainerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "trainer_id")
     private Long trainerId;
 
-    @Column(nullable = false)
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @Column(nullable = false)
     private String specialization;
 
     @Column(nullable = false)
-    private String photo;
-
-    @Column(nullable = false)
-    private int experience; // 🚨 누락된 필드 추가
+    private int experience;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal fee; // 🚨 `DECIMAL(10,2)`에 맞춰 BigDecimal 사용
+    private BigDecimal fee;
+
+    @Column(nullable = false)
+    private String shortIntro;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String bio; // 🚨 긴 텍스트를 저장하기 위해 TEXT 타입 지정
+    private String bio;
 
-    // 기본 생성자 추가 (JPA 요구 사항)
-    public TrainerEntity() {}
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TrainerPhotoEntity> photos;
 
-    // Getter & Setter 추가
-    public Long getTrainerId() { return trainerId; }
-    public void setTrainerId(Long trainerId) { this.trainerId = trainerId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getSpecialization() { return specialization; }
-    public void setSpecialization(String specialization) { this.specialization = specialization; }
-
-    public String getPhoto() { return photo; }
-    public void setPhoto(String photo) { this.photo = photo; }
-
-    public int getExperience() { return experience; }
-    public void setExperience(int experience) { this.experience = experience; }
-
-    public BigDecimal getFee() { return fee; }
-    public void setFee(BigDecimal fee) { this.fee = fee; }
-
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
+    public String getPhotoUrl() {
+        if (photos != null && !photos.isEmpty()) {
+            return photos.get(0).getPhotoUrl();
+        }
+        return "/images/default-trainer.png";
+    }
 }

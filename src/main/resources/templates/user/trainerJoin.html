@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>트레이너 회원가입 | Fit Me</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        .font-title { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; }
+        .font-body { font-family: 'Montserrat', sans-serif; font-weight: 400; }
+        .bg-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+        .fade-in { animation: fadeIn 0.7s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
+
+   <!-- ✅ 에러 메시지 alert -->
+   <meta name="errorMessage" th:if="${errorMessage}" th:content="${errorMessage}">
+   <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const errorMessage = document.querySelector("meta[name='errorMessage']")?.content;
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+        });
+
+        // ✅ 유효성 검사 함수
+        function validateForm() {
+            let isValid = true;
+
+            // 비밀번호 검사 (6자 이상 + 특수문자 포함)
+            const password = document.getElementById("password").value;
+            const passwordError = document.getElementById("passwordError");
+            const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
+            if (!passwordRegex.test(password)) {
+                passwordError.textContent = "비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.";
+                isValid = false;
+            } else {
+                passwordError.textContent = "";
+            }
+
+            // 이름 검사 (한글만 가능)
+            const userName = document.getElementById("userName").value;
+            const nameError = document.getElementById("nameError");
+            const nameRegex = /^[가-힣]+$/;
+            if (!nameRegex.test(userName)) {
+                nameError.textContent = "이름은 한글만 입력할 수 있습니다.";
+                isValid = false;
+            } else {
+                nameError.textContent = "";
+            }
+
+            return isValid;
+        }
+    </script>
+
+    <div class="relative z-10 flex flex-col w-full max-w-md fade-in">
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit:me Logo" class="w-36">
+            </a>
+        </header>
+
+        <section class="bg-overlay p-8 py-10 shadow-lg rounded-lg w-full text-center">
+            <h1 class="text-4xl font-title text-white tracking-widest">트레이너 가입</h1>
+            <p class="text-gray-300 mt-1 font-body">전문가로서 등록하세요.</p>
+
+            <form th:action="@{/trainer/joinProc}" method="post" class="mt-6 space-y-4" onsubmit="return validateForm()">
+                <input type="email" name="userEmail" placeholder="이메일 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                
+                <!-- ✅ 비밀번호 유효성 검사 -->
+                <input type="password" id="password" name="password" placeholder="비밀번호 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="passwordError" class="text-red-400 text-sm"></p>
+
+                <!-- ✅ 이름 유효성 검사 -->
+                <input type="text" id="userName" name="userName" placeholder="이름 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="nameError" class="text-red-400 text-sm"></p>
+
+                <!-- ✅ 성별 선택 -->
+                <select name="userGender" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                    <option value="Male">남성</option>
+                    <option value="Female">여성</option>
+                </select>
+
+                <input type="date" name="userBirthdate" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="text" name="userContact" placeholder="연락처 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="hidden" name="isOnline" value="false">
+
+                <input type="text" name="specialization" placeholder="전문 분야 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="number" name="experience" placeholder="경력 (년) *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="number" step="0.01" name="fee" placeholder="수업료 (₩) *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="text" name="shortIntro" placeholder="한 줄 소개 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <textarea name="bio" placeholder="자기소개 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white"></textarea>
+
+                <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-title uppercase">
+                    가입하기
+                </button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,29 +1,126 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <title>트레이너 상세 프로필</title>
+<meta charset="UTF-8">
+<title>트레이너 상세 프로필</title>
 
-    <!-- Bootstrap 제외하고 내 CSS만 사용 -->
-    <link rel="stylesheet" th:href="@{/css/trainer-detail.css}">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts (Oswald + Montserrat) -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap"
+	rel="stylesheet">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<!-- 내 CSS 파일 -->
+<link rel="stylesheet" href="/css/trainer-detail.css">
+
+<!-- JS -->
+<script src="../../static/js/jquery-3.7.1.min.js"
+	th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script src="../../static/js/trainer-detail.js"
+	th:src="@{/js/trainer-detail.js}"></script>
 </head>
 
-<body>
-    <div class="profile-container">
-        <div class="profile-card">
-             <!-- 모든 사진을 반복해서 표시 -->
-    		<img th:each="photo : ${trainer.photos}" th:src="${photo}" alt="Trainer Image" class="profile-photo">
-            <h1 class="trainer-name" th:text="${trainer.name}">트레이너 이름</h1>
-            <p class="trainer-specialization"><strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span></p>
-            <p class="trainer-experience"><strong>경력:</strong> <span th:text="${trainer.experience}"></span> 년</p>
-            <p class="trainer-bio"><strong>소개:</strong> <span th:text="${trainer.bio}"></span></p>
-            <p class="trainer-fee"><strong>PT 비용(1회 당):</strong> <span th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span> 원</p>
-            
-            <div class="button-group">
-                <a href="/trainers" class="back-button">목록으로 돌아가기</a>
-                <button class="appointment-button">상담 신청하기</button>
-            </div>
-        </div>
-    </div>
+<body class="bg-gray-900 text-white" style="margin-top: 100px;">
+	<!-- 헤더 포함 -->
+	<div th:replace="~{fragment/header :: header}"></div>
+
+	<!-- 컨테이너 -->
+	<div class="container mt-28">
+		<div class= "gaduriContainer">
+
+			<!-- 왼쪽: 트레이너 상세 사진 + 소개를 카드 형태로 묶음 -->
+			<div class="intro-card">
+				<h3 class="intro-header">Introduce Coach</h3>
+
+				<!-- 상단: 사진 그리드 -->
+				<div class="photos-grid">
+					<div th:each="photo, stat : ${trainer.photos}"
+						th:if="${stat.index < 6}">
+						<img th:src="${photo.photoUrl}" alt="Trainer Image">
+					</div>
+					<div th:if="${#lists.size(trainer.photos) > 6}">
+						<a href="#" class="more-photos">더보기</a>
+					</div>
+				</div>
+
+				<!-- 하단: 소개 텍스트 -->
+				<p class="trainer-bio" th:text="${trainer.bio}"></p>
+			</div>
+
+			<!-- 오른쪽: 미니 프로필 카드 -->
+			<div class="profile-card">
+				<div class="text-center">
+					<img th:src="${trainer.photoUrl}" class="profile-image"
+						alt="Trainer Profile">
+				</div>
+				<h4 class="mt-3 font-title"
+					th:text="${trainer.user.userName} + ' 선생님'">트레이너 이름</h4>
+				<!-- 별점이 있다면 (예시) -->
+				<!-- <div class="rating">★★★★★</div> -->
+				<p class="short-intro" th:text="${trainer.shortIntro}">짧은 자기소개</p>
+
+				<p class="mt-3">
+					<strong>전문 분야:</strong> <span th:text="${trainer.specialization}"></span>
+				</p>
+				<p>
+					<strong>경력:</strong> <span th:text="${trainer.experience}"></span>
+					년
+				</p>
+				<p>
+					<strong>대표 가격 (회당):</strong> <span
+						th:text="${#numbers.formatInteger(trainer.fee, 0, 'COMMA')}"></span>
+					원
+				</p>
+
+				<!-- 상담 신청 or 프로필 수정 버튼 -->
+				<div class="text-center mt-3">
+					<!-- 트레이너 본인 -->
+					<div th:if="${isTrainer}">
+						<div th:if="${trainer.trainerId == loggedInTrainerId}">
+							<button class="btn btn-warning w-100"
+								onclick="location.href='/trainer/edit'">프로필 수정</button>
+						</div>
+					</div>
+					<!-- 일반 사용자 -->
+					<div th:if="${not isTrainer}">
+						<!-- 이미 신청한 경우 -->
+						<div th:if="${appliedToThis}">
+							<form th:action="@{/trainer/consultation/cancel}" method="post">
+								<input type="hidden" name="trainerId"
+									th:value="${trainer.trainerId}" />
+								<button type="submit" class="btn btn-danger w-100">신청
+									취소</button>
+							</form>
+						</div>
+						<!-- 신청하지 않은 경우 -->
+						<div th:if="${!appliedToAny}">
+							<form th:action="@{/trainer/consultation/apply}" method="post">
+								<input type="hidden" name="trainerId"
+									th:value="${trainer.trainerId}" />
+								<button type="submit" class="btn btn-primary w-100">방문
+									상담 신청</button>
+							</form>
+						</div>
+						<!-- 다른 트레이너에게 신청한 경우(버튼 비활성화) -->
+						<div th:if="${appliedToAny and !appliedToThis}">
+							<button class="btn btn-secondary w-100" disabled>신청 완료</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

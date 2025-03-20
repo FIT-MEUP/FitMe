@@ -1,65 +1,114 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회원가입 - Fit:me</title>
-  <!-- CSS 경로: join.css (Thymeleaf 문법 사용) -->
-  <link rel="stylesheet" th:href="@{/css/join.css}">
-  <!-- JS 경로: join.js (필요시 defer 속성 추가) -->
-  <script th:src="@{/js/join.js}" defer></script>
+    <meta charset="UTF-8">
+    <title>회원가입 | Fit Gym</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        .font-title { font-family: 'Oswald', sans-serif; font-weight: 600; text-transform: uppercase; }
+        .font-body { font-family: 'Montserrat', sans-serif; font-weight: 400; }
+        .bg-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+        .fade-in { animation: fadeIn 0.7s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>회원가입</h1>
-    <p class="required-info">* 필수 입력 항목</p>
-    
-    <!-- 회원가입 폼 -->
-    <form id="joinForm" method="post" action="#" th:action="@{/user/joinProc}">
-      <!-- role 정보를 전달 (회원가입은 기본적으로 ROLE_USER) -->
-      <input type="hidden" id="role" name="role" th:value="${role}">
-      
-      <div>
-        <label for="email">이메일 *</label>
-        <input type="email" id="email" name="email" placeholder="이메일 입력" required>
-      </div>
-      
-      <div>
-        <label for="password">비밀번호 *</label>
-        <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
-      </div>
-      
-      <div>
-        <label for="passwordConfirm">비밀번호 확인 *</label>
-        <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="비밀번호 확인" required>
-      </div>
-      
-      <div>
-        <label for="userName">이름 *</label>
-        <input type="text" id="userName" name="userName" placeholder="이름 입력" required>
-      </div>
-      
-      <div>
-        <label for="userGender">성별 *</label>
-        <select id="userGender" name="userGender" required>
-          <option value="Male">남성</option>
-          <option value="Female">여성</option>
-          <option value="Other">기타</option>
-        </select>
-      </div>
-      
-      <div>
-        <label for="userBirthdate">생년월일 *</label>
-        <input type="date" id="userBirthdate" name="userBirthdate" required>
-      </div>
-      
-      <div>
-        <label for="userContact">연락처 *</label>
-        <input type="text" id="userContact" name="userContact" placeholder="연락처 입력" required>
-      </div>
-      
-      <button type="submit">회원가입</button>
-    </form>
-  </div>
+
+<body class="bg-gray-900 flex justify-center items-center min-h-screen text-white">
+
+   <!-- ✅ 에러 메시지 alert -->
+   <meta name="errorMessage" th:if="${errorMessage}" th:content="${errorMessage}">
+   <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const errorMessage = document.querySelector("meta[name='errorMessage']")?.content;
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+            
+            // ✅ 성공 메시지 alert 추가
+            const successMessage = "[[${successMessage}]]";
+            if (successMessage && successMessage.trim() !== "") {
+                alert(successMessage);
+            }
+            
+        });
+
+        // ✅ 유효성 검사 함수
+        function validateForm() {
+            let isValid = true;
+
+            // 비밀번호 검사 (6자 이상 + 특수문자 포함)
+            const password = document.getElementById("password").value;
+            const passwordError = document.getElementById("passwordError");
+            const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
+            if (!passwordRegex.test(password)) {
+                passwordError.textContent = "비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.";
+                isValid = false;
+            } else {
+                passwordError.textContent = "";
+            }
+
+            // 이름 검사 (한글만 가능)
+            const userName = document.getElementById("userName").value;
+            const nameError = document.getElementById("nameError");
+            const nameRegex = /^[가-힣]+$/;
+            if (!nameRegex.test(userName)) {
+                nameError.textContent = "이름은 한글만 입력할 수 있습니다.";
+                isValid = false;
+            } else {
+                nameError.textContent = "";
+            }
+
+            return isValid;
+        }
+    </script>
+
+    <div class="relative z-10 flex flex-col w-full max-w-md fade-in">
+        <header class="flex justify-center py-4">
+            <a href="/">
+                <img src="/images/logo.png" th:src="@{/images/logo.png}" alt="Fit:me Logo" class="w-36">
+            </a>
+        </header>
+
+        <section class="bg-overlay p-8 py-10 shadow-lg rounded-lg w-full text-center">
+            <h1 class="text-4xl font-title text-white tracking-widest">회원가입</h1>
+            <p class="text-gray-300 mt-1 font-body">Fit Gym에 가입하세요!</p>
+
+            <form th:action="@{/user/joinProc}" method="post" class="mt-6 space-y-4" onsubmit="return validateForm()">
+                <input type="email" name="userEmail" placeholder="이메일 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                
+                <!-- ✅ 비밀번호 유효성 검사 -->
+                <input type="password" id="password" name="password" placeholder="비밀번호 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="passwordError" class="text-red-400 text-sm"></p>
+
+                <!-- ✅ 이름 유효성 검사 -->
+                <input type="text" id="userName" name="userName" placeholder="이름 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <p id="nameError" class="text-red-400 text-sm"></p>
+
+                <!-- ✅ 성별 선택 -->
+                <select name="userGender" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                    <option value="Male">남성</option>
+                    <option value="Female">여성</option>
+                </select>
+
+                <input type="date" name="userBirthdate" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="text" name="userContact" placeholder="연락처 *" required class="w-full p-3 rounded-lg bg-gray-800 text-white">
+                <input type="hidden" name="isOnline" value="false">
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-title uppercase">
+                    가입하기
+                </button>
+                <a href="/" class="block w-full text-center mt-4 text-gray-400 hover:text-white">취소</a>
+            </form>
+        </section>
+    </div>
 </body>
 </html>

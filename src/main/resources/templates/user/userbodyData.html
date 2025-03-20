@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 신체 데이터</title>
+    <link rel="stylesheet" th:href="@{/css/userbodyData.css}">
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/js/userbodyData.js}" defer></script>
+</head>
+
+<body class="bg-gray-900 text-white font-body">
+    <div class="max-w-6xl mx-auto py-10 px-6">
+        <!-- 상단 메뉴 -->
+        <div class="flex justify-between items-center bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-title">MY BODY RECORD</h1>
+            <a th:href="@{/mypage(userId=${userId})}" class="btn">돌아가기</a>
+        </div>
+        
+        <div class="mt-10 text-center">
+            <h2>[[${#authentication.principal.displayName}]] 님</h2>
+        </div>
+
+        <!-- 신체 데이터 테이블 -->
+        <div class="mt-8">
+            <table class="w-full text-left border-collapse rounded-lg overflow-hidden shadow-lg">
+                <thead class="bg-red-600 text-white">
+                    <tr>
+                        <th class="py-3 px-6">키</th>
+                        <th class="py-3 px-6">체중</th>
+                        <th class="py-3 px-6">BMI</th>
+                        <th class="py-3 px-6">체지방률</th>
+                        <th class="py-3 px-6">골격근</th>
+                        <th class="py-3 px-6">기초대사량</th>
+                        <th class="py-3 px-6">날짜</th>
+                        <th class="py-3 px-6">수정</th>
+                        <th class="py-3 px-6">삭제</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800">
+                    <tr th:if="${list.isEmpty()}">
+                        <td colspan="9" class="py-4 text-center">신체 데이터가 없습니다.</td>
+                    </tr>
+                    <tr th:each="data : ${list}" th:id="'row-' + ${data.dataId}" class="hover:bg-gray-700 transition-all">
+                        <td th:text="${data.height} + ' cm'"></td>
+                        <td th:text="${data.weight} + ' kg'"></td>
+                        <td th:text="${data.bmi}"></td>
+                        <td th:text="${data.fatMass} + '%' "></td>
+                        <td th:text="${data.muscleMass} + ' kg'"></td>
+                        <td th:text="${data.basalMetabolicRate} + ' kcal'"></td>
+                        <td th:text="${#temporals.format(data.recordDate, 'yyyy-MM-dd')}"></td>
+                        <td><button onclick="editRow(this)" class="btn-warning">수정</button></td>
+                        <td><button class="btn-danger delete-btn" th:attr="data-id=${data.dataId}">삭제</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

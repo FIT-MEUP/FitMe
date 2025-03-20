@@ -2,11 +2,14 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f8f8f8;
+    margin: 0;
+    /* 수평 중앙정렬만 적용 (vertical은 자연스럽게 흐르게 함) */
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+    /* align-items: center; 제거 또는 flex-start로 변경 */
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 20px; /* 상단 여백 추가 */
 }
 
 /* 회원가입 컨테이너 */

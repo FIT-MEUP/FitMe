@@ -1,13 +1,8 @@
 package fitmeup.dto;
 
 import java.time.LocalDate;
-
 import fitmeup.entity.UserEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -15,38 +10,67 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-	private Long userId;  // 회원 고유 ID
+    private Long userId;
     private String userName;
-    private String userGender; // String으로 변환
+    private String userGender;
     private LocalDate userBirthdate;
     private String userEmail;
     private String userContact;
-    private String role;  // String으로 변환
+    private String role;
+    private TrainerDTO trainerInfo;
+    private Boolean isOnline;
 
-    // ✅ Entity → DTO 변환
-    public static UserDTO fromEntity(UserEntity userEntity) {
+    // raw 비밀번호를 입력받음; joinProc()에서 암호화하여 Entity로 변환
+    private String password;
+
+    /**
+     * Entity → DTO 변환
+     */
+    public static UserDTO fromEntity(UserEntity userEntity, TrainerDTO trainerDTO) {
         return UserDTO.builder()
                 .userId(userEntity.getUserId())
                 .userName(userEntity.getUserName())
-                .userGender(userEntity.getUserGender().name())  // Enum → String 변환
+                .userGender(userEntity.getUserGender().name())
                 .userBirthdate(userEntity.getUserBirthdate())
                 .userEmail(userEntity.getUserEmail())
                 .userContact(userEntity.getUserContact())
-                .role(userEntity.getRole().name())  // Enum → String 변환
+                .role(userEntity.getRole().name())
+                .trainerInfo(trainerDTO)
                 .build();
     }
 
-    // ✅ DTO → Entity 변환
-    public UserEntity toEntity(String passwordHash) {
+    /**
+     * DTO → Entity 변환 (암호화된 비밀번호 전달)
+     */
+    public UserEntity toEntity(String encryptedPassword) {
         return UserEntity.builder()
                 .userId(this.userId)
-                .passwordHash(passwordHash)  // 비밀번호는 DTO에서 받지 않지만, 생성 시 필요
+                .password(encryptedPassword)
                 .userName(this.userName)
-                .userGender(UserEntity.Gender.valueOf(this.userGender))  // String → Enum 변환
+                .userGender(convertToGenderEnum(this.userGender))  // ✅ 변환 함수 사용
                 .userBirthdate(this.userBirthdate)
                 .userEmail(this.userEmail)
                 .userContact(this.userContact)
-                .role(UserEntity.Role.valueOf(this.role))  // String → Enum 변환
+                .isOnline(this.isOnline)
+                .role(convertToRoleEnum(this.role))  // ✅ 변환 함수 사용
                 .build();
+    }
+
+    // ✅ 안전한 Gender 변환 함수
+    private UserEntity.Gender convertToGenderEnum(String gender) {
+        try {
+            return UserEntity.Gender.valueOf(gender.substring(0, 1).toUpperCase() + gender.substring(1).toLowerCase());
+        } catch (Exception e) {
+            return UserEntity.Gender.Other;  // ❗예외 발생 시 기본값 반환 (Optional)
+        }
+    }
+
+    // ✅ 안전한 Role 변환 함수
+    private UserEntity.Role convertToRoleEnum(String role) {
+        try {
+            return UserEntity.Role.valueOf(role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase());
+        } catch (Exception e) {
+            return UserEntity.Role.User;  // ❗예외 발생 시 기본값 반환 (Optional)
+        }
     }
 }
