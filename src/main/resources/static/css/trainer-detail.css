@@ -17,6 +17,7 @@ body {
 ------------------------- */
 .intro-card {
   background-color: #1f2937;
+  width:700px;
   color: #fff;
   padding: 24px;
   border-radius: 12px;
