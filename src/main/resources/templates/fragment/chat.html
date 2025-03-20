@@ -105,7 +105,7 @@
             <!-- 파일 메시지인 경우 -->
             <th:block th:if="${msg.fileUrl != null}">
               <!-- 파일 미리보기 컨테이너 (90% 폭, 가운데 정렬) -->
-              <div style="width:90%; margin:0 auto;">
+              <div style="width:90%; margin:0 auto;">ㄴㄴ
                 <th:block th:switch="${msg.fileType}">
                   <th:block th:case="'image'">
                     <img th:src="${msg.fileUrl}" alt="이미지" style="max-width:100%; display:block;">
@@ -128,11 +128,12 @@
                 </th:block>
               </div>
               <!-- 다운로드 링크 (미리보기 아래에 표시) -->
+
               <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}"
                  style="display:block; margin-top:5px; font-size:12px;">
-                <span>다운로드</span>
-<!--                <span th:text="${msg.originalFileName != null ? msg.originalFileName : '파일 다운로드'}"></span>-->
+                <span style="color: grey" >다운로드</span>
               </a>
+
             </th:block>
             <!-- 텍스트 메시지인 경우 -->
             <th:block th:if="${msg.fileUrl == null}">
