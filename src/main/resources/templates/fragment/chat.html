@@ -86,80 +86,59 @@
   </div>
 
   <!-- (B) 대화 영역 -->
+    <div id="conversationArea" class="conversation flex text-right flex-col bg-blue-100 rounded-lg p-4 text-black" style="max-height: 24rem; overflow-y: auto;" >
+      <th:block th:if="${conversation != null and !#lists.isEmpty(conversation)}">
+        <div th:each="msg : ${conversation}" class="py-1">
+          <!-- 보내는 메시지: 오른쪽정렬 / 받는 메시지: 왼쪽정렬 -->
+          <!-- msg.senderId == currentUserId → 'message sender', 아니면 'message receiver' -->
+          <!-- <div th:class="${(msg.senderId eq currentUser.userId) ? 'message sender' : 'message receiver'}"> -->
+          <div th:class="${(msg.senderId eq currentUser.userId) ? 'flex flex-col text-right' : 'flex flex-col text-left'}">
 
+            <strong th:text="${(msg.senderId eq currentUser.userId) ? currentUser.userName : targetUser.userName}" class="block">
+              Sender
+            </strong>
 
-  <div id="conversationArea" class="conversation flex text-right flex-col bg-blue-100 rounded-lg p-4 text-black" style="max-height: 24rem; overflow-y: auto;" >
-    <th:block th:if="${conversation != null and !#lists.isEmpty(conversation)}">
-      <div th:each="msg : ${conversation}" class="py-1">
-        <!-- 보내는 메시지: 오른쪽정렬 / 받는 메시지: 왼쪽정렬 -->
-        <!-- msg.senderId == currentUserId → 'message sender', 아니면 'message receiver' -->
-        <!-- <div th:class="${(msg.senderId eq currentUser.userId) ? 'message sender' : 'message receiver'}"> -->
-        <div th:class="${(msg.senderId eq currentUser.userId) ? 'flex flex-col text-right' : 'flex flex-col text-left'}">
-          
-          <strong th:text="${(msg.senderId eq currentUser.userId) ? currentUser.userName : targetUser.userName}" class="block">
-            Sender          
-          </strong>
-          <!-- (B-1) 파일 메시지인지 체크 -->
-          <th:block th:if="${msg.fileUrl != null}">
-            <th:block th:switch="${msg.fileType}">
-
-              <!-- 이미지 파일 -->
-              <th:block th:case="'image'">
-                <img th:src="${msg.fileUrl}" alt="이미지" style="max-width:100px;" />
-                <br/>
-                <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
-                  [[${msg.originalFileName}]]
-                </a>
-              </th:block>
-
-              <!-- 비디오 파일 -->
-              <th:block th:case="'video'">
-                <video controls width="300">
-                  <source th:src="${msg.fileUrl}" type="video/mp4" />
-                  영상 재생 불가
-                </video>
-                <br/>
-                <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
-                  [[${msg.originalFileName}]]
-                </a>
-              </th:block>
-
-              <!-- 오디오 파일 -->
-              <th:block th:case="'audio'">
-                <audio controls>
-                  <source th:src="${msg.fileUrl}" type="audio/mpeg" />
-                  오디오 재생 불가
-                </audio>
-                <br/>
-                <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
-                  [[${msg.originalFileName}]]
-                </a>
-              </th:block>
-
-              <!-- 기타 문서 -->
-              <th:block th:case="*">
-                <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}">
-                  [[${msg.originalFileName}]]
-                </a>
-              </th:block>
+          <!-- 메시지 말풍선 -->
+          <div th:class="${(msg.senderId eq currentUser.userId) ?
+                         'bg-green-400 text-white rounded-lg p-2 max-w-[150px] break-words whitespace-normal rightbox ml-auto' :
+                         'bg-white text-gray-900 rounded-lg p-2 max-w-[150px] border break-words whitespace-normal leftbox'}">
+            <!-- 파일 메시지인 경우 -->
+            <th:block th:if="${msg.fileUrl != null}">
+              <!-- 파일 미리보기 컨테이너 (90% 폭, 가운데 정렬) -->
+              <div style="width:90%; margin:0 auto;">
+                <th:block th:switch="${msg.fileType}">
+                  <th:block th:case="'image'">
+                    <img th:src="${msg.fileUrl}" alt="이미지" style="max-width:100%; display:block;">
+                  </th:block>
+                  <th:block th:case="'video'">
+                    <video controls style="max-width:100%; display:block;">
+                      <source th:src="${msg.fileUrl}" type="video/mp4">
+                      영상 재생 불가
+                    </video>
+                  </th:block>
+                  <th:block th:case="'audio'">
+                    <audio controls style="max-width:100%; display:block;">
+                      <source th:src="${msg.fileUrl}" type="audio/mpeg">
+                      오디오 재생 불가
+                    </audio>
+                  </th:block>
+                  <th:block th:case="*">
+                    <span>파일 미리보기 불가</span>
+                  </th:block>
+                </th:block>
+              </div>
+              <!-- 다운로드 링크 (미리보기 아래에 표시) -->
+              <a th:href="${msg.fileUrl}" th:download="${msg.originalFileName}"
+                 style="display:block; margin-top:5px; font-size:12px;">
+                <span>다운로드</span>
+<!--                <span th:text="${msg.originalFileName != null ? msg.originalFileName : '파일 다운로드'}"></span>-->
+              </a>
             </th:block>
-          </th:block>
-
-          <!-- (B-2) 텍스트 메시지 -->
-          <th:block th:if="${msg.fileUrl} == null">
-
-          <div th:class="${(msg.senderId eq currentUser.userId) ? 
-            'flex justify-end' :  'flex justify-start'}">
-            
-            <div th:class="${(msg.senderId eq currentUser.userId) ? 
-              'bg-green-400 text-white rounded-lg p-2 max-w-[150px] break-words whitespace-normal rightbox ml-auto' : 
-              'bg-white text-gray-900 rounded-lg p-2 max-w-[150px] border break-words whitespace-normal leftbox'}" 
-              >
-              
-              <span th:text="${msg.content}" class="leading-5">메시지</span>
-            </div>
+            <!-- 텍스트 메시지인 경우 -->
+            <th:block th:if="${msg.fileUrl == null}">
+              <span th:text="${msg.content}" class="leading-5"></span>
+            </th:block>
           </div>
-          </th:block>
         </div>
       </div>
     </th:block>
@@ -169,32 +148,24 @@
     </th:block>
   </div>
 
-<!-- (C) 채팅 입력창 -->
-<div class="input-container bg-gray-100 p-3 rounded-lg shadow-md w-full max-w-md flex flex-col gap-2">
-  <!-- 텍스트 메시지 입력 (첫 번째 줄) -->
-  <input type="text" id="newMessage" placeholder="메시지를 입력하세요"
-         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-
-  <!-- 버튼 + 파일 첨부 버튼 (두 번째 줄) -->
-  <div class="flex items-center justify-between">
-    <!-- (C-1) plus.png 이미지 버튼 (클릭 시 파일 업로드) -->
-    <img src="/images/plus.png" id="fileSelectIcon"
-         class="w-8 h-8 cursor-pointer hover:opacity-80 transition"
-         alt="파일 첨부 버튼"/>
-
-       <!-- (C-2) 숨김 파일 입력 (accept 속성 없이 모든 파일 가능) -->
-       <input type="file" id="fileInput" style="display:none;"/>
-    <!-- 전송 버튼 -->
-    <button type="button" id="sendBtn"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 active:bg-blue-700 transition">
-      전송
-    </button>
+  <!-- (C) 채팅 입력창 -->
+  <div class="input-container bg-gray-100 p-3 rounded-lg shadow-md w-full max-w-md flex flex-col gap-2">
+    <input type="text" id="newMessage" placeholder="메시지를 입력하세요"
+           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+    <div class="flex items-center justify-between">
+      <img src="/images/plus.png" id="fileSelectIcon"
+           class="w-8 h-8 cursor-pointer hover:opacity-80 transition"
+           alt="파일 첨부 버튼"/>
+      <input type="file" id="fileInput" style="display:none;"/>
+      <button type="button" id="sendBtn"
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 active:bg-blue-700 transition">
+        전송
+      </button>
+    </div>
   </div>
 </div>
-
-
-</div>
 <!-- chat.html 프래그먼트 끝 -->
+
 
 <script>
   function initChat() {
