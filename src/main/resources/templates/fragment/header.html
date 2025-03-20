@@ -15,7 +15,7 @@
 						<a href="/" class="text-white hover:text-blue-400 transition">
 							홈</a> <a
 							th:href="@{/user/login}"
-							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							class="text-white hover:text-blue-400 transition"> 식단 관리 </a> <a
 							th:href="@{/user/login}"
 							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
 							th:href="@{/user/login}"
@@ -29,7 +29,7 @@
 					<!-- 2. 트레이너 -->
 					<div th:case="'Trainer'" class="flex space-x-12">
 						<a href="/" class="text-white hover:text-blue-400 transition">홈</a> 
-						<a th:href="@{/meals}" class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> 
+						<a th:href="@{/meals}" class="text-white hover:text-blue-400 transition"> 식단 관리 </a> 
 						<a th:href="@{/work}" class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> 
 					    <a th:href="@{/firstTrainerSchedule}"class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> 
 					    <a th:href="@{/trainer/{trainerId}(trainerId=${trainerId})}" class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
@@ -42,7 +42,7 @@
 						<a href="/" class="text-white hover:text-blue-400 transition">
 							홈</a> <a
 							th:href="@{/meals}"
-							class="text-white hover:text-blue-400 transition"> 식단 플래너 </a> <a
+							class="text-white hover:text-blue-400 transition"> 식단 관리 </a> <a
 							th:href="@{/work}"
 							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
 							th:href="@{/firstUserCalendar}"

@@ -68,7 +68,7 @@ console.log("Merged calendarEvents:", calendarEvents);
 	<div th:replace="~{fragment/header :: header}"></div>
 
 	
-  <div id="page-container">
+  <div id="page-container" style="margin-top: 130px">
     <!-- 왼쪽 사이드바 -->
     <div id="left-sidebar" class="flex flex-col items-center w-64 p-4 bg-gray-800 text-white">
       <button id="diet-board">식단 게시판</button>
@@ -110,34 +110,8 @@ console.log("Merged calendarEvents:", calendarEvents);
     </div>
   </div>
 
-				<!-- 일반 공지 -->
-				<div class="p-4 bg-gray-700 rounded">
-					<h3 class="text-lg font-bold mb-2">일반 공지</h3>
-					<p th:text="${AnnouncementContent}">여기에 나중에 글을 작성할 예정입니다.</p>
-				</div>
-			</div>
-		</div>
-		<!-- 중앙 캘린더 -->
-		<div id="calendar"></div>
-		<!-- 오른쪽 미니 캘린더 영역 -->
-		<div id="mini-calendar-container">
-			<div id="mini-calendar-wrapper">
-				<div id="mini-calendar"></div>
-			</div>
-			<div id="month-placeholder"></div>
-			<!-- 일정 선택 폼 (기본 숨김) -->
-			<div id="schedule-form" style="display: none; margin-bottom: 10px;">
-				<label for="start-date">시작 날짜:</label> <input type="datetime-local"
-					id="start-date">
-				<p>분은 00분 또는 30분만 선택 가능합니다.</p>
-			</div>
-			<button id="pt-button">PT시작</button>
-			<button id="delete-button">기존 일정 삭제</button>
-			<div id="pt-info">잔여 PT : [[${changeAmount}]]</div>
-			<!-- 신규: month view일 때 채팅박스 -->
-			<div id="chat-box" style="display: none;">여기에 채팅 내용이 표시됩니다.</div>
-		</div>
-	</div>
+			
+		
 
 	<!-- Hidden div for chat data: currentUser (로그인한 유저)와 targetUser (할당된 트레이너) -->
 	<div id="chatData" style="display: none;"
