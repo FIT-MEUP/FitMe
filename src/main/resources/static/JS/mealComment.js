@@ -96,7 +96,7 @@ function submitMealCommentForm(event) {
             loadMealComments(selectedMealId);
         },
         error: function () {
-            alert("댓글 추가 실패!");
+            alert("댓글 작성에 실패했습니다.");
         }
     });
 }
@@ -112,7 +112,7 @@ function deleteMealComment(commentId) {
             loadMealComments(selectedMealId);
         },
         error: function () {
-            alert("댓글 삭제 실패!");
+            alert("댓글 삭제에 실패했습니다!");
         }
     });
 }

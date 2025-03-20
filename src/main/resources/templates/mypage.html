@@ -2,19 +2,17 @@
 <html lang="ko" xmlns:th="http://thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>마이페이지</title>
-<link rel="stylesheet" th:href="@{/css/mypage.css}">
-<script src="../../static/js/jquery-3.7.1.min.js"
-	th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>마이페이지</title>
+	<link rel="stylesheet" th:href="@{/css/mypage.css}">
+	<script src="../../static/js/jquery-3.7.1.min.js" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
 
-<script th:inline="javascript">
-    let loggedInUserId = [[${userId}]]; // Thymeleaf에서 받은 userId를 JavaScript 변수로 저장
-    
-</script>
+	<script th:inline="javascript">
+		let loggedInUserId = [[${ userId }]]; // Thymeleaf에서 받은 userId를 JavaScript 변수로 저장
+	</script>
 
 
 
@@ -40,8 +38,7 @@
 				<table class="calendar" id="calendar"></table>
 				<div class="menu-buttons">
 					<a th:href="@{/user/ptData(userId=${userId})}" class="button">PT
-						이력</a> <a th:href="@{/user/userbodyData(userId=${userId})}"
-						class="button">신체정보 내역 조회</a>
+						이력</a> <a th:href="@{/user/userbodyData(userId=${userId})}" class="button">신체정보 내역 조회</a>
 				</div>
 
 			</div>
@@ -53,6 +50,15 @@
 					<button class="edit-button" onclick="toggleEditMode()">수정</button>
 				</div>
 
+				<!-- 트레이너만 보이는 회원 선택 dropdown -->
+				<div class="userdropdown" th:if="${role == 'Trainer'}" style="width: fit-content;">
+					<select id="trainerMemberSelect" class="form-select" style="width: 150px; margin-top: 30px;"
+						onchange="handleTrainerMemberChange(this.value)" required>
+						<option value="" th:selected="${userId == null}">회원 선택하기</option>
+						<option th:each="member : ${trainerMembers}" th:value="${member.userId}"
+							th:text="${member.userName}" th:selected="${userId == member.userId}"></option>
+					</select>
+				</div>
 
 				<table class="user-info">
 					<tr>
@@ -71,10 +77,8 @@
 						<td id="bmi" th:text="${latestData.bmi}">0 bmi지수</td>
 						<td id="fatMass" th:text="${latestData.fatMass} + '%'">0%</td>
 						<td id="muscleMass" th:text="${latestData.muscleMass} + 'kg'">0kg</td>
-						<td id="basalMetabolicRate"
-							th:text="${latestData.basalMetabolicRate} + ' kcal'">0 kcal</td>
-						<td id="current-date"
-							th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
+						<td id="basalMetabolicRate" th:text="${latestData.basalMetabolicRate} + ' kcal'">0 kcal</td>
+						<td id="current-date" th:text="${#temporals.format(latestData.recordDate, 'yyyy-MM-dd')}">-</td>
 					</tr>
 
 				</table>

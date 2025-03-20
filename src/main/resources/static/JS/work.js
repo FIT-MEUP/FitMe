@@ -332,11 +332,11 @@ function editWorkout(id) {
                 // 기존 동작 유지
                 loadWorkoutVideo(id);
             } else {
-                alert("🚨 운동 기록을 찾을 수 없습니다.");
+                alert("운동 기록을 찾을 수 없습니다.");
             }
         },
         error: function () {
-            alert("운동 기록 불러오기 실패!");
+            alert("운동 기록 불러오기에 실패했습니다.");
         }
     });
 }
@@ -412,7 +412,7 @@ function uploadNewVideo(workoutId) {
     let file = fileInput.files[0];
 
     if (!file) {
-        alert("업로드할 영상을 선택하세요!");
+        alert("업로드할 영상을 선택하세요.");
         return;
     }
 
@@ -435,7 +435,7 @@ function uploadNewVideo(workoutId) {
             loadWorkoutVideo(workoutId);
         },
         error: function () {
-            alert("영상 업로드 중 오류 발생!");
+            alert("영상 업로드 중 오류가 발생했습니다.");
         }
     });
 }
@@ -468,7 +468,7 @@ function updateWorkout() {
         contentType: "application/json",
         data: JSON.stringify(updatedWorkout),
         success: function (response) {
-            alert("✅ 운동 기록이 수정되었습니다.");
+            alert("운동 기록이 수정되었습니다.");
             resetForm();
             loadWorkoutData(selectedDate);  // ✅ 최신 데이터 다시 불러오기
             const currentDate = calendar.getDate();
@@ -476,7 +476,7 @@ function updateWorkout() {
         },
         error: function (xhr, status, error) {
             console.error("❌ 운동 기록 수정 실패!", error);
-            alert("수정 중 오류 발생!");
+            alert("수정 중 오류가 발생했습니다.");
         }
     });
 }
@@ -511,7 +511,7 @@ function addWorkout() {
     let workoutDate = selectedDate;  // ✅ workoutDate를 전역 변수 `selectedDate`에서 가져오기
 
     if (!part || !exercise || !sets || !reps || !weight) {
-        alert("모든 항목을 입력하세요!");
+        alert("모든 항목을 입력해주세요!");
         return;
     }
 
@@ -533,8 +533,8 @@ function addWorkout() {
             fetchWorkoutDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
         },
         error: function (xhr, status, error) {
-            console.error("❌ 운동 기록 저장 실패:", error);
-            alert("운동 기록 저장 중 오류 발생!");
+            console.error("운동 기록 저장에 실패하였습니다. : ", error);
+            alert("운동 기록 저장 중 오류가 발생했습니다.");
         }
     });
 }
@@ -554,13 +554,13 @@ function deleteWorkout(workoutId) {
         contentType: "application/json",
         data: JSON.stringify({ userId: userId }), // ✅ userId 추가
         success: function (response) {
-            alert("✅ 운동 기록이 삭제되었습니다.");
+            alert("운동 기록이 삭제되었습니다.");
             loadWorkoutData(selectedDate);
             const currentDate = calendar.getDate();
             fetchWorkoutDates(currentDate.getFullYear(), currentDate.getMonth() + 1);
         },
         error: function (xhr, status, error) {
-            alert("❌ 삭제 중 오류 발생!");
+            alert("삭제 중 오류가 발생했습니다.");
         }
     });
 }
@@ -581,7 +581,7 @@ function uploadVideoForWorkout(workoutId) {
     fileInput.onchange = function () {
         let file = fileInput.files[0];
         if (!file) {
-            alert("업로드할 영상을 선택하세요!");
+            alert("업로드할 영상을 선택하세요.");
             return;
         }
 
@@ -597,7 +597,7 @@ function uploadVideoForWorkout(workoutId) {
             processData: false,
             contentType: false,
             success: function () {
-                alert("✅ 영상이 업로드되었습니다.");
+                alert("영상이 업로드되었습니다.");
                 loadWorkoutVideo(workoutId);
 
                 // ✅ 수정 버튼을 누르지 않은 경우
@@ -614,7 +614,7 @@ function uploadVideoForWorkout(workoutId) {
                 }
             },
             error: function () {
-                alert("❌ 영상 업로드 중 오류 발생!");
+                alert("영상 업로드 중 오류가 발생했습니다.");
             }
         });
     };
@@ -729,7 +729,7 @@ function searchWorkout(query) {
             });
         },
         error: function () {
-            alert("❌ 검색 중 오류 발생!");
+            alert("검색 중 오류가 발생했습니다.");
         }
     });
 }
@@ -767,7 +767,7 @@ function submitCommentForm(event) {
     let workoutId = selectedWorkoutId || getFirstWorkoutId();
 
     if (!content) {
-        alert("댓글을 입력하세요!");
+        alert("댓글을 입력해주세요.");
         return;
     }
 
@@ -789,7 +789,7 @@ function submitCommentForm(event) {
         },
         error: function (xhr) {
             console.error("❌ 운동 댓글 추가 실패!", xhr.responseText);
-            alert("댓글 추가 실패: " + xhr.responseText);
+
         }
     });
 }
@@ -866,7 +866,7 @@ function deleteWorkoutComment(commentId) {
         url: `/comments/${commentId}`,
         type: "DELETE",
         success: function () {
-            alert("✅ 댓글이 삭제되었습니다.");
+            alert("댓글이 삭제되었습니다.");
 
             // ✅ 삭제된 댓글을 UI에서 즉시 제거
             let commentElement = document.getElementById(`comment-${commentId}`);
@@ -876,7 +876,7 @@ function deleteWorkoutComment(commentId) {
 
         },
         error: function () {
-            alert("❌ 댓글 삭제 실패!");
+            alert("댓글 삭제에 실패했습니다.");
         }
     });
 }
