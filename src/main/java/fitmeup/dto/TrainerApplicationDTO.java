@@ -28,6 +28,7 @@ public class TrainerApplicationDTO {
     // 승인 상태
     private String status;
     private String name;
+    private String phoneNumber;
     private LocalDateTime appliedAt;
     private LocalDateTime responseAt;
 
@@ -38,6 +39,7 @@ public class TrainerApplicationDTO {
                 .name(entity.getUser().getUserName())
                 .trainerId(entity.getTrainer().getTrainerId())
                 .status(entity.getStatus().toString())
+                .phoneNumber(entity.getUser().getUserContact())
                 .appliedAt(entity.getAppliedAt())
                 .responseAt(entity.getResponseAt())
                 .build();

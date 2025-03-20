@@ -10,7 +10,7 @@ $(document).ready(function () {
             function (frame) {
                 console.log("Trainer 알림용 WS 연결 성공:", frame);
                 // 최상위 .container에 저장된 trainer의 userId 사용
-                var trainerUserId = parseInt($(".container").data("user-name"));
+                var trainerUserId = parseInt($("#trainerInfo").data("user-name"));
                 console.log("트레이너 userId:", trainerUserId);
                 notificationClient.subscribe(
                     `/queue/notifications/${trainerUserId}`,

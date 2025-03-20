@@ -75,29 +75,29 @@ console.log("Merged calendarEvents:", calendarEvents);
     });
 </script>
 
-	<div id="page-container">
-		<!-- 왼쪽 사이드바 -->
-		<div id="left-sidebar">
-			<a th:href="@{/trainer/memberManage}">
-				<button id="member-management">회원관리</button>
-			</a>
-			<button id="schedule-management" style="display: none;">일정관리</button>
-			<button id="reset-button" style="display: none;">초기화</button>
-			<div id="left-placeholder">공지사항란</div>
-
-		</div>
-		<!-- 중앙 캘린더 -->
-		<div id="calendar"></div>
-		<!-- 오른쪽 미니 캘린더 영역 -->
-		<div id="mini-calendar-container">
-			<div id="mini-calendar-wrapper">
-				<div id="mini-calendar"></div>
-			</div>
-			<div id="month-placeholder"></div>
-			<button id="pt-button">PT시작</button>
-		</div>
-	</div>
-
-
+  <div id="page-container">
+    <!-- 왼쪽 사이드바 -->
+    <div id="left-sidebar">
+      <a th:href="@{/trainer/memberManage}">
+        <button id="member-management">회원관리</button>
+      </a>
+      <button id="schedule-management" style="display:none;">일정관리</button>
+      <button id="reset-button" style="display:none;">초기화</button>
+      <div id="left-placeholder">공지사항란</div>
+      
+    </div>
+    <!-- 중앙 캘린더 -->
+    <div id="calendar"></div>
+    <!-- 오른쪽 미니 캘린더 영역 -->
+    <div id="mini-calendar-container">
+      <div id="mini-calendar-wrapper">
+        <div id="mini-calendar"></div>
+      </div>
+      <div id="month-placeholder"></div>
+      <button id="pt-button">PT시작</button>
+    </div>
+  </div>
+  
+  
 </body>
 </html>
