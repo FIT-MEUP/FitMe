@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fitmeup.dto.HealthDataDTO;
 import fitmeup.dto.LoginUserDetails;
 import fitmeup.dto.PTSessionHistoryDTO;
+import fitmeup.entity.UserEntity;
 import fitmeup.service.HealthDataService;
 import fitmeup.service.PTSessionHistoryService;
+import fitmeup.service.TrainerApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +31,7 @@ public class MyPageController {
 
 	private final HealthDataService healthDataService; // ✅ 서비스 주입
 	private final PTSessionHistoryService ptSessionHistoryService;
+	private final TrainerApplicationService trainerApplicationService;
 
 	/**
 	 * 마이페이지에서 사용자 데이터 조회
@@ -49,6 +52,16 @@ public class MyPageController {
 		}
 		log.info("userId ======{}",userId);	
 			model.addAttribute("userId",userId);
+			
+			//  현재 로그인한 사용자 role
+		    String role = loginUser.getRoles();
+		    model.addAttribute("role", role);
+
+		    //  트레이너가 로그인한 경우, 승인된 회원 목록 조회 후 전달
+		    if ("Trainer".equals(role)) {
+		        List<UserEntity> trainerMembers = trainerApplicationService.getTrainerMembers(loginUser.getUserId());
+		        model.addAttribute("trainerMembers", trainerMembers);
+		    }
 		
 	    // 최신 데이터 가져오기
 	    HealthDataDTO latestData = healthDataService.getLatestHealthData(userId);

@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let foodFat = parseFloat(document.getElementById("editFoodFat").value);
 
         if (!foodName || userWeight < 1) {
-            alert("음식을 선택하거나 직접 입력하고 먹은 g 수를 입력하세요!");
+            alert("음식을 선택하거나, 음식을 직접 입력하고 먹은 g 수를 입력하세요!");
             return;
         }
 

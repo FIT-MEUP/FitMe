@@ -1,12 +1,14 @@
 /* 공통 및 캘린더 스타일 */
 
 body {
-  background: linear-gradient(135deg, #111827, #1f2937) !important;
+    background: linear-gradient(135deg, #111827, #1f2937) !important;
 }
 
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #f59e0b !important; /* Tailwind yellow-500 */
-    color: black !important; /* ✅ 검은색 적용 */
+    background-color: #f59e0b !important;
+    /* Tailwind yellow-500 */
+    color: black !important;
+    /* ✅ 검은색 적용 */
     font-weight: bold !important;
     border-radius: 8px;
 }
@@ -19,14 +21,17 @@ body {
 .fc-daygrid-day-number {
     font-size: 1.2rem;
     font-weight: bold;
-    color: black; /* ✅ 검은색으로 변경 */
+    color: black;
+    /* ✅ 검은색으로 변경 */
 }
 
 /* ✅ 오늘 날짜 강조 */
 .fc-day-today {
-    background-color: #facc15 !important; /* Tailwind yellow-300 */
+    background-color: #facc15 !important;
+    /* Tailwind yellow-300 */
     border-radius: 8px;
-    color: black !important; /* ✅ 검은색 적용 */
+    color: black !important;
+    /* ✅ 검은색 적용 */
     font-weight: bold !important;
 }
 
@@ -34,7 +39,8 @@ body {
 #calendar {
     max-height: 550px;
     margin: 0 auto;
-    background: #1f2937; /* Tailwind bg-gray-800 */
+    background: #1f2937;
+    /* Tailwind bg-gray-800 */
     border-radius: 10px;
     padding: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
@@ -184,7 +190,8 @@ body {
 
 /* 캘린더 버튼 스타일 */
 .fc .fc-button {
-    background: #60a5fa; /* Tailwind blue-400 */
+    background: #60a5fa;
+    /* Tailwind blue-400 */
     color: white;
     border: none;
     font-size: 0.9rem;
@@ -194,7 +201,8 @@ body {
 }
 
 .fc .fc-button:hover {
-    background: #3b82f6; /* Tailwind blue-500 */
+    background: #3b82f6;
+    /* Tailwind blue-500 */
 }
 
 .fc .fc-button:disabled {
@@ -204,7 +212,8 @@ body {
 
 
 /* ✅ 화살표 버튼 크기 조정 */
-.fc-prev-button, .fc-next-button {
+.fc-prev-button,
+.fc-next-button {
     padding: 6px 8px !important;
 }
 
@@ -310,26 +319,30 @@ nav a {
 }
 
 nav a:hover {
-    color: #60A5FA; /* Tailwind의 hover:text-blue-400 */
+    color: #60A5FA;
+    /* Tailwind의 hover:text-blue-400 */
 }
 
 /* ✅ 캘린더와 식단 기록 한 줄 정렬 */
 .meal-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* 간격 추가 */
+    gap: 20px;
+    /* 간격 추가 */
     justify-content: space-between;
 }
 
 /* ✅ 캘린더 크기 조정 */
 .calendar-container {
-    flex: 0 0 35%; /* 캘린더 비율 조정 */
+    flex: 0 0 35%;
+    /* 캘린더 비율 조정 */
     max-width: 35%;
 }
 
 /* ✅ 식단 기록 크기 조정 */
 .meal-record-container {
-    flex: 0 0 60%; /* 식단 기록 비율 조정 */
+    flex: 0 0 60%;
+    /* 식단 기록 비율 조정 */
     max-width: 60%;
 }
 
@@ -338,6 +351,7 @@ nav a:hover {
     .meal-container {
         flex-direction: column;
     }
+
     .calendar-container,
     .meal-record-container {
         flex: 100%;
@@ -348,9 +362,11 @@ nav a:hover {
 /* ✅ 캘린더와 식단 기록 한 줄 정렬 */
 .meal-container {
     display: flex;
-    gap: 20px; /* 간격 추가 */
+    gap: 20px;
+    /* 간격 추가 */
     justify-content: space-between;
-    align-items: flex-start; /* 위쪽 정렬 */
+    align-items: flex-start;
+    /* 위쪽 정렬 */
 }
 
 /* ✅ 캘린더 크기 조정 */
@@ -367,8 +383,10 @@ nav a:hover {
 
 /* ✅ 등록된 식단이 없을 때 가독성 개선 */
 .no-meal-warning {
-    background-color: #fbbf24; /* 노란색 배경 */
-    color: #000; /* 검정색 글씨 */
+    background-color: #fbbf24;
+    /* 노란색 배경 */
+    color: #000;
+    /* 검정색 글씨 */
     font-weight: bold;
     padding: 12px;
     text-align: center;
@@ -379,7 +397,8 @@ nav a:hover {
 
 /* ✅ 오늘 날짜 강조 */
 .fc-day-today {
-    background-color: #facc15; /* Tailwind yellow-300 */
+    background-color: #facc15;
+    /* Tailwind yellow-300 */
     border-radius: 8px;
     color: black;
     font-weight: bold;
@@ -387,7 +406,8 @@ nav a:hover {
 
 /* ✅ 선택된 날짜 스타일 */
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
-    background-color: #f59e0b; /* Tailwind yellow-500 */
+    background-color: #f59e0b;
+    /* Tailwind yellow-500 */
     color: black !important;
     font-weight: bold !important;
     border-radius: 8px;
@@ -398,6 +418,7 @@ nav a:hover {
     .meal-container {
         flex-direction: column;
     }
+
     .calendar-container,
     .meal-record-container {
         flex: 100%;
@@ -406,10 +427,74 @@ nav a:hover {
 }
 
 .sikdangirok {
-	font-size: 2em;
+    font-size: 2em;
 }
+
 .meal-container-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 사진 출력 크기 비율 고정*/
+.card img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+/* ✅ 식단 추가 / 수정 모달 */
+#editMealModal .modal-body label,
+#editMealModal .modal-body h6,
+#editMealModal .modal-body select {
+    color: black;
+}
+
+#editMealModal .modal-body input,
+#editMealModal .modal-body textarea {
+    color: black;
+}
+
+#editMealModal .modal-body input::placeholder,
+#editMealModal .modal-body textarea::placeholder {
+    color: #333;
+}
+
+/* ✅ 음식 추가 모달 */
+#foodModal .modal-body label,
+#foodModal .modal-body h6,
+#foodModal .modal-body select {
+    color: black;
+}
+
+#foodModal .modal-body input,
+#foodModal .modal-body textarea {
+    color: black;
+}
+
+#foodModal .modal-body input::placeholder,
+#foodModal .modal-body textarea::placeholder {
+    color: #333;
+}
+
+/* ✅ 음식 추가(수정용) 모달 */
+#editFoodModal .modal-body label,
+#editFoodModal .modal-body h6,
+#editFoodModal .modal-body select {
+    color: black;
+}
+
+#editFoodModal .modal-body input,
+#editFoodModal .modal-body textarea {
+    color: black;
+}
+
+#editFoodModal .modal-body input::placeholder,
+#editFoodModal .modal-body textarea::placeholder {
+    color: #333;
+}.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important; 
 }

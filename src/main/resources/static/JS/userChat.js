@@ -173,48 +173,87 @@ $(document).ready(function() {
   // (5) 메시지 수신 시 UI 반영
   //------------------------------------------------------
   function updateChatWindow(chat) {
-    const conversationArea = $("#conversationArea");
-    const messageDiv = $("<div>").addClass("message");
+    const conversationArea = document.getElementById("conversationArea");
 
-    // 발신자 이름
-    const senderName = (chat.senderId === window.currentUser.userId)
-        ? window.currentUser.userName
-        : window.targetUser.userName;
-
-    // 파일 메시지 vs 텍스트 메시지
-    if (chat.fileUrl && chat.fileType) {
-      let filePreview = "";
-      switch (chat.fileType) {
-        case "image":
-          filePreview = `<img src="${chat.fileUrl}" alt="이미지" style="max-width:200px;">`;
-          break;
-        case "video":
-          filePreview = `
-            <video controls width="300">
-              <source src="${chat.fileUrl}" type="video/mp4"/>
-              영상 재생 불가
-            </video>`;
-          break;
-        case "audio":
-          filePreview = `
-            <audio controls>
-              <source src="${chat.fileUrl}" type="audio/mpeg"/>
-              오디오 재생 불가
-            </audio>`;
-          break;
-        default:
-          const docName = chat.originalFileName || "파일";
-          filePreview = `<a href="${chat.fileUrl}" download="${docName}">${docName}</a>`;
-          break;
-      }
-      messageDiv.html(`<strong>${senderName}</strong>: ${filePreview}`);
+    // 발신자에 따라 전체 컨테이너의 정렬 지정
+    const messageContainer = document.createElement("div");
+    if (chat.senderId === window.currentUser.userId) {
+      messageContainer.className = "flex justify-end";
     } else {
-      // 일반 텍스트
-      messageDiv.html(`<strong>${senderName}</strong>: <span>${chat.content}</span>`);
+      messageContainer.className = "flex justify-start";
     }
 
-    conversationArea.append(messageDiv);
-    conversationArea.scrollTop(conversationArea.prop("scrollHeight"));
+    // 말풍선 스타일을 적용할 내부 div 생성
+    const messageBubble = document.createElement("div");
+    if (chat.senderId === window.currentUser.userId) {
+      messageBubble.className =
+          "bg-green-400 text-white rounded-lg p-2 max-w-[150px] break-words whitespace-normal rightbox ml-auto";
+      // 발신자 이름 추가
+      const messageSender = document.createElement("strong");
+      messageSender.textContent = window.currentUser.userName;
+      messageContainer.appendChild(messageSender);
+    } else {
+      messageBubble.className =
+          "bg-white text-gray-900 rounded-lg p-2 max-w-[150px] border break-words whitespace-normal leftbox";
+      // 수신자 이름 추가
+      const messageSender = document.createElement("strong");
+      messageSender.textContent = window.targetUser.userName;
+      messageContainer.appendChild(messageSender);
+    }
+
+    // 파일 메시지 처리: 파일 미리보기와 다운로드 링크 추가
+    if (chat.fileUrl && chat.fileType) {
+      // 파일 미리보기용 컨테이너 생성 (전체 말풍선의 90% 폭, 가운데 정렬)
+      const filePreviewContainer = document.createElement("div");
+      filePreviewContainer.style.width = "90%";
+      filePreviewContainer.style.margin = "0 auto";
+      let filePreviewHTML = "";
+      switch (chat.fileType) {
+        case "image":
+          filePreviewHTML = `<img src="${chat.fileUrl}" alt="이미지" style="max-width:100%; display:block;">`;
+          break;
+        case "video":
+          filePreviewHTML = `<video controls style="max-width:100%; display:block;">
+                                      <source src="${chat.fileUrl}" type="video/mp4">
+                                      영상 재생 불가
+                                   </video>`;
+          break;
+        case "audio":
+          filePreviewHTML = `<audio controls style="max-width:100%; display:block;">
+                                      <source src="${chat.fileUrl}" type="audio/mpeg">
+                                      오디오 재생 불가
+                                   </audio>`;
+          break;
+        default:
+          filePreviewHTML = `<span>파일 미리보기 불가</span>`;
+          break;
+      }
+      filePreviewContainer.innerHTML = filePreviewHTML;
+
+      // 다운로드 링크 생성 (말풍선 아래에 위치)
+      const downloadLink = document.createElement("a");
+      downloadLink.href = chat.fileUrl;
+      downloadLink.download = chat.originalFileName || "파일";
+      downloadLink.textContent = chat.originalFileName ? "다운로드" : "파일 다운로드";
+      downloadLink.style.display = "block";
+      downloadLink.style.marginTop = "5px";
+      downloadLink.style.fontSize = "12px";
+
+      // 말풍선 안에 미리보기와 다운로드 링크 추가
+      messageBubble.appendChild(filePreviewContainer);
+      messageBubble.appendChild(downloadLink);
+    } else {
+      // 텍스트 메시지 처리
+      const messageText = document.createElement("span");
+      messageText.className = "leading-5";
+      messageText.textContent = chat.content;
+      messageBubble.appendChild(messageText);
+    }
+
+    // 구성 요소 결합 및 추가
+    messageContainer.appendChild(messageBubble);
+    conversationArea.appendChild(messageContainer);
+    conversationArea.scrollTop = conversationArea.scrollHeight;
   }
 
   // 대화중이 아닌 메시지 -> unread 배지 증가

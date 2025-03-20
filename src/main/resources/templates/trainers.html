@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-<meta charset="UTF-8">
-<title>트레이너 목록</title>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<link rel="stylesheet" href="../../static/css/trainers.css"
-	th:href="@{/css/trainers.css}">
+<head>
+	<meta charset="UTF-8">
+	<title>트레이너 목록</title>
+
+	<link rel="stylesheet" href="../../static/css/trainers.css" th:href="@{/css/trainers.css}">
+
+<link rel="stylesheet" href="../../static/css/header.css"
+	th:href="@{/css/header.css}">
 
 <!-- Tailwind CSS & AlpineJS -->
 <script src="https://cdn.tailwindcss.com"></script>
@@ -16,21 +18,21 @@
 	th:src="@{/js/jquery-3.7.1.min.js}"></script>
 <script src="../../static/js/trainers.js" th:src="@{/js/trainers.js}"></script>
 
-<!-- Google Fonts -->
-<link
-	href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap"
-	rel="stylesheet">
+	<!-- Google Fonts -->
+	<link
+		href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap"
+		rel="stylesheet">
 
 
 </head>
+
 <body class="bg-gray-900 text-white" style="margin-top: 100px;">
 	<!-- 헤더 포함 -->
 	<div th:replace="~{fragment/header :: header}"></div>
 
 	<!-- 메인 컨텐츠 -->
 	<section class="flex flex-col items-center text-center mt-28">
-		<h1
-			class="text-6xl font-title text-white drop-shadow-lg tracking-widest">
+		<h1 class="text-6xl font-title text-white drop-shadow-lg tracking-widest">
 			FIND YOUR TRAINER</h1>
 		<p class="mt-4 text-2xl text-gray-300 font-body">당신의 목표를 함께 만들어갈
 			최고의 트레이너를 만나보세요.</p>
@@ -38,44 +40,35 @@
 
 	<!-- 배경 비디오 -->
 	<div class="video-container mt-10">
-		<video autoplay muted loop playsinline
-			class="absolute inset-0 w-full h-full object-cover">
-			<source src="../../static/videos/Intro.mp4"
-				th:src="@{/videos/Intro.mp4}" type="video/mp4">
+		<video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
+			<source src="../../static/videos/Intro.mp4" th:src="@{/videos/Intro.mp4}" type="video/mp4">
 			브라우저가 비디오 태그를 지원하지 않습니다.
 		</video>
 	</div>
 
 	<!-- 트레이너 목록 -->
-	<main id="trainer-list"
-		class="relative z-10 flex flex-col items-center text-center mt-16">
+	<main id="trainer-list" class="relative z-10 flex flex-col items-center text-center mt-16">
 		<h2 class="text-4xl font-title text-white mb-6 tracking-widest">TRAINER
 			LIST</h2>
 
-		<div
-			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 w-full max-w-6xl mx-auto">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6 w-full max-w-6xl mx-auto">
 			<!-- 반복문 시작 -->
-			<div th:each="trainer : ${trainers}"
-				class="trainer-card group bg-gray-800 rounded-lg overflow-hidden shadow-lg text-white font-body relative 
+			<div th:each="trainer : ${trainers}" class="trainer-card group bg-gray-800 rounded-lg overflow-hidden shadow-lg text-white font-body relative 
          transition-transform transform hover:-translate-y-1 hover:shadow-2xl">
 				<!-- 상단 이미지 영역 -->
-				<div class="relative overflow-hidden">
-					<img
-						th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
+				<div class="relative overflow-hidden bg-black">
+					<img th:src="${trainer.photos.size() > 0 ? trainer.photos[0].photoUrl : '/images/default-trainer.jpg'}"
 						alt="Trainer Image"
-						class="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-110">
+						class="w-full h-56 object-contain transition-transform duration-300 group-hover:scale-105">
 				</div>
 
 				<!-- 하단 텍스트 영역 -->
 
 				<div class="p-6 text-center">
-					<h5 class="text-2xl font-title mb-2"
-						th:text="${trainer.user.userName}">트레이너 이름</h5>
-					<p class="text-white-700 font-body"
-						th:text="${trainer.specialization}">전문 분야</p>
+					<h5 class="text-2xl font-title mb-2" th:text="${trainer.user.userName}">트레이너 이름</h5>
+					<p class="text-white-700 font-body" th:text="${trainer.specialization}">전문 분야</p>
 
-					<a th:href="@{/trainer/{id}(id=${trainer.trainerId})}"
-						class="btn-detail"> 자세히 보기 </a>
+					<a th:href="@{/trainer/{id}(id=${trainer.trainerId})}" class="btn-detail"> 자세히 보기 </a>
 				</div>
 			</div>
 			<!-- 반복문 끝 -->
@@ -83,4 +76,5 @@
 	</main>
 
 </body>
+
 </html>
