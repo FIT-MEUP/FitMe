@@ -22,7 +22,6 @@
 <link
 	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
 	rel="stylesheet">
-<link rel="stylesheet" href="/css/meals.css">
 <!-- ✅ CSS 파일 불러오기 -->
 <script
 	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
@@ -39,20 +38,7 @@
 	<!-- 헤더 포함 -->
 	<div th:replace="~{fragment/header :: header}"></div>
 
-	<nav class="navbar navbar-light bg-light p-3">
-		<!-- 트레이너일 경우 -->
-		<button class="btn btn-primary"
-			sec:authorize="hasAuthority('Trainer')"
-			onclick="location.href='/trainer/memberManage';">← 뒤로 가기</button>
-		<!-- 일반 사용자일 경우 -->
-		<button class="btn btn-primary" sec:authorize="hasAuthority('User')"
-			onclick="location.href='/firstUserCalendar';">← 뒤로 가기</button>
-		<h3 class="text-center flex-grow-1">
-			<a href="/meals?mealDate=" id="mainPageLink"
-				class="text-dark text-decoration-none">식단 게시판</a>
-		</h3>
-
-	</nav>
+	
 
 
 	<input type="hidden" id="loggedInUserId" th:value="${userId}">
@@ -84,9 +70,7 @@
 		<div class="meal-container">
 			<!-- ✅ 캘린더 영역 -->
 			<div class="calendar-container">
-				<div class="bg-gray-900 p-6 rounded-lg shadow-lg">
-					<h5 class="text-white text-center mb-4 font-bold text-lg">📅
-						My calendar</h5>
+				<div class="bg-gray-700 p-6 rounded-lg shadow-lg">
 					<div id="calendar" class="bg-light rounded p-3 shadow"></div>
 				</div>
 			</div>
@@ -94,9 +78,7 @@
 			<!-- ✅ 식단 기록 -->
 			<div class="meal-record-container">
 				<div class="bg-dark p-4 rounded shadow-lg meal-container-title">
-					<span><h4
-							class="text-white fw-bold text-center mb-3 sikdangirok">🍽
-							식단 보고서 🍽</h4></span>
+					<span> <h4 class="text-white fw-bold text-center mb-3 sikdangirok"> 식단 기록지 </h4></span>
 
 					<!-- ✅ "식단 추가 버튼" (우측 끝으로 정렬) -->
 					<button id="addMealButton"
@@ -112,7 +94,7 @@
 
 				<!-- 식단이 있는 경우 -->
 				<th:block th:if="${meals != null and not #lists.isEmpty(meals)}">
-					<div class="row">
+					<div class="row mt-4" >
 						<div class="col-md-4 mb-4" th:each="meal : ${meals}">
 							<div class="card shadow-sm border-0">
 								<div class="card-body">
@@ -128,24 +110,18 @@
 									<h6 class="card-subtitle mb-2 text-muted"
 										th:text="${meal.mealType}"></h6>
 									<p class="card-text">
-										🔥 칼로리: <span th:text="${meal.totalCalories}"></span> kcal
+										칼로리: <span th:text="${meal.totalCalories}"></span> kcal
 									</p>
 									<p class="card-text">
-										🍞 탄수화물: <span th:text="${meal.totalCarbs}"></span> g
+										탄수화물: <span th:text="${meal.totalCarbs}"></span> g
 									</p>
 									<p class="card-text">
-										🍗 단백질: <span th:text="${meal.totalProtein}"></span> g
+										단백질: <span th:text="${meal.totalProtein}"></span> g
 									</p>
 									<p class="card-text">
-										🥑 지방: <span th:text="${meal.totalFat}"></span> g
+										지방: <span th:text="${meal.totalFat}"></span> g
 									</p>
 
-									<!-- ✅ 포함된 음식 목록 -->
-									<h6 class="fw-bold mt-3">🥗 포함된 음식</h6>
-									<ul class="list-group list-group-flush">
-										<li class="list-group-item p-2"
-											th:each="food : ${meal.foodList}" th:text="${food.foodName}"></li>
-									</ul>
 
 									<!-- ✅ 수정 & 삭제 버튼 (작성자만 가능) -->
 									<th:block th:if="${userId == meal.userId}">
@@ -161,14 +137,14 @@
 												th:data-totalcarbs="${meal.totalCarbs}"
 												th:data-totalprotein="${meal.totalProtein}"
 												th:data-totalfat="${meal.totalFat}" data-bs-toggle="modal"
-												data-bs-target="#editMealModal">✏️ 수정</button>
+												data-bs-target="#editMealModal">수정</button>
 
 											<form method="post" action="/meals/delete" class="m-0">
 												<input type="hidden" name="mealId" th:value="${meal.mealId}">
 												<input type="hidden" name="mealDate"
 													th:value="${meal.mealDate}">
 												<button type="submit"
-													class="btn btn-danger btn-sm shadow-sm">🗑 삭제</button>
+													class="btn btn-danger btn-sm shadow-sm">삭제</button>
 											</form>
 										</div>
 									</th:block>
@@ -188,7 +164,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content rounded-lg shadow-lg">
 					<div class="modal-header bg-dark text-white">
-						<h5 class="modal-title">🍽 새 식단 추가</h5>
+						<h5 class="modal-title">새 식단 추가</h5>
 						<button type="button" class="btn-close btn-close-white"
 							data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -197,24 +173,24 @@
 							<input type="hidden" name="userId" th:value="${userId}">
 							<input type="hidden" id="selectedMealDate" name="mealDate"
 								th:value="${selectedDate}" required> <label
-								for="mealType" class="fw-bold">🥗 식사 유형</label> <select
+								for="mealType" class="fw-bold">식사 유형</label> <select
 								id="mealType" name="mealType" class="form-select mt-2 rounded"
 								required>
 								<option value="" disabled selected>식사 유형 선택</option>
-								<option value="아침">🍳 아침</option>
-								<option value="점심">🥪 점심</option>
-								<option value="저녁">🍛 저녁</option>
+								<option value="아침">아침</option>
+								<option value="점심">점심</option>
+								<option value="저녁">저녁</option>
 							</select>
 
 							<div class="row mt-3">
 								<div class="col-md-6">
-									<label class="fw-bold">🔥 총 칼로리 (kcal)</label> <input
+									<label class="fw-bold">총 칼로리 (kcal)</label> <input
 										type="number" id="mealCalories" name="totalCalories"
 										class="form-control rounded" placeholder="예: 500" step="any"
 										required>
 								</div>
 								<div class="col-md-6">
-									<label class="fw-bold">🍞 탄수화물 (g)</label> <input type="number"
+									<label class="fw-bold">탄수화물 (g)</label> <input type="number"
 										id="mealCarbs" name="totalCarbs" class="form-control rounded"
 										placeholder="예: 50" step="any" required>
 								</div>
@@ -222,20 +198,20 @@
 
 							<div class="row mt-3">
 								<div class="col-md-6">
-									<label class="fw-bold">🍗 단백질 (g)</label> <input type="number"
+									<label class="fw-bold">단백질 (g)</label> <input type="number"
 										id="mealProtein" name="totalProtein"
 										class="form-control rounded" placeholder="예: 20" step="any"
 										required>
 								</div>
 								<div class="col-md-6">
-									<label class="fw-bold">🥑 지방 (g)</label> <input type="number"
+									<label class="fw-bold">지방 (g)</label> <input type="number"
 										id="mealFat" name="totalFat" class="form-control rounded"
 										placeholder="예: 10" step="any" required>
 								</div>
 							</div>
 
 							<!-- ✅ 추가된 음식 목록 -->
-							<h6 class="fw-bold mt-4">🍽 추가된 음식 목록</h6>
+							<h6 class="fw-bold mt-4">추가된 음식 목록</h6>
 							<ul id="selectedFoodsList" class="list-group mt-2 rounded"></ul>
 
 							<!-- ✅ 음식 추가 버튼 -->
@@ -271,23 +247,23 @@
 							enctype="multipart/form-data">
 							<input type="hidden" id="editMealId" name="mealId"> <input
 								type="hidden" id="editMealDate" name="mealDate"> <label
-								for="editMealType" class="fw-bold">🥗 식사 유형</label> <select
+								for="editMealType" class="fw-bold">식사 유형</label> <select
 								id="editMealType" name="mealType"
 								class="form-select mt-2 rounded" required>
-								<option value="아침">🍳 아침</option>
-								<option value="점심">🥪 점심</option>
-								<option value="저녁">🍛 저녁</option>
+								<option value="아침">아침</option>
+								<option value="점심">점심</option>
+								<option value="저녁">저녁</option>
 							</select>
 
 							<div class="row mt-3">
 								<div class="col-md-6">
-									<label class="fw-bold">🔥 총 칼로리 (kcal)</label> <input
+									<label class="fw-bold">총 칼로리 (kcal)</label> <input
 										type="number" id="editMealCalories" name="totalCalories"
 										class="form-control rounded" placeholder="예: 500" step="any"
 										required>
 								</div>
 								<div class="col-md-6">
-									<label class="fw-bold">🍞 탄수화물 (g)</label> <input type="number"
+									<label class="fw-bold">탄수화물 (g)</label> <input type="number"
 										id="editMealCarbs" name="totalCarbs"
 										class="form-control rounded" placeholder="예: 50" step="any"
 										required>
@@ -296,20 +272,20 @@
 
 							<div class="row mt-3">
 								<div class="col-md-6">
-									<label class="fw-bold">🍗 단백질 (g)</label> <input type="number"
+									<label class="fw-bold">단백질 (g)</label> <input type="number"
 										id="editMealProtein" name="totalProtein"
 										class="form-control rounded" placeholder="예: 20" step="any"
 										required>
 								</div>
 								<div class="col-md-6">
-									<label class="fw-bold">🥑 지방 (g)</label> <input type="number"
+									<label class="fw-bold">지방 (g)</label> <input type="number"
 										id="editMealFat" name="totalFat" class="form-control rounded"
 										placeholder="예: 10" step="any" required>
 								</div>
 							</div>
 
 							<!-- ✅ 추가된 음식 목록 -->
-							<h6 class="fw-bold mt-4">🍽 추가된 음식 목록</h6>
+							<h6 class="fw-bold mt-4">추가된 음식 목록</h6>
 							<ul id="editSelectedFoodsList" class="list-group mt-2 rounded"></ul>
 
 							<!-- ✅ 음식 추가 버튼 -->
@@ -387,7 +363,7 @@
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content rounded-lg shadow-lg">
 					<div class="modal-header bg-dark text-white">
-						<h5 class="modal-title">🍽 음식 검색</h5>
+						<h5 class="modal-title">음식 검색</h5>
 						<button type="button" class="btn-close btn-close-white"
 							data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
@@ -413,12 +389,12 @@
 
 						<div class="row mt-3">
 							<div class="col-md-6">
-								<label class="fw-bold">🔥 총 칼로리</label> <input type="text"
+								<label class="fw-bold">총 칼로리</label> <input type="text"
 									id="foodCalories" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>
 							<div class="col-md-6">
-								<label class="fw-bold">🍞 탄수화물</label> <input type="text"
+								<label class="fw-bold">탄수화물</label> <input type="text"
 									id="foodCarbs" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>
@@ -426,12 +402,12 @@
 
 						<div class="row mt-3">
 							<div class="col-md-6">
-								<label class="fw-bold">🍗 단백질</label> <input type="text"
+								<label class="fw-bold">단백질</label> <input type="text"
 									id="foodProtein" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>
 							<div class="col-md-6">
-								<label class="fw-bold">🥑 지방</label> <input type="text"
+								<label class="fw-bold">지방</label> <input type="text"
 									id="foodFat" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>
@@ -482,12 +458,12 @@
 
 						<div class="row mt-3">
 							<div class="col-md-6">
-								<label class="fw-bold">🔥 총 칼로리</label> <input type="text"
+								<label class="fw-bold">총 칼로리</label> <input type="text"
 									id="editFoodCalories" class="form-control rounded"
 									placeholder="-" readonly>
 							</div>
 							<div class="col-md-6">
-								<label class="fw-bold">🍞 탄수화물</label> <input type="text"
+								<label class="fw-bold">탄수화물</label> <input type="text"
 									id="editFoodCarbs" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>
@@ -495,12 +471,12 @@
 
 						<div class="row mt-3">
 							<div class="col-md-6">
-								<label class="fw-bold">🍗 단백질</label> <input type="text"
+								<label class="fw-bold">단백질</label> <input type="text"
 									id="editFoodProtein" class="form-control rounded"
 									placeholder="-" readonly>
 							</div>
 							<div class="col-md-6">
-								<label class="fw-bold">🥑 지방</label> <input type="text"
+								<label class="fw-bold">지방</label> <input type="text"
 									id="editFoodFat" class="form-control rounded" placeholder="-"
 									readonly>
 							</div>

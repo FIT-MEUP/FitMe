@@ -492,3 +492,17 @@ $(document).on('hidden.bs.modal', function () {
     $('body').removeClass('modal-open');
 });
 
+function toggleDropdown() {
+    var dropdown = document.getElementById("dropdownMenu");
+    dropdown.classList.toggle("hidden");
+}
+
+// 클릭 외부 감지하여 닫기
+document.addEventListener("click", function(event) {
+    var dropdown = document.getElementById("dropdownMenu");
+    var button = document.getElementById("userMenu");
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add("hidden");
+    }
+});
+

@@ -1,102 +1,241 @@
-/* ✅ 기본 스타일 */
+/* ✅ 전체 페이지 기본 스타일 */
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #181818;
     color: white;
+    margin: 0;
+    padding: 0;
 }
 
-/* ✅ 컨테이너 스타일 */
-.max-w-6xl {
-    max-width: 72rem;
-    margin: auto;
-    padding: 40px 20px;
+/* ✅ 컨테이너 */
+.container {
+    max-width: 1000px;
+    margin: 100px auto 50px auto;
+    padding: 20px;
+    background-color: #1f2937;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ✅ 상단 메뉴 */
-.bg-gray-800 {
+/* ✅ 상단 헤더 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
     background: rgba(40, 40, 40, 0.9);
-    padding: 15px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ✅ 버튼 스타일 */
-.btn {
-    background: rgba(230, 57, 70, 0.85);
-    border: 1px solid rgba(230, 57, 70, 0.85);
-    padding: 10px 18px;
-    font-size: 14px;
-    text-transform: uppercase;
-    font-weight: 600;
+
+
+.header .edit-button {
+    background: #e63946;
     color: white;
+    padding: 8px 14px;
     border-radius: 6px;
     transition: all 0.3s ease;
-    text-align: center;
-    display: inline-block;
     cursor: pointer;
 }
 
-.btn:hover {
-    background: rgba(230, 57, 70, 1);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.4);
+.header .edit-button:hover {
+    background: #c53030;
 }
 
-.btn-warning {
-    background: rgba(255, 165, 0, 0.85);
+/* ✅ 메인 콘텐츠 레이아웃 */
+.main-content {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* ✅ 사이드바 (캘린더, PT 이력 버튼) */
+.sidebar {
+    flex: 1;
+    background: rgba(30, 30, 30, 0.9);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.date-display {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.calendar-navigation button {
+    background: #4a5568;
     color: white;
-    padding: 8px 12px;
+    padding: 6px 12px;
     border-radius: 6px;
     transition: all 0.3s ease;
 }
 
-.btn-warning:hover {
-    background: rgba(255, 165, 0, 1);
-    transform: translateY(-2px);
+.calendar-navigation button:hover {
+    background: #2d3748;
 }
 
-.btn-danger {
-    background: rgba(200, 0, 0, 0.85);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.btn-danger:hover {
-    background: rgba(200, 0, 0, 1);
-    transform: translateY(-2px);
-}
-
-
-/* ✅ 테이블 스타일 */
-.w-full {
+.calendar {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    border-radius: 12px;
-    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.bg-red-600 {
-    background: rgba(230, 57, 70, 0.8);
+.calendar th,
+.calendar td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.calendar td:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ✅ 선택된 날짜 강조 */
+.selected-date {
+    background: #facc15 !important;
+    color: black !important;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+/* ✅ PT 이력 & 신체정보 버튼 */
+.menu-buttons {
+    margin-top: 12px;
+}
+
+.menu-buttons .button {
+    display: block;
+    background: rgba(230, 57, 70, 0.9);
     color: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.menu-buttons .button:hover {
+    background: rgba(200, 30, 50, 1);
+}
+
+/* ✅ 사용자 정보 테이블 */
+.content {
+    flex: 2;
+    background: rgba(40, 40, 40, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.content h2 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.user-info {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.user-info th {
+    background: rgba(230, 57, 70, 0.9);
+    color: white;
+    padding: 10px;
     font-weight: bold;
 }
 
-.bg-gray-700 {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.w-full th, .w-full td {
-    padding: 12px;
+.user-info td {
+    padding: 10px;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
 }
 
-/* ✅ 호버 효과 */
-.w-full tbody tr:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transition: background 0.3s ease;
+.user-info tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ✅ 수정 버튼 */
+#editButtons {
+    text-align: center;
+    margin-top: 12px;
+}
+
+#editButtons button {
+    background: #38b2ac;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#editButtons button:hover {
+    background: #2c7a7b;
+}
+
+/* ✅ 그래프 버튼 */
+.graphs {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    gap: 16px; /* 버튼 간격 추가 */
+    margin-top: 16px;
+}
+
+.graph {
+    width: 160px; /* 버튼 길이 조정 */
+    background: rgba(45, 55, 72, 0.9); /* 어두운 네이비 색감 */
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* 부드러운 테두리 추가 */
+    color: white;
+}
+
+.graph:hover {
+    background: rgba(66, 82, 110, 1); /* 기존보다 어두운 블루 */
+    transform: scale(1.05); /* 가벼운 확대 효과 */
+}
+
+/* ✅ 그래프 표시 영역 */
+#graph-container {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(30, 30, 30, 0.9);
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* ✅ 반응형 스타일 (태블릿 & 모바일 최적화) */
+/* ✅ 반응형 조정 (작은 화면에서 세로 정렬) */
+@media (max-width: 768px) {
+    .graphs {
+        flex-direction: column;
+        align-items: center; /* 버튼 가운데 정렬 */
+    }
+
+    .graph {
+        width: 100%; /* 작은 화면에서는 전체 너비 */
+    }
 }
