@@ -40,7 +40,7 @@
     <header class="relative flex items-center justify-between bg-black text-white p-4 shadow-lg h-28">
 
         <!-- 로고 -->
-        <a href="#" th:href="@{/trainerschedule}" class="flex items-center gap-20 py-3 px-5">
+        <a href="#" th:href="@{/firstTrainerSchedule}" class="flex items-center gap-20 py-3 px-5">
             <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo" class="w-[200px] object-contain">
         </a>
     
@@ -65,7 +65,7 @@
 
         <nav class="w-1/5 bg-black p-6 rounded-lg shadow-md">
 
-            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">이용자 명단</h2>
+            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">회원 목록</h2>
             <ul class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
                 <!-- 회원 버튼이 동적으로 추가됨 -->
                 <li>

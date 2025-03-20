@@ -99,7 +99,9 @@ console.log("Merged calendarEvents:", calendarEvents);
       <!-- 일정 선택 폼 (기본 숨김) -->
       <div id="schedule-form" style="display:none; margin-bottom:10px;">
         <label for="start-date">시작 날짜:</label>
-        <input type="datetime-local" id="start-date" class="black">
+
+        <input type="datetime-local" id="start-date" class="text-black">
+
         <p>분은 00분 또는 30분만 선택 가능합니다.</p>
       </div>
       <button id="pt-button">PT시작</button>
@@ -110,8 +112,6 @@ console.log("Merged calendarEvents:", calendarEvents);
     </div>
   </div>
 
-			
-		
 
 	<!-- Hidden div for chat data: currentUser (로그인한 유저)와 targetUser (할당된 트레이너) -->
 	<div id="chatData" style="display: none;"

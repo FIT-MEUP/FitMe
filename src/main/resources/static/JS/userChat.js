@@ -196,28 +196,30 @@ $(document).ready(function() {
     // 발신자에 따라 전체 컨테이너의 정렬 지정
     const messageContainer = document.createElement("div");
     if (chat.senderId === window.currentUser.userId) {
-      messageContainer.className = "flex justify-end";
+      messageContainer.className = "flex flex-col text-right";
     } else {
-      messageContainer.className = "flex justify-start";
+      messageContainer.className = "flex flex-col text-left";
     }
-
     // 말풍선 스타일을 적용할 내부 div 생성
     const messageBubble = document.createElement("div");
     if (chat.senderId === window.currentUser.userId) {
       messageBubble.className =
-          "bg-green-400 text-white rounded-lg p-2 max-w-[150px] break-words whitespace-normal rightbox ml-auto";
+          "bg-green-400 text-white rounded-lg p-2 w-fit max-w-[150px] break-words whitespace-normal rightbox ml-auto inline-block text-left";
+
       // 발신자 이름 추가
       const messageSender = document.createElement("strong");
       messageSender.textContent = window.currentUser.userName;
       messageContainer.appendChild(messageSender);
     } else {
       messageBubble.className =
-          "bg-white text-gray-900 rounded-lg p-2 max-w-[150px] border break-words whitespace-normal leftbox";
+          "bg-white text-gray-900 rounded-lg p-2 w-fit max-w-[150px] border break-words whitespace-normal leftbox inline-block text-left";
       // 수신자 이름 추가
       const messageSender = document.createElement("strong");
       messageSender.textContent = window.targetUser.userName;
+
       messageContainer.appendChild(messageSender);
     }
+
 
     // 파일 메시지 처리: 파일 미리보기와 다운로드 링크 추가
     if (chat.fileUrl && chat.fileType) {
