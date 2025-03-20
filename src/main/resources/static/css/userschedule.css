@@ -196,3 +196,11 @@ body {
     border-radius: 10px;
     display: none;
 }
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important; 
+}
+.px-5 {
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+}

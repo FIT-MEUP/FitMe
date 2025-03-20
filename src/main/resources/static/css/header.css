@@ -1,0 +1,52 @@
+/* 🏋️‍♂️ 헤더 스타일 */
+.header {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: rgba(0, 0, 0, 0.8); /* 어두운 반투명 배경 */
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  line-height: inherit;
+}
+
+/* 로고 스타일 */
+.header .logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* 네비게이션 스타일 */
+.header .nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.header .nav a {
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.header .nav a:hover {
+  color: rgb(59 130 246 / 0.9); /* 강조된 블루 */
+}
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.51rem !important; 
+}
+.px-5 {
+    padding-left: 3rem !important;  
+    padding-right: 3rem !important;
+}
+#userMenu{
+  font-size: 16px;
+}
