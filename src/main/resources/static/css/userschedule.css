@@ -34,7 +34,7 @@ body {
     cursor: pointer;
     border-radius: 6px;
     border: none;
-    background: #e63946
+    background: #6366f1;
 }
 
 #left-sidebar button:hover {
@@ -82,7 +82,7 @@ body {
 
 /* ✅ FullCalendar 버튼 스타일 */
 .fc .fc-button {
-    background: #e63946;
+    background: #6366f1; /* Tailwind indigo-500 */
     color: white;
     border: none;
     font-size: 0.9rem;
@@ -92,7 +92,7 @@ body {
 }
 
 .fc .fc-button:hover {
-    background: #991B1B;
+    background: #4f46e5; /* Tailwind indigo-600 */
 }
 
 /* ✅ 네비게이션 화살표 버튼 */
@@ -134,7 +134,7 @@ body {
     cursor: pointer;
     border-radius: 8px;
     border: none;
-    background: #e63946
+    background: #6366f1;
 }
 
 #pt-button:hover, #delete-button:hover {
@@ -146,7 +146,7 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: #fff;
-    text-shadow: 0 0 5px #e63946 10px #e63946 20px #e63946
+    text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea, 0 0 20px #9333ea;
 }
 
 /* ✅ 채팅 버튼 & 배지 */
