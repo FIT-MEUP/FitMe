@@ -50,7 +50,7 @@
         <!-- 우측 버튼 -->
         <div class="flex items-center gap-4">
             <a th:href="@{/user/logout}">
-                <button class="bg-blue-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">로그아웃</button>
+                <button class="bg-red-600 px-4 py-2 rounded-md hover:bg-opacity-40 transition">로그아웃</button>
             </a>
         </div>
     </header>
@@ -65,13 +65,13 @@
 
         <nav class="w-1/5 bg-black p-6 rounded-lg shadow-md">
 
-            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">회원 목록</h2>
+            <h2 class="text-lg font-semibold text-white border-b-2 border-red-600 pb-2 px-2">회원 목록</h2>
             <ul class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
                 <!-- 회원 버튼이 동적으로 추가됨 -->
                 <li>
-                    <a href="#" class="block bg-blue-100 text-black font-bold text-2xl p-2 rounded-lg text-center hover:bg-blue-700 transition select-btn" 
+                    <a href="#" class="block bg-white text-black font-bold text-2xl p-2 rounded-lg text-center hover:bg-red-700 transition select-btn" 
                     th:data-id="${ApprovedItem.applicationId}" th:data-user-id="${ApprovedItem.userId}">
-                        <span class="username" th:text="${ApprovedItem.name}">유저이름</span>
+                        <span class="username text-black" th:text="${ApprovedItem.name}">유저이름</span>
 
                         <span class="unread-count"
                             th:if="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0}">
@@ -90,7 +90,7 @@
 
             <section>
                 <h2 class="text-3xl font-semibold text-white px-2">공지사항</h2>
-                <div class="mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
+                <div class="mt-4 p-4 bg-white rounded-lg shadow-md">
                     <!-- 공지사항 내용 -->
                     <p id="noticeText" class="text-black font-bold mt-2" th:text="${AnnouncementContent}">트레이너 공지 사항 내용</p>
             
@@ -99,10 +99,10 @@
             
                     <!-- 버튼 그룹 -->
                     <div class="flex justify-end space-x-2 mt-3">
-                        <button id="editBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition">수정</button>
-                        <button id="saveBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 transition hidden">완료</button>
+                        <button id="editBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800 transition">수정</button>
+                        <button id="saveBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800 transition hidden">완료</button>
 
-                        <button id="cancelBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition hidden">취소</button>
+                        <button id="cancelBtn" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700 transition hidden">취소</button>
 
                     </div>
                 </div>
@@ -110,12 +110,12 @@
             <!-- 선택된 회원 정보 표시 -->
                 <h2 id="userinfoname" class="text-3xl font-semibold text-white pt-5 px-2">회원 정보</h2>
              <section class="grid grid-cols-2 gap-4 mt-2">
-                <div id="userInfo" class="flex flex-col items-center justify-center mt-4 p-4 bg-blue-100 rounded-lg shadow-md">
+                <div id="userInfo" class="flex flex-col items-center justify-center mt-4 p-4 bg-white rounded-lg shadow-md">
                     <p class="text-gray-600" id="user-card">회원 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
-                    <button class="text-blue-500 font-semibold mt-2 hidden h-4 mb-2">회원 정보 게시판 이동</button>
+                    <button class="text-red-500 font-semibold mt-2 hidden h-4 mb-2">회원 정보 게시판 이동</button>
                 </div>
                 <!-- PT 정보 표시 -->
-                <div id="userPTInfo" class="flex flex-col justify-center items-center mt-4 p-4 bg-blue-100 rounded-lg shadow-md py-2">
+                <div id="userPTInfo" class="flex flex-col justify-center items-center mt-4 p-4 bg-white rounded-lg shadow-md py-2">
                     <p class="text-gray-600">PT 정보를 보려면 왼쪽 목록에서 선택하세요.</p>
 
                 </div>
@@ -123,13 +123,13 @@
 
             <!-- 2×2 추가 박스 -->        
             <div class="flex flex-col gap-4 mt-6">
-                <div id="diet-section" class="flex flex-col items-center bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                <div id="diet-section" class="flex flex-col items-center bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <div id="diet-card">해당 이용자의 오늘의 식단</div>
-                    <button class="text-blue-500 font-semibold mt-2 hidden">식단 게시판 이동</button>
+                    <button class="text-red-500 font-semibold mt-2 hidden">식단 게시판 이동</button>
                 </div>
-                <div id="workout-section" class="flex flex-col items-center bg-blue-100 p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
+                <div id="workout-section" class="flex flex-col items-center bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition">
                     <div id="workout-card">해당 이용자의 오늘의 운동</div>
-                    <button class="text-blue-500 font-semibold mt-2 hidden">운동 게시판 이동</button>
+                    <button class="text-red-500 font-semibold mt-2 hidden">운동 게시판 이동</button>
                 </div>
             </div>
         </main>
@@ -138,10 +138,10 @@
 
         <nav class="w-1/5 bg-black p-6 rounded-lg shadow-md">
 
-            <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">신청 회원</h2>
-            <table class="w-full mt-4 border-collapse py-6 px-8 rounded-lg shadow-md bg-blue-100">
+            <h2 class="text-lg font-semibold text-white border-b-2 border-red-600 pb-2 px-2">신청 회원</h2>
+            <table class="w-full mt-4 border-collapse py-6 px-8 rounded-lg shadow-md bg-white">
                 <thead>
-                    <tr class=" text-black  text-xl font-bold border-b border-blue-600">
+                    <tr class=" text-black  text-xl font-bold border-b border-red-600">
                         <th class="p-2 border-x-0">이름</th>
                         <th class="p-2 border-x-0">수락</th>
                         <th class="p-2 border-x-0">거절</th>
@@ -151,10 +151,10 @@
                     <tr class="border-t-2 border-gray-800">
                         <td class="p-2 text-black font-semibold text-center border-x-0" th:text="${PendingItem.name}">최용재</td>
                         <td class="p-2 text-center border-x-0">
-                            <button class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800 transition approve-btn" th:data-id="${PendingItem.applicationId}">수락</button>
+                            <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-800 transition approve-btn" th:data-id="${PendingItem.applicationId}">수락</button>
                         </td>
                         <td class="p-2 text-center border-x-0">
-                            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition reject-btn" th:data-id="${PendingItem.applicationId}">거절</button>
+                            <button class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-700 transition reject-btn" th:data-id="${PendingItem.applicationId}">거절</button>
                         </td>
                     </tr>
                     <tr class="border-gray-800">

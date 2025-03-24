@@ -108,8 +108,8 @@ body {
 
 /* ✅ "오늘" 버튼 */
 .fc .fc-button.fc-today-button {
-    background: #f7ff16;
-    color: black;
+    background: #e63946;
+    color: white;
 }
 
 .fc .fc-button.fc-today-button:hover {

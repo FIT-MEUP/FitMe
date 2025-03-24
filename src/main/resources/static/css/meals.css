@@ -76,7 +76,7 @@ body {
 
 .comment-nickname {
     font-weight: bold;
-    color: #198754;
+    color: #e63946;
     font-size: 0.88rem;
     white-space: nowrap;
 }
@@ -90,7 +90,7 @@ body {
 .comment-delete-btn {
     background: none;
     border: none;
-    color: #dc3545;
+    color: #e63946;
     font-size: 0.8rem;
     cursor: pointer;
     margin-left: 10px;
@@ -126,7 +126,7 @@ body {
 }
 
 #mealCommentForm button:hover {
-    background: #146c43;
+    background: #e63946;
 }
 
 /* 트레이너 드롭다운 */
@@ -190,7 +190,7 @@ body {
 
 /* 캘린더 버튼 스타일 */
 .fc .fc-button {
-    background: #60a5fa;
+    background: #e63946;
     /* Tailwind blue-400 */
     color: white;
     border: none;
@@ -201,7 +201,7 @@ body {
 }
 
 .fc .fc-button:hover {
-    background: #3b82f6;
+    background: #E63649CC;
     /* Tailwind blue-500 */
 }
 
@@ -268,7 +268,7 @@ body {
 
 .card-text span {
     font-weight: bold;
-    color: #198754;
+    color: #e63946;
 }
 
 .card ul {
@@ -319,7 +319,7 @@ nav a {
 }
 
 nav a:hover {
-    color: #60A5FA;
+    color: #e63946;
     /* Tailwind의 hover:text-blue-400 */
 }
 
@@ -383,9 +383,9 @@ nav a:hover {
 
 /* ✅ 등록된 식단이 없을 때 가독성 개선 */
 .no-meal-warning {
-    background-color: #fbbf24;
+    background-color: #e63946;
     /* 노란색 배경 */
-    color: #000;
+    color: white;
     /* 검정색 글씨 */
     font-weight: bold;
     padding: 12px;

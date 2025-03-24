@@ -15,7 +15,7 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: #fff;
-    text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea, 0 0 20px #9333ea;
+    text-shadow: 0 0 5px #e63946, 0 0 10px #9333ea, 0 0 20px #9333ea;
 }
 
 /* ✅ 강한 타이틀 스타일 (강제 적용) */
@@ -38,7 +38,7 @@ body {
 .btn-success,
 .btn-warning,
 .btn-danger {
-    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    background: #e63946;
     border: none;
     color: white;
     font-size: 0.85rem;
@@ -107,7 +107,7 @@ body {
 }
 
 .fc .fc-button {
-    background: #6366f1;
+    background: #e63946;
     color: white;
     border: none;
     font-size: 0.9rem;
@@ -117,7 +117,7 @@ body {
 }
 
 .fc .fc-button:hover {
-    background: #4f46e5;
+    background: #991B1B;
 }
 
 .fc-toolbar-title {
@@ -156,7 +156,7 @@ body {
 }
 
 .comment-section button {
-    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    background: #e63946;
     border: none;
     border-radius: 6px;
     color: white;
@@ -191,7 +191,7 @@ body {
 .comment-delete-btn {
     background: none;
     border: none;
-    color: #dc3545;
+    color: #e63946;
     font-size: 0.8rem;
     cursor: pointer;
     margin-left: 10px;

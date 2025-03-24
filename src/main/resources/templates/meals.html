@@ -79,7 +79,7 @@
 					</span>
 
 					<!-- ✅ "식단 추가 버튼" (우측 끝으로 정렬) -->
-					<button id="addMealButton" class="btn btn-success px-4 py-2 fw-bold shadow-sm sikdanchooga"
+					<button id="addMealButton" class="btn btn-success px-4 py-2 fw-bold shadow-sm sikdanchooga bg-red-500 border-red-500 hover:bg-red-800 hover:border-red-800"
 						data-bs-toggle="modal" data-bs-target="#mealModal" th:if="${role != 'Trainer'}">+ 식단 추가</button>
 				</div>
 
@@ -121,7 +121,8 @@
 
 										<div class="card-buttons">
 											<!-- 수정 버튼 -->
-											<button class="btn btn-outline-warning btn-sm flex-grow-1 edit-meal-btn"
+											<button class="btn btn-outline-warning btn-sm flex-grow-1 edit-meal-btn border-red-500
+												hover:border-red-800 text-white bg-red-500 hover:bg-red-800"
 												th:data-mealid="${meal.mealId}" th:data-mealdate="${meal.mealDate}"
 												th:data-mealtype="${meal.mealType}"
 												th:data-totalcalories="${meal.totalCalories}"
@@ -134,7 +135,7 @@
 												<input type="hidden" name="mealId" th:value="${meal.mealId}">
 												<input type="hidden" name="mealDate" th:value="${meal.mealDate}">
 												<button type="submit"
-													class="btn btn-danger btn-sm shadow-sm">삭제</button>
+													class="btn btn-danger btn-sm shadow-sm bg-gray-500 border-gray-500 hover:bg-gray-500 hover:border-gray-800">삭제</button>
 											</form>
 										</div>
 									</th:block>
