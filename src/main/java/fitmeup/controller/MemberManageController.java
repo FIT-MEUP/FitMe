@@ -91,19 +91,13 @@ public class MemberManageController {
             for (TrainerApplicationDTO item : ApprovedList) {
                 Long userId = item.getUserId();  // 신청서상 회원 ID
                 Long applicationId = item.getApplicationId(); // 신청서 ID
-
-
                 UserDTO userDTO = userService.getUserById(userId);
-
                 boolean online = Boolean.TRUE.equals(userDTO.getIsOnline());
-
                 userOnlineMap.put(applicationId, online);
             }
 
-
             // userOnlineMap을 Thymeleaf로 넘겨서, ApprovedItem.applicationId → userOnlineMap → online
             model.addAttribute("userOnlineMap", userOnlineMap);
-
 
             // ChatUserService에서 채팅 대상 유저 정보 조회 (ChatUserDTO: userId, unreadCount, online)
             List<ChatUserDTO> chatUserList = chatUserService.getChatUserList();
@@ -113,6 +107,16 @@ public class MemberManageController {
                 .collect(Collectors.toMap(ChatUserDTO::getUserId, Function.identity(), (oldValue, newValue) -> oldValue));
 
             model.addAttribute("ChatUserMap", chatUserMap);
+
+            // ApprovedList를 unreadCount에 따라 내림차순 정렬 (unreadCount가 없으면 0으로 간주)
+            ApprovedList.sort((a, b) -> {
+                int countA = (chatUserMap.get(a.getUserId()) != null ? chatUserMap.get(a.getUserId()).getUnreadCount() : 0);
+                int countB = (chatUserMap.get(b.getUserId()) != null ? chatUserMap.get(b.getUserId()).getUnreadCount() : 0);
+                return Integer.compare(countB, countA);
+            });
+
+            // 정렬된 ApprovedList를 모델에 다시 세팅
+            model.addAttribute("ApprovedList", ApprovedList);
 
             // JSON 문자열 변환 처리 (예외를 catch하여 처리)
             String chatUserMapJson = "";

@@ -1,54 +1,89 @@
 $(document).ready(function () {
+    sortMemberList();
+    connectTrainerNotificationWebSocket();
+});
     //------------------------------------------------------
     // (1) 트레이너 알림용 WebSocket 연결
     //------------------------------------------------------
-    function connectTrainerNotificationWebSocket() {
-        var socket = new SockJS("/ws");
-        var notificationClient = Stomp.over(socket);
-        notificationClient.connect(
-            {},
-            function (frame) {
-                console.log("Trainer 알림용 WS 연결 성공:", frame);
-                // 최상위 .container에 저장된 trainer의 userId 사용
-                var trainerUserId = parseInt($("#trainerInfo").data("user-name"));
-                console.log("트레이너 userId:", trainerUserId);
-                notificationClient.subscribe(
-                    `/queue/notifications/${trainerUserId}`,
-                    function (response) {
-                        try {
-                            var unreadMap = JSON.parse(response.body);
-                            console.log("알림으로 받은 unreadMap:", unreadMap);
-                            $(".memberList li").each(function () {
-                                var userId = $(this).find(".select-btn").data("user-id");
-                                // 현재 대화중인 유저와 다르면 unread count를 업데이트
-                                if (!window.targetUser || window.targetUser.userId != userId) {
-                                    var unreadCount = unreadMap[userId] || 0;
-                                    if (unreadCount > 0) {
-                                        $(this).find(".unread-count").text(unreadCount).show();
-                                    } else {
-                                        $(this).find(".unread-count").text("").hide();
-                                    }
-                                }
-                            });
-                        } catch (e) {
-                            console.error("알림 데이터 파싱 오류:", e);
+//------------------------------------------------------
+// (1) 트레이너 알림용 WebSocket 연결 (수정됨)
+//------------------------------------------------------
+function connectTrainerNotificationWebSocket() {
+    var socket = new SockJS("/ws");
+    var notificationClient = Stomp.over(socket);
+    notificationClient.connect({}, function (frame) {
+        console.log("Trainer 알림용 WS 연결 성공:", frame);
+        // #trainerInfo 요소의 data-user-id 속성에서 트레이너의 userId를 가져옴
+        var trainerUserId = parseInt($("#trainerInfo").data("user-id"));
+        console.log("트레이너 userId:", trainerUserId);
+        notificationClient.subscribe(`/queue/notifications/${trainerUserId}`, function (response) {
+            try {
+                var unreadMap = JSON.parse(response.body);
+                console.log("알림으로 받은 unreadMap:", unreadMap);
+                $(".memberList li").each(function () {
+                    var userId = $(this).find(".select-btn").data("user-id");
+                    // 현재 대화중인 회원이 아니라면 업데이트
+                    if (!window.targetUser || window.targetUser.userId != userId) {
+                        var unreadCount = unreadMap[userId] || 0;
+                        var $unreadBadge = $(this).find(".unread-count");
+                        $unreadBadge.data("count", unreadCount);
+                        if (unreadCount > 0) {
+                            $unreadBadge.text("•").css("display", "inline-block");
+                        } else {
+                            $unreadBadge.text("").css("display", "none");
                         }
                     }
-                );
+                });
+                sortMemberList();
+            } catch (e) {
+                console.error("알림 데이터 파싱 오류:", e);
+            }
+        });
+    }, function (error) {
+        console.error("Trainer 알림용 WS 연결 오류:", error);
+    });
+}
 
-            }, function (error) {
-                console.error("Trainer 알림용 WS 연결 오류:", error);
-            });
+//------------------------------------------------------
+// (2) 회원 목록 정렬 함수
+//------------------------------------------------------
+function sortMemberList() {
+    // ul#memberContainer 내부의 select-btn 요소들을 선택
+    var members = $("#memberContainer .select-btn");
+    var hasUnread = false;
 
-    }
-
-
-    function removeOnlineDot(userId) {
-        var $selectBtn = $(`.select-btn[data-user-id="${userId}"]`);
-        if ($selectBtn.length) {
-            $selectBtn.find(".greenDot").remove();
+    // 전체 회원 중 하나라도 unreadCount > 0 인지 확인 (data-count 속성 사용)
+    members.each(function() {
+        var count = parseInt($(this).find(".unread-count").data("count")) || 0;
+        if (count > 0) {
+            hasUnread = true;
+            return false; // 반복 종료
         }
+    });
+
+    // 전체 회원 모두 unreadCount가 0이면 정렬하지 않고 그대로 둠
+    if (!hasUnread) {
+        return;
     }
+
+    // unreadCount가 있는 회원은 내림차순, unreadCount가 없는 회원은 userId 기준 오름차순 정렬
+    members.sort(function(a, b) {
+        var countA = parseInt($(a).find(".unread-count").data("count")) || 0;
+        var countB = parseInt($(b).find(".unread-count").data("count")) || 0;
+
+        // 둘 다 unreadCount가 0이면 userId 기준 오름차순 정렬
+        if (countA === 0 && countB === 0) {
+            var idA = parseInt($(a).data("user-id"));
+            var idB = parseInt($(b).data("user-id"));
+            return idA - idB;
+        }
+        // unreadCount가 있는 경우 내림차순 정렬 (큰 값이 위로)
+        return countB - countA;
+    });
+
+    // 정렬된 회원 항목들을 컨테이너에 다시 추가하여 화면 업데이트
+    $("#memberContainer").html(members);
+}
 
 
 const noticeText = $("#noticeText");
@@ -148,33 +183,32 @@ $(".reject-btn").click(function () {
 });
 
 //------------------------------------------------------
-// (3) 회원 목록 클릭 -> 대화 로드
+// (4) 회원 목록 클릭 시, 여러 정보 로드 (채팅, 식단, 운동, 회원정보 등)
 //------------------------------------------------------
-$(".select-btn").click(function () {
-    let applicationId = $(this).data("id");
-    let userId = $(this).data("user-id");
+$(document).on('click', '.select-btn', function(e) {
+    e.preventDefault();
+    var userId = $(this).data('user-id');
+    var applicationId = $(this).data('id');
 
-    // 식단 버튼과 운동 버튼 보이기
+    // 식단, 운동, 회원 정보 관련 버튼 보이기 및 클릭 이벤트 재설정
     $("#diet-section button")
-        .removeClass("hidden")
-        .off("click")
-        .on("click", function () {
-            window.location.href = `/meals?userId=${userId}`;
-        });
-
+    .removeClass("hidden")
+    .off("click")
+    .on("click", function () {
+        window.location.href = `/meals?userId=${userId}`;
+    });
     $("#workout-section button")
-        .removeClass("hidden")
-        .off("click")
-        .on("click", function () {
-            window.location.href = `/work?userId=${userId}`;
-        });
-
+    .removeClass("hidden")
+    .off("click")
+    .on("click", function () {
+        window.location.href = `/work?userId=${userId}`;
+    });
     $("#userInfo button")
-        .removeClass("hidden")
-        .off("click")
-        .on("click", function () {
-            window.location.href = `/mypage?userId=${userId}`;
-        });
+    .removeClass("hidden")
+    .off("click")
+    .on("click", function () {
+        window.location.href = `/mypage?userId=${userId}`;
+    });
 
     updateUnreadCountToZero(userId);
     console.log("선택한 applicationId:", applicationId);
@@ -196,7 +230,7 @@ $(".select-btn").click(function () {
         },
     });
 
-    // 회원 PT 조회 (선택된 신청서의 정보를 출력)
+    // 회원 PT 조회
     $.ajax({
         url: `/trainer/selectPT?userId=${userId}`,
         type: "GET",
@@ -208,6 +242,8 @@ $(".select-btn").click(function () {
             console.error("Error:", xhr);
         },
     });
+
+    // 식단 미리보기 업데이트
     $.ajax({
         url: `/trainer/mealPreview?userId=${userId}`,
         type: "GET",
@@ -224,6 +260,7 @@ $(".select-btn").click(function () {
         },
     });
 
+    // 운동 미리보기 업데이트
     $.ajax({
         url: `/trainer/workPreview?userId=${userId}`,
         type: "GET",
@@ -249,17 +286,12 @@ $(".select-btn").click(function () {
         success: function (htmlFragment) {
             $("#chatFragmentContainer").html(htmlFragment);
             $("#chatFragmentContainer").show();
-
-
-        // 채팅창이 렌더링되고 나서 스크롤 이동
             setTimeout(function() {
                 const conversationArea = document.getElementById("conversationArea");
                 if (conversationArea) {
                     conversationArea.scrollTop = conversationArea.scrollHeight;
                 }
             }, 1);
-
-            conversationArea.scrollTop = conversationArea.scrollHeight;
 
             if (typeof initChat === "function") {
                 initChat();
@@ -461,20 +493,60 @@ function connectChat() {
 // //------------------------------------------------------
 // (7) 미읽음 배지 업데이트
 //------------------------------------------------------
-function updateUnreadCount(senderId) {
-    if (window.targetUser && senderId === window.targetUser.userId) {
-        return;
+// function updateUnreadCount(senderId) {
+//     if (window.targetUser && senderId === window.targetUser.userId) {
+//         return;
+//     }
+//     const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
+//     const unreadSpan = $(sel);
+//     if (unreadSpan.length) {
+//     }
+// }
+//
+// function updateUnreadCountToZero(userId) {
+//     const sel = `.select-btn[data-user-id="${userId}"] .unread-count`;
+//     $(sel).text("").hide();
+// }
+//     function updateUnreadCount(senderId) {
+//         if (window.targetUser && senderId === window.targetUser.userId) {
+//             return;
+//         }
+//         const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
+//         const unreadSpan = $(sel);
+//         if (unreadSpan.length) {
+//             // 기존에 저장된 카운트가 없으면 0으로 시작
+//             let count = unreadSpan.data("count") || 0;
+//             count++;
+//             unreadSpan.data("count", count);
+//             // 숫자 대신 점(dot)을 표시
+//             unreadSpan.text("•").show();
+//         }
+//     }
+    function updateUnreadCount(senderId) {
+        if (window.targetUser && senderId === window.targetUser.userId) {
+            return;
+        }
+        const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
+        const unreadSpan = $(sel);
+        if (unreadSpan.length) {
+            // 기존에 저장된 count 값을 data 속성에서 가져오거나 없으면 0으로 시작
+            let count = parseInt(unreadSpan.data("count")) || 0;
+            count++;
+            unreadSpan.data("count", count);
+            // 숫자 대신 점(dot)만 표시
+            unreadSpan.text("•").css("display", "inline-block");
+            sortMemberList();
+        }
     }
-    const sel = `.select-btn[data-user-id="${senderId}"] .unread-count`;
-    const unreadSpan = $(sel);
-    if (unreadSpan.length) {
-    }
-}
 
-function updateUnreadCountToZero(userId) {
-    const sel = `.select-btn[data-user-id="${userId}"] .unread-count`;
-    $(sel).text("").hide();
-}
+    function updateUnreadCountToZero(userId) {
+        var selector = `.select-btn[data-user-id="${userId}"] .unread-count`;
+        var unreadSpan = $(selector);
+        unreadSpan.data("count", 0);
+        unreadSpan.text("").css("display", "none");
+        // 리셋 후 정렬 실행
+        sortMemberList();
+    }
 
 //------------------------------------------------------
 // (9) 파일 업로드 (plus.png + #fileInput)
@@ -523,7 +595,7 @@ function uploadChatFile(file) {
             console.error("파일 업로드 실패:", err);
         });
     }
-});
+
 
 
 // 보여질 정보들

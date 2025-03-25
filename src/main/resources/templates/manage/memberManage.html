@@ -24,13 +24,13 @@
     ::-webkit-scrollbar {
       display: none;
     }
-    .unread-count {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    background-color: rgb(95, 230, 95);
-    border-radius: 50%;
-}
+/*    .unread-count {*/
+/*    display: inline-block;*/
+/*    width: 18px;*/
+/*    height: 18px;*/
+/*    background-color: rgb(95, 230, 95);*/
+/*    border-radius: 50%;*/
+/*}*/
     </style>
 
 
@@ -66,7 +66,7 @@
         <nav class="w-1/5 bg-black p-6 rounded-lg shadow-md">
 
             <h2 class="text-lg font-semibold text-white border-b-2 border-blue-600 pb-2 px-2">회원 목록</h2>
-            <ul class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
+            <ul id="memberContainer" class="memberList mt-3 space-y-2" th:each="ApprovedItem : ${ApprovedList}">
                 <!-- 회원 버튼이 동적으로 추가됨 -->
                 <li>
                     <a href="#" class="block bg-blue-100 text-black font-bold text-2xl p-2 rounded-lg text-center hover:bg-blue-700 transition select-btn" 
@@ -74,8 +74,11 @@
                         <span class="username" th:text="${ApprovedItem.name}">유저이름</span>
 
                         <span class="unread-count"
-                            th:if="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0}">
+                              th:attr="data-count=${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null ? ChatUserMap[ApprovedItem.userId].unreadCount : 0}"
+                              th:style="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0 ? 'display:inline-block;' : 'display:none;'}"
+                              th:text="${ChatUserMap != null and ChatUserMap[ApprovedItem.userId] != null and ChatUserMap[ApprovedItem.userId].unreadCount > 0 ? '•' : ''}">
                         </span>
+
                     </a>
                 </li>
             </ul>
