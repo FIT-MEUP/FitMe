@@ -33,12 +33,12 @@ function toggleEditMode() {
          dayOptions += `<option value="${i}" ${i === currentDay ? "selected" : ""}>${i}일</option>`;
       }
       // ✅ 기존 값에서 공백 제거 + 숫자로 변환하여 NaN 방지
-              const height = parseFloat(document.getElementById("height").innerText.replace(' cm', '').trim()) || 0;
-              const weight = parseFloat(document.getElementById("weight").innerText.replace(' kg', '').trim()) || 0;
-              const bmi = parseFloat(document.getElementById("bmi").innerText.trim()) || 0;
-              const fatMass = parseFloat(document.getElementById("fatMass").innerText.replace('%', '').trim()) || 0;
-              const muscleMass = parseFloat(document.getElementById("muscleMass").innerText.replace('kg', '').trim()) || 0; 
-              const basalMetabolicRate = parseFloat(document.getElementById("basalMetabolicRate").innerText.replace(' kcal', '').trim()) || 0;
+      const height = parseFloat(document.getElementById("height").innerText.replace(' cm', '').trim()) || 0;
+      const weight = parseFloat(document.getElementById("weight").innerText.replace(' kg', '').trim()) || 0;
+      const bmi = parseFloat(document.getElementById("bmi").innerText.trim()) || 0;
+      const fatMass = parseFloat(document.getElementById("fatMass").innerText.replace('%', '').trim()) || 0;
+      const muscleMass = parseFloat(document.getElementById("muscleMass").innerText.replace('kg', '').trim()) || 0;
+      const basalMetabolicRate = parseFloat(document.getElementById("basalMetabolicRate").innerText.replace(' kcal', '').trim()) || 0;
 
       // 각 셀을 입력 필드로 변환
       userInfoRow.innerHTML = `
@@ -91,7 +91,7 @@ function saveChanges() {
    const month = document.getElementById("editMonth").value;
    const day = document.getElementById("editDay").value;
    const userId = loggedInUserId;
-//   const userId = 1;
+   //   const userId = 1;
 
    // 입력받은 연,월,일을 사용해 "YYYY-MM-DD" 형식의 문자열 생성 (타임존 문제 회피)
    const formattedMonth = month.toString().padStart(2, '0');
@@ -126,16 +126,16 @@ function saveChanges() {
          basalMetabolicRate,
          userId,
          recordDate,
-         
+
       }),
-      success: function(response) {
+      success: function (response) {
          alert('저장 성공');
          console.log("서버 응답:", response);
 
          isEditMode = false;
 
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
          alert('저장 실패');
          console.error("에러 상태:", status);
          console.error("에러 내용:", error);
@@ -198,7 +198,7 @@ function createCalendar() {
 
             // 현재의 날짜 값을 별도의 변수에 저장해서 캡처
             let day = currentDay;
-            td.onclick = function() { onDateClick(day); }; // 날짜 클릭 이벤트
+            td.onclick = function () { onDateClick(day); }; // 날짜 클릭 이벤트
 
 
             if (currentDay === selectedDate.getDate()) {
@@ -245,32 +245,32 @@ function changeMonth(offset) {
 ////////////////////////////////////////////////////////////달력끝/////////////////////////////////////////////////////////
 
 
-   function showGraph(type) {
-      if (isEditMode) {
-         console.log("❌ 수정 모드에서는 그래프를 표시하지 않음!");
-         return;
-      }
-      $("#graph-container").show();
-      console.log("📢 showGraph 실행됨! type:", type);  // ✅ 함수 실행 확인
-   
-      $.ajax({
-         url: "/user/healthDataHistory", // 📌 DB에서 건강 데이터 가져오기
-         type: "GET",
-         data: { userId: loggedInUserId},  // 현재는 userId=1로 가정
-         success: function(data) {
-            console.log("📢 AJAX 응답:", data); // ✅ 데이터 정상 수신 확인
-   
-            if (data.length > 0) {
-               updateGraph(data, type); // ✅ 버튼에 따라 적절한 데이터만 출력
-            } else {
-               console.log("❌ 데이터 없음! 그래프 그릴 수 없음.");
-            }
-         },
-         error: function(xhr, status, error) {
-            console.error("🔥 그래프 데이터 가져오기 실패:", error);
-         }
-      });
+function showGraph(type) {
+   if (isEditMode) {
+      console.log("❌ 수정 모드에서는 그래프를 표시하지 않음!");
+      return;
    }
+   $("#graph-container").show();
+   console.log("📢 showGraph 실행됨! type:", type);  // ✅ 함수 실행 확인
+
+   $.ajax({
+      url: "/user/healthDataHistory", // 📌 DB에서 건강 데이터 가져오기
+      type: "GET",
+      data: { userId: loggedInUserId },  // 현재는 userId=1로 가정
+      success: function (data) {
+         console.log("📢 AJAX 응답:", data); // ✅ 데이터 정상 수신 확인
+
+         if (data.length > 0) {
+            updateGraph(data, type); // ✅ 버튼에 따라 적절한 데이터만 출력
+         } else {
+            console.log("❌ 데이터 없음! 그래프 그릴 수 없음.");
+         }
+      },
+      error: function (xhr, status, error) {
+         console.error("🔥 그래프 데이터 가져오기 실패:", error);
+      }
+   });
+}
 
 
 
@@ -354,7 +354,7 @@ function updateGraph(data, type) {
 createCalendar();
 
 // ✅ 🔥 최신 데이터 자동 로드 기능 추가!
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
    fetchLatestData();  // 🔥 최신 데이터 불러오기
 });
 
@@ -365,7 +365,7 @@ function fetchLatestData() {
       url: "/user/latestHealthData",
       type: "GET",
       data: { userId: loggedInUserId },  // ✅ userId 추가
-      success: function(data) {
+      success: function (data) {
          if (data) {
             console.log("📢 최신 데이터 응답:", data);
             $("#height").text(data.height + " cm");
@@ -377,7 +377,7 @@ function fetchLatestData() {
             $("#current-date").text(data.recordDate);
          }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
          console.error("데이터 가져오기 실패:", error);
       }
    });
@@ -389,23 +389,43 @@ function fetchGraphData() {
       url: "/user/healthDataHistory",
       type: "GET",
       data: { userId: loggedInUserId },  // 현재는 userId=1로 가정
-      success: function(data) {
+      success: function (data) {
          if (data.length > 0) {
             updateGraph(data);
          } else {
             console.log("데이터 없음");
          }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
          console.error("그래프 데이터 가져오기 실패:", error);
       }
    });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
    fetchLatestData();  // 🔥 최신 데이터 불러오기 
 
 });
+
+function toggleDropdown() {
+   var dropdown = document.getElementById("dropdownMenu");
+   dropdown.classList.toggle("hidden");
+}
+
+// 클릭 외부 감지하여 닫기
+document.addEventListener("click", function (event) {
+   var dropdown = document.getElementById("dropdownMenu");
+   var button = document.getElementById("userMenu");
+   if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.classList.add("hidden");
+   }
+});
+
+// 트레이너가 회원 선택 시, 마이페이지 이동
+function handleTrainerMemberChange(userId) {
+   if (!userId) return;
+   window.location.href = `/mypage?userId=${userId}`;
+}
 
 
 

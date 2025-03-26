@@ -191,17 +191,33 @@ body {
     background: #2c7a7b;
 }
 
+#editYear {
+    color: black;
+}
+
+#editMonth {
+    color: black;
+}
+
+#editDay {
+    color: black;
+}
+
 /* ✅ 그래프 버튼 */
 .graphs {
     display: flex;
-    justify-content: center; /* 가운데 정렬 */
-    gap: 16px; /* 버튼 간격 추가 */
+    justify-content: center;
+    /* 가운데 정렬 */
+    gap: 16px;
+    /* 버튼 간격 추가 */
     margin-top: 16px;
 }
 
 .graph {
-    width: 160px; /* 버튼 길이 조정 */
-    background: rgba(45, 55, 72, 0.9); /* 어두운 네이비 색감 */
+    width: 160px;
+    /* 버튼 길이 조정 */
+    background: rgba(45, 55, 72, 0.9);
+    /* 어두운 네이비 색감 */
     padding: 12px;
     border-radius: 6px;
     text-align: center;
@@ -209,13 +225,16 @@ body {
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2); /* 부드러운 테두리 추가 */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* 부드러운 테두리 추가 */
     color: white;
 }
 
 .graph:hover {
-    background: rgba(66, 82, 110, 1); /* 기존보다 어두운 블루 */
-    transform: scale(1.05); /* 가벼운 확대 효과 */
+    background: rgba(66, 82, 110, 1);
+    /* 기존보다 어두운 블루 */
+    transform: scale(1.05);
+    /* 가벼운 확대 효과 */
 }
 
 /* ✅ 그래프 표시 영역 */
@@ -232,10 +251,118 @@ body {
 @media (max-width: 768px) {
     .graphs {
         flex-direction: column;
-        align-items: center; /* 버튼 가운데 정렬 */
+        align-items: center;
+        /* 버튼 가운데 정렬 */
     }
 
     .graph {
-        width: 100%; /* 작은 화면에서는 전체 너비 */
+        width: 100%;
+        /* 작은 화면에서는 전체 너비 */
     }
+}
+
+/* ✅ 입력란 텍스트 색상 조정 */
+input[type="text"],
+input[type="number"] {
+    color: black;
+    /* 글자색 검은색으로 변경 */
+    width: 80px;
+    /* ✅ 입력 필드 너비를 줄임 */
+    background-color: white;
+    /* 배경색 흰색 유지 */
+    border: 1px solid #ccc;
+    /* 테두리 추가 */
+    padding: 6px;
+    /* ✅ 패딩을 줄여서 크기 조정 */
+    font-size: 14px;
+    border-radius: 6px;
+    text-align: center;
+    /* ✅ 숫자 입력 시 가운데 정렬 */
+}
+
+/* ✅ 포커스(클릭) 시 스타일 */
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #e63946;
+    /* 빨간색 포커스 효과 */
+    box-shadow: 0 0 5px rgba(230, 57, 70, 0.4);
+}
+
+/* ✅ 드롭다운(셀렉트 박스) 텍스트 색상 조정 */
+select {
+    color: black;
+    /* 글자색 검은색 */
+    background-color: white;
+    /* 배경색 흰색 */
+    border: 1px solid #ccc;
+    /* 테두리 추가 */
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    appearance: none;
+    /* 기본 브라우저 스타일 제거 */
+}
+
+/* ✅ 드롭다운 화살표 커스텀 (크롬, 사파리 등 웹킷 브라우저용) */
+select::-webkit-scrollbar {
+    width: 8px;
+}
+
+select::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+select::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+}
+
+/* ✅ 포커스(클릭) 시 스타일 */
+select:focus {
+    outline: none;
+    border-color: #e63946;
+    /* 빨간색 포커스 효과 */
+    box-shadow: 0 0 5px rgba(230, 57, 70, 0.4);
+}
+
+select:focus,
+select:active {
+    color: black !important;
+    /* 포커스 시에도 검은색 */
+    background-color: white !important;
+}
+
+/* ✅ 드롭다운 옵션 텍스트 스타일 */
+select option {
+    color: black !important;
+    /* 옵션 텍스트 검은색 */
+    background-color: white !important;
+    /* 옵션 배경 흰색 */
+}
+
+/* ✅ 수정 모드에서 input 크기 유지 */
+.edit-mode input {
+    width: 100px;
+    /* 한 줄에 맞는 적절한 크기로 설정 */
+    padding: 6px;
+    font-size: 14px;
+}
+
+/* ✅ h2와 버튼을 같은 줄에 배치 */
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    /* ✅ h2는 왼쪽, 버튼은 오른쪽 정렬 */
+    align-items: center;
+    /* ✅ 수직 정렬 */
+    width: 100%;
+
+}
+
+.userdropdown select,
+.userdropdown option {
+  text-align: center;
+  color: black;
+
 }

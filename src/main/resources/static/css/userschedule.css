@@ -196,3 +196,26 @@ body {
     border-radius: 10px;
     display: none;
 }
+
+/* ✅ `input[type="datetime-local"]`의 기본 텍스트 색상을 검정으로 변경 */
+.black {
+    color: black !important;
+}
+
+/* ✅ 기본 placeholder 및 내부 텍스트 색상 변경 (크롬, 사파리 등 웹킷 브라우저용) */
+.black::-webkit-datetime-edit {
+    color: black !important;
+}
+
+/* ✅ 포커스 상태에서도 검정 유지 */
+.black:focus {
+    color: black !important;
+}
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important; 
+}
+.px-5 {
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+}
