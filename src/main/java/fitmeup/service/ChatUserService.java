@@ -61,10 +61,7 @@ public class ChatUserService {
       }
     }
 
-    // 로그 찍기: unreadCountMap 최종 내용
-    System.out.println("UnreadCountMap: " + unreadCountMap);
-
-    // 사용자별로 ChatUserDTO를 생성 (온라인 상태 포함)
+    // 사용자별로 ChatUserDTO 생성 (온라인 상태 포함)
     List<ChatUserDTO> contactedUsers = new ArrayList<>();
     List<ChatUserDTO> notContactedUsers = new ArrayList<>();
     for (UserEntity user : allUsers) {
@@ -73,7 +70,7 @@ public class ChatUserService {
       ChatUserDTO dto = ChatUserDTO.builder()
           .userId(otherUserId)
           .unreadCount(unreadCount)
-          .online(user.getIsOnline())  // UserEntity에서 온라인 상태를 나타내는 getter (예: getIsOnline())가 있다고 가정
+          .online(user.getIsOnline())
           .build();
       if (unreadCount > 0) {
         contactedUsers.add(dto);
@@ -82,16 +79,19 @@ public class ChatUserService {
       }
     }
 
-    // 읽지 않은 메시지가 있는 사용자들을 우선 정렬 후, 나머지 사용자를 정렬합니다.
+    // 읽지 않은 메시지가 있는 회원을 먼저 정렬 (unreadCount 내림차순, 같은 경우 userId 오름차순)
     contactedUsers.sort(Comparator.comparingInt(ChatUserDTO::getUnreadCount).reversed()
         .thenComparing(ChatUserDTO::getUserId));
+    // 나머지 회원은 userId 오름차순으로 정렬
     notContactedUsers.sort(Comparator.comparing(ChatUserDTO::getUserId));
 
+    // 두 리스트를 합쳐 최종 결과 생성
     List<ChatUserDTO> result = new ArrayList<>();
     result.addAll(contactedUsers);
     result.addAll(notContactedUsers);
 
-    System.out.println("Final ChatUserDTO list: " + result);
+    // 디버그용 로그 출력 (필요 시 주석 처리)
+    log.info("Final ChatUserDTO list: " + result);
 
     return result;
   }

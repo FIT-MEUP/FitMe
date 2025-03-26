@@ -29,7 +29,7 @@ public class DownloadController {
   private final ChatService chatService;
 
   @GetMapping("/download/{savedFileName}")
-  public ResponseEntity<Resource> downloadFile(@PathVariable String savedFileName) throws IOException {
+  public ResponseEntity<Resource> downloadFile(@PathVariable(name = "savedFileName")String savedFileName) throws IOException {
     // 1) DB 조회
     Optional<ChatDTO> optional = chatService.findBySavedFileName(savedFileName);
     if (optional.isEmpty()) {
