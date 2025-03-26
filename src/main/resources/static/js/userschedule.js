@@ -175,65 +175,76 @@ document.addEventListener('DOMContentLoaded', function () {
     mainCalendar.render();
     miniCalendar.render();
 
-    ptButton.addEventListener('click', function() {
-        if (!userSelectionMode) {
-            userSelectionMode = true;
-            ptButton.textContent = "일정 선택 완료";
-            mainCalendarEl.classList.add('selection-mode');
-            scheduleForm.style.display = 'block';
-            deleteButton.style.display = 'block';
-        } else {
-            var startStr = startDateInput.value;
-            if (!startStr) {
-                alert("시작 날짜를 선택해주세요.");
-                return;
-            }
-            var startTime = new Date(startStr);
-            var minutes = startTime.getMinutes();
-            if (minutes !== 0 && minutes !== 30) {
-                alert("분은 00분 또는 30분만 선택 가능합니다.");
-                return;
-            }
-            var now = new Date();
-            if (startTime < now) {
-                alert("현재 시간 이후에만 스케줄을 생성할 수 있습니다.");
-                return;
-            }
-            if (userCreatedEvents.length > 0) {
-                userCreatedEvents[0].instance.remove();
-                userCreatedEvents = [];
-            }
-            var endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
-            var newEventData = {
-                title: userName, // 로그인한 사용자의 이름
-                start: startTime,
-                end: endTime,
-                allDay: false,
-                color: 'yellow',
-                isUserCreated: true
-            };
-            // 여기서 사용자에게 확인하기 전에 이벤트를 추가하지 않고, 확인 후 추가하도록 할 수도 있지만,
-            // 기존 구조를 유지하면서, 저장 전 AJAX 호출 시 eventInstance.remove()로 이벤트를 숨깁니다.
-            var addedEvent = mainCalendar.addEvent(newEventData);
-            userCreatedEvents.push({ data: newEventData, instance: addedEvent });
-            if (confirm("선택한 이벤트를 저장하시겠습니까?")) {
-                userCreatedEvents.forEach(function(item) {
-					item.instance.remove();
-                    sendUserEventToServer(item.data, item.instance);
-                });
-            } else {
-                userCreatedEvents.forEach(function(item) {
-                    item.instance.remove();
-                });
-            }
-            userCreatedEvents = [];
-            userSelectionMode = false;
-            ptButton.textContent = "일정 선택";
-            mainCalendarEl.classList.remove('selection-mode');
-            scheduleForm.style.display = 'none';
-            deleteButton.style.display = 'none';
-        }
-    });
+	ptButton.addEventListener('click', function() {
+	    if (!userSelectionMode) {
+	        userSelectionMode = true;
+	        ptButton.textContent = "일정 선택 완료";
+	        mainCalendarEl.classList.add('selection-mode');
+	        scheduleForm.style.display = 'block';
+	        deleteButton.style.display = 'block';
+	    } else {
+	        // 날짜, 시간(시, 분) 값을 개별적으로 가져옴
+	        var dateValue = document.getElementById("start-date").value;
+	        var hourValue = document.getElementById("start-hour").value;
+	        var minuteValue = document.getElementById("start-minute").value;
+	        
+	        if (!dateValue) {
+	            alert("날짜를 선택해주세요.");
+	            return;
+	        }
+	        
+	        // ISO 포맷(YYYY-MM-DDTHH:MM:SS)으로 결합하여 Date 객체 생성
+	        var startTimeStr = dateValue + "T" + hourValue + ":" + minuteValue + ":00";
+	        var startTime = new Date(startTimeStr);
+	        
+	        // 현재 시간보다 이전이면 경고
+	        var now = new Date();
+	        if (startTime < now) {
+	            alert("현재 시간 이후에만 스케줄을 생성할 수 있습니다.");
+	            return;
+	        }
+	        
+	        // 기존 생성된 사용자 이벤트 제거 (있다면)
+	        if (userCreatedEvents.length > 0) {
+	            userCreatedEvents[0].instance.remove();
+	            userCreatedEvents = [];
+	        }
+	        
+	        // 1시간 후 종료 시간 계산
+	        var endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+	        var newEventData = {
+	            title: userName, // 로그인한 사용자의 이름
+	            start: startTime,
+	            end: endTime,
+	            allDay: false,
+	            color: 'yellow',
+	            isUserCreated: true
+	        };
+	        
+	        // 이벤트를 캘린더에 추가하고 사용자 이벤트 배열에 저장
+	        var addedEvent = mainCalendar.addEvent(newEventData);
+	        userCreatedEvents.push({ data: newEventData, instance: addedEvent });
+	        
+	        if (confirm("선택한 이벤트를 저장하시겠습니까?")) {
+	            userCreatedEvents.forEach(function(item) {
+	                item.instance.remove();
+	                sendUserEventToServer(item.data, item.instance);
+	            });
+	        } else {
+	            userCreatedEvents.forEach(function(item) {
+	                item.instance.remove();
+	            });
+	        }
+	        
+	        userCreatedEvents = [];
+	        userSelectionMode = false;
+	        ptButton.textContent = "일정 선택";
+	        mainCalendarEl.classList.remove('selection-mode');
+	        scheduleForm.style.display = 'none';
+	        deleteButton.style.display = 'none';
+	    }
+	});
+
 
     function sendUserEventToServer(eventData, eventInstance) {
         $.ajax({
@@ -317,6 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+	
 });
 
 function toggleDropdown() {

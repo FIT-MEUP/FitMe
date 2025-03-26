@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	        success: function (response) {
 				if(response==="success"){
 	            // 성공 후 처리 예시: 페이지를 새로고침하거나, 다른 페이지로 이동
-	            alert('요청이 성공적으로 처리되었습니다.');
+	            alert('출석 완료.');
 				window.location.href = '/work' ;
 				}else if(response==="noMore"){
 					alert('이 회원의 남은 PT횟수는 0입니다.');

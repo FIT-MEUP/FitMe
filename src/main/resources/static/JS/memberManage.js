@@ -154,7 +154,7 @@ $(".approve-btn").click(function () {
         contentType: "application/json",
         data: JSON.stringify({ applicationId: applicationId }),
         success: function (response) {
-            alert("신청이 승인되었습니다.");
+            
             location.reload();
         },
         error: function (xhr) {
