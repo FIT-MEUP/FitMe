@@ -14,6 +14,14 @@
 		href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap"
 		rel="stylesheet">
 
+		<style>
+			body{
+			 -ms-overflow-style: none;
+			 }
+			::-webkit-scrollbar {
+			  display: none;
+			}
+		</style>
 <!-- ✅ 기존 CSS 유지 -->
 <link rel="stylesheet" th:href="@{/css/meals.css}">
 <link rel="stylesheet" th:href="@{/css/header.css}">
@@ -478,11 +486,11 @@
 		</div>
 
 		<!-- ✅ 등록된 식단이 없을 때 표시 -->
-		<th:block th:if="${meals == null or #lists.isEmpty(meals)}">
+		<!-- <th:block th:if="${meals == null or #lists.isEmpty(meals)}">
 			<div class="alert alert-warning text-center mt-4" role="alert">
 				<p class="m-0">등록된 식단이 없습니다.</p>
 			</div>
-		</th:block>
+		</th:block> -->
 
 		<script src="/js/meals.js"></script>
 		<!-- ✅ JavaScript 파일 불러오기 -->
