@@ -12,58 +12,58 @@
 				<th:block th:switch="${roles ?: ''}">
 					<!-- 1. 미로그인 사용자 -->
 					<div th:case="''" class="flex space-x-12">
-						<a href="/" class="text-white hover:text-blue-400 transition">
+						<a href="/" class="text-white hover:text-red-400 transition">
 							홈</a> <a
 							th:href="@{/user/login}"
-							class="text-white hover:text-blue-400 transition"> 식단 관리 </a> <a
+							class="text-white hover:text-red-400 transition"> 식단 관리 </a> <a
 							th:href="@{/user/login}"
-							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							class="text-white hover:text-red-400 transition"> 운동 다이어리 </a> <a
 							th:href="@{/user/login}"
-							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> <a
+							class="text-white hover:text-red-400 transition"> 예약 및 일정 </a> <a
 							th:href="@{/user/login}"
-							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
-							<a href="/videos" class="text-white hover:text-blue-400 transition">
+							class="text-white hover:text-red-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-red-400 transition">
 					운동영상</a>
 					</div>
 
 					<!-- 2. 트레이너 -->
 					<div th:case="'Trainer'" class="flex space-x-12">
-						<a href="/" class="text-white hover:text-blue-400 transition">홈</a> 
-						<a th:href="@{/meals}" class="text-white hover:text-blue-400 transition"> 식단 관리 </a> 
-						<a th:href="@{/work}" class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> 
-					    <a th:href="@{/firstTrainerSchedule}"class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> 
-					    <a th:href="@{/trainer/{trainerId}(trainerId=${trainerId})}" class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
-						<a href="/videos" class="text-white hover:text-blue-400 transition"> 운동영상</a>
+						<a href="/" class="text-white hover:text-red-400 transition">홈</a> 
+						<a th:href="@{/meals}" class="text-white hover:text-red-400 transition"> 식단 관리 </a> 
+						<a th:href="@{/work}" class="text-white hover:text-red-400 transition"> 운동 다이어리 </a> 
+					    <a th:href="@{/firstTrainerSchedule}"class="text-white hover:text-red-400 transition"> 예약 및 일정 </a> 
+					    <a th:href="@{/trainer/{trainerId}(trainerId=${trainerId})}" class="text-white hover:text-red-400 transition"> 마이 페이지 </a>
+						<a href="/videos" class="text-white hover:text-red-400 transition"> 운동영상</a>
 					</div>
 
 
 					<!-- 3. 트레이너 승인된 회원 -->
 					<div th:case="'UserNowPt'" class="flex space-x-12">
-						<a href="/" class="text-white hover:text-blue-400 transition">
+						<a href="/" class="text-white hover:text-red-400 transition">
 							홈</a> <a
 							th:href="@{/meals}"
-							class="text-white hover:text-blue-400 transition"> 식단 관리 </a> <a
+							class="text-white hover:text-red-400 transition"> 식단 관리 </a> <a
 							th:href="@{/work}"
-							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
+							class="text-white hover:text-red-400 transition"> 운동 다이어리 </a> <a
 							th:href="@{/firstUserCalendar}"
-							class="text-white hover:text-blue-400 transition"> 예약 및 일정 </a> <a
+							class="text-white hover:text-red-400 transition"> 예약 및 일정 </a> <a
 							th:href="@{/mypage}"
-							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
-							<a href="/videos" class="text-white hover:text-blue-400 transition">
+							class="text-white hover:text-red-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-red-400 transition">
 					운동영상</a>
 					</div>
 
 					<!-- 4. 트레이너 매칭되지 않은 회원 -->
 					<div th:case="'UserNotPt'" class="flex space-x-12">
-						<a href="/" class="text-white hover:text-blue-400 transition">
+						<a href="/" class="text-white hover:text-red-400 transition">
 							홈</a> <a
-							th:href="@{/}" class="text-white hover:text-blue-400 transition">
+							th:href="@{/}" class="text-white hover:text-red-400 transition">
 							식단 플래너 </a> <a th:href="@{/}"
-							class="text-white hover:text-blue-400 transition"> 운동 다이어리 </a> <a
-							th:href="@{/}" class="text-white hover:text-blue-400 transition">
+							class="text-white hover:text-red-400 transition"> 운동 다이어리 </a> <a
+							th:href="@{/}" class="text-white hover:text-red-400 transition">
 							예약 및 일정 </a> <a th:href="@{/}"
-							class="text-white hover:text-blue-400 transition"> 마이 페이지 </a>
-							<a href="/videos" class="text-white hover:text-blue-400 transition">
+							class="text-white hover:text-red-400 transition"> 마이 페이지 </a>
+							<a href="/videos" class="text-white hover:text-red-400 transition">
 					운동영상</a>
 					</div>
 				</th:block>
@@ -74,7 +74,7 @@
 			<div class="flex gap-6">
 				<th:block sec:authorize="isAnonymous()">
 					<a th:href="@{/user/login}"
-						class="bg-blue-600 px-5 py-2 rounded-lg hover:bg-blue-700 transition font-nav">
+						class="bg-red-600 px-5 py-2 rounded-lg hover:bg-red-700 transition font-nav">
 						로그인 </a>
 				</th:block>
 				<th:block sec:authorize="isAuthenticated()">
