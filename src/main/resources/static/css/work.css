@@ -1,38 +1,36 @@
+/* ======================================
+   Work.css Combined File with Sidebar Calendar Styles
+   ====================================== */
+
 /* ✅ 전체 배경 및 기본 스타일 */
 body {
     margin: 40px 10px;
     padding: 0;
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
-    background: #111827;
-    /* Tailwind bg-gray-900 */
+    background: #111827; /* Tailwind bg-gray-900 */
     color: white;
-
 }
 
-/* ✅ 네온 효과 (타이틀 및 강조 텍스트) */
+/* (이하 공통 스타일은 동일) */
 .neon-text {
     font-size: 1.5rem;
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 5px #9333ea, 0 0 10px #9333ea, 0 0 20px #9333ea;
 }
-
-/* ✅ 강한 타이틀 스타일 (강제 적용) */
 .font-title {
     font-family: 'Oswald', sans-serif !important;
     font-weight: 600;
     text-transform: uppercase;
 }
-
-/* ✅ 네비게이션 & 주요 버튼 */
 .font-nav {
     font-family: 'Oswald', sans-serif !important;
     font-weight: 400;
     text-transform: uppercase;
 }
 
-/* ✅ 공통 버튼 스타일 */
+/* 공통 버튼 스타일 */
 .btn-primary,
 .btn-info,
 .btn-success,
@@ -46,23 +44,10 @@ body {
     border-radius: 6px;
     transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.btn.btn-primary.addbtn {
-    width: 100%;
-}
-
-.btn.btn-primary.comments {
-    margin-top: 10px;
-}
-
-.btn.btn-primary.search {
-    margin-top: 10px;
-}
-
-.btn.btn-success {
-    width: 100%;
-}
-
+.btn.btn-primary.addbtn { width: 100%; }
+.btn.btn-primary.comments { margin-top: 10px; }
+.btn.btn-primary.search { margin-top: 10px; }
+.btn.btn-success { width: 100%; }
 .btn-primary:hover,
 .btn-info:hover,
 .btn-success:hover,
@@ -76,29 +61,43 @@ body {
 .container {
     display: flex;
     gap: 20px;
+    
 }
 
-/* ✅ 캘린더 스타일 */
+/* ======================================
+   FullCalendar 관련 스타일
+   ====================================== */
+/* 
+   ⬇⬇ 변경 1) max-height 제거/수정 ⬇⬇
+   기존: #calendar { max-height: 550px; ... }
+   → 스크롤 없애려면 max-height를 없애거나 충분히 크게.
+*/
 #calendar {
-    max-height: 550px;
-
+    /* max-height: 550px;  <-- 이 부분 제거 */
     margin: 0 auto 20px auto;
     background: #1f2937;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-
 }
 
-/* ✅ FullCalendar 스타일 */
+/* 
+   ⬇⬇ 변경 2) 요일 헤더를 흰 배경 + 검정 글자로 ⬇⬇
+   FullCalendar에서 dayGrid 헤더는 
+   .fc-daygrid .fc-col-header-cell
+   클래스로 구성됩니다.
+*/
+.fc-daygrid .fc-col-header-cell {
+    background-color: #fff !important; /* 요일 헤더 배경: 흰색 */
+    color: #000 !important;           /* 요일 헤더 글씨: 검정 */
+}
+
 .fc-daygrid-day {
     transition: background-color 0.2s ease-in-out;
 }
-
 .fc-daygrid-day:hover {
     background-color: #374151;
 }
-
 .fc-daygrid-day.selected-date .fc-daygrid-day-frame {
     background-color: #facc15 !important;
     border-radius: 5px;
@@ -115,16 +114,14 @@ body {
     border-radius: 6px;
     transition: background 0.2s ease;
 }
-
 .fc .fc-button:hover {
     background: #4f46e5;
 }
-
 .fc-toolbar-title {
     text-align: center;
 }
 
-/* ✅ 운동 기록 있는 날짜 dot 스타일 */
+/* dot 표시 */
 .workout-dot {
     width: 6px;
     height: 6px;
@@ -133,7 +130,9 @@ body {
     margin: 2px auto 0 auto;
 }
 
-/* ✅ 댓글 섹션 스타일 */
+/* ======================================
+   댓글 섹션 스타일 (기타 스타일 동일)
+   ====================================== */
 .comment-section {
     margin-top: 30px;
     padding: 20px;
@@ -142,11 +141,7 @@ body {
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
     display: none;
 }
-
-.comment-section h4 {
-    color: #facc15;
-}
-
+.comment-section h4 { color: #facc15; }
 .comment-section textarea {
     background: #374151;
     color: white;
@@ -154,7 +149,6 @@ body {
     border-radius: 6px;
     padding: 8px 10px;
 }
-
 .comment-section button {
     background: linear-gradient(135deg, #4f46e5, #9333ea);
     border: none;
@@ -162,7 +156,6 @@ body {
     color: white;
     padding: 8px 14px;
 }
-
 #commentList li {
     display: flex;
     justify-content: space-between;
@@ -171,23 +164,17 @@ body {
     border-bottom: 1px solid #4b5563;
     font-size: 0.9rem;
 }
-
 .comment-left {
     display: flex;
     align-items: center;
     gap: 8px;
     flex: 1;
 }
-
 .comment-nickname {
     font-weight: bold;
     color: #facc15;
 }
-
-.comment-text {
-    color: white;
-}
-
+.comment-text { color: white; }
 .comment-delete-btn {
     background: none;
     border: none;
@@ -196,14 +183,8 @@ body {
     cursor: pointer;
     margin-left: 10px;
 }
+.hidden-action-buttons { display: none; }
 
-/* 수정/삭제 버튼 숨김용 클래스 */
-.hidden-action-buttons {
-    display: none;
-}
-
-
-/* dot 스타일 수정 */
 .workout-dot {
     width: 7px;
     height: 7px;
@@ -212,33 +193,98 @@ body {
     box-shadow: 0 0 4px rgba(25, 135, 84, 0.6);
     margin: 2px auto;
 }
-
-.fc-daygrid-day-frame {
-    position: relative;
-    /* 기준점 */
-}
+.fc-daygrid-day-frame { position: relative; }
 
 .py-4 {
     padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important; 
+    padding-bottom: 1.5rem !important;
 }
 
 /*0320 박노은 */
 .btn.btn-primary.search {
     padding: 8px 16px;
-    /* 내부 여백을 늘려서 버튼을 키울 수도 있음 */
     margin-top: 2px;
-    /* 10px → 4px로 줄임 */
 }
-
 #search {
     max-width: 280px;
-    /* 원하는 가로 길이로 수정 */
 }
-
-/* FullCalendar 요일 헤더 텍스트 색상 변경 */
 .fc .fc-col-header-cell-cushion {
     color: black;
-}.fc-view{
+}
+.fc-view {
     font-size: 14px;
+}
+
+/* ======================================
+   Sidebar Calendar Styles (Mypage Design)
+   ====================================== */
+.sidebar-calendar {
+  background: rgba(30, 30, 30, 0.9);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.sidebar-calendar .date-display {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+.sidebar-calendar .calendar-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sidebar-calendar .calendar-navigation button {
+  background: #4a5568;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border: none;
+}
+.sidebar-calendar .calendar-navigation button:hover {
+  background: #2d3748;
+}
+.sidebar-calendar .calendar {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.1);
+}
+.sidebar-calendar .calendar th,
+.sidebar-calendar .calendar td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+.sidebar-calendar .calendar td:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.sidebar-calendar .selected-date {
+  background: #facc15 !important;
+  color: black !important;
+  font-weight: bold;
+  border-radius: 6px;
+}
+.sidebar-calendar .menu-buttons {
+  margin-top: 12px;
+}
+.sidebar-calendar .menu-buttons .button {
+  display: block;
+  background: rgba(230, 57, 70, 0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 6px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.sidebar-calendar .menu-buttons .button:hover {
+  background: rgba(200, 30, 50, 1);
 }
