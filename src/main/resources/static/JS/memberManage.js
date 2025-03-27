@@ -1,6 +1,64 @@
 $(document).ready(function () {
     sortMemberList();
     connectTrainerNotificationWebSocket();
+    
+const noticeText = $("#noticeText");
+const editNotice = $("#editNotice");
+const editBtn = $("#editBtn");
+const saveBtn = $("#saveBtn");
+const cancelBtn = $("#cancelBtn");
+
+// 수정 버튼 클릭 시
+editBtn.click(function () {
+    editNotice.val(noticeText.text());
+    noticeText.addClass("hidden");
+    editNotice.removeClass("hidden");
+    editBtn.addClass("hidden");
+    saveBtn.removeClass("hidden");
+    cancelBtn.removeClass("hidden");
+});
+
+// 취소 버튼 클릭 시
+cancelBtn.click(function () {
+    noticeText.removeClass("hidden");
+    editNotice.addClass("hidden");
+    editBtn.removeClass("hidden");
+    saveBtn.addClass("hidden");
+    cancelBtn.addClass("hidden");
+});
+
+// 완료(저장) 버튼 클릭 시
+saveBtn.click(function () {
+    const updatedNotice = editNotice.val().trim();
+    if (updatedNotice === "") {
+        alert("공지사항 내용을 입력해주세요.");
+        return;
+    }
+
+    $.ajax({
+        url: "/trainer/saveAnnouncement",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ announcement: updatedNotice }),
+        success: function (data) {
+            console.log("data: " + data);
+            if (data) {
+                noticeText.text(updatedNotice);
+                noticeText.removeClass("hidden");
+                editNotice.addClass("hidden");
+                editBtn.removeClass("hidden");
+                saveBtn.addClass("hidden");
+                cancelBtn.addClass("hidden");
+            } else {
+                alert("공지사항 업데이트에 실패했습니다.");
+            }
+        },
+        error: function () {
+            alert("서버 오류가 발생했습니다.");
+        },
+    });
+});
+
 });
     //------------------------------------------------------
     // (1) 트레이너 알림용 WebSocket 연결
@@ -85,63 +143,6 @@ function sortMemberList() {
     $("#memberContainer").html(members);
 }
 
-
-const noticeText = $("#noticeText");
-const editNotice = $("#editNotice");
-const editBtn = $("#editBtn");
-const saveBtn = $("#saveBtn");
-const cancelBtn = $("#cancelBtn");
-
-// 수정 버튼 클릭 시
-editBtn.click(function () {
-    editNotice.val(noticeText.text());
-    noticeText.addClass("hidden");
-    editNotice.removeClass("hidden");
-    editBtn.addClass("hidden");
-    saveBtn.removeClass("hidden");
-    cancelBtn.removeClass("hidden");
-});
-
-// 취소 버튼 클릭 시
-cancelBtn.click(function () {
-    noticeText.removeClass("hidden");
-    editNotice.addClass("hidden");
-    editBtn.removeClass("hidden");
-    saveBtn.addClass("hidden");
-    cancelBtn.addClass("hidden");
-});
-
-// 완료(저장) 버튼 클릭 시
-saveBtn.click(function () {
-    const updatedNotice = editNotice.val().trim();
-    if (updatedNotice === "") {
-        alert("공지사항 내용을 입력해주세요.");
-        return;
-    }
-
-    $.ajax({
-        url: "/trainer/saveAnnouncement",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ announcement: updatedNotice }),
-        success: function (data) {
-            console.log("data: " + data);
-            if (data) {
-                noticeText.text(updatedNotice);
-                noticeText.removeClass("hidden");
-                editNotice.addClass("hidden");
-                editBtn.removeClass("hidden");
-                saveBtn.addClass("hidden");
-                cancelBtn.addClass("hidden");
-            } else {
-                alert("공지사항 업데이트에 실패했습니다.");
-            }
-        },
-        error: function () {
-            alert("서버 오류가 발생했습니다.");
-        },
-    });
-});
 
 //------------------------------------------------------
 // (2) 신청 승인/거절 처리
@@ -614,7 +615,7 @@ function showPTInfo(response, userId) {
         </tr>
       </table>
       <div class="text-right w-full">
-        <button id="PTeditBtn" class="bg-blue-500 text-white px-4 rounded h-8" onclick="editPT(${response.changeAmount}, ${userId})">수정</button>
+        <button id="PTeditBtn" class="bg-red-500 text-white px-4 rounded h-8" onclick="editPT(${response.changeAmount}, ${userId})">수정</button>
       </div>
     `);
 }
@@ -636,10 +637,10 @@ function editPT(currentAmount, userId) {
 
     $PTeditBtn.replaceWith(`
       <section class="flex justify-center items-center w-full gap-2 mt-1 overflow-hidden">
-        <button id="PTsaveBtn" class="w-32 bg-green-500 text-white px-4 rounded h-8" onclick="savePT(${userId})">
+        <button id="PTsaveBtn" class="w-32 bg-red-500 text-white px-4 rounded h-8" onclick="savePT(${userId})">
           확인
         </button>
-        <button id="PTcancelBtn" class="w-32 bg-red-500 text-white px-4 rounded h-8" onclick="cancelEdit(${currentAmount})">
+        <button id="PTcancelBtn" class="w-32 bg-gray-500 text-white px-4 rounded h-8" onclick="cancelEdit(${currentAmount})">
           취소
         </button>
       </section>
@@ -674,7 +675,7 @@ function savePT(userId) {
                 $("#PTsaveBtn").replaceWith(
                     `
             <div class="text-right w-full">
-              <button id="PTeditBtn" class="bg-blue-500 text-white px-4 rounded h-8" onclick="editPT(${newPTAmount}, ${userId})">수정</button>
+              <button id="PTeditBtn" class="bg-red-500 text-white px-4 rounded h-8" onclick="editPT(${newPTAmount}, ${userId})">수정</button>
             </div>
             `
                 );

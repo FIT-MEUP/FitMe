@@ -13,8 +13,12 @@
             height: 100vh;
             margin: 0;
             overflow: hidden; /* 스크롤 방지 */
+            -ms-overflow-style: none;
         }
         
+    ::-webkit-scrollbar {
+      display: none;
+    }
         /* 🎥 비디오 컨테이너 */
         .video-container {
             position: fixed;
