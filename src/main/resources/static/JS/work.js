@@ -269,7 +269,7 @@ function updateWorkoutTable(workouts, videoMap) {
             <td>${workout.weight}</td>
             <td id="videoSection-${workout.workoutId}">
                 ${videoFile
-                ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 영상 열기</button>`
+                ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 재생</button>`
                 : `<button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workout.workoutId})">📂 삽입</button>`
             }
             </td>
@@ -359,13 +359,13 @@ function loadWorkoutVideo(workoutId) {
                 } else {
                     // 수정 모드 아닐 때 → 영상 열기 버튼만
                     videoSection.innerHTML = `
-                        <button class="btn btn-sm btn-success" onclick="openVideo('${videoFileName}')">🎥 영상 열기</button>
+                        <button class="btn btn-sm btn-success" onclick="openVideo('${videoFileName}')">🎥 재생</button>
                     `;
                 }
             } else {
                 // 영상 없을 때는 삽입 버튼
                 videoSection.innerHTML = `
-                    <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
+                    <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂삽입</button>
                 `;
             }
         },
@@ -395,7 +395,7 @@ function deleteWorkoutVideo(workoutId) {
 
             // ✅ 영상 삭제 후, 삽입 버튼으로 UI 즉시 변경
             videoSection.innerHTML = `
-                <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂 삽입</button>
+                <button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workoutId})">📂삽입</button>
             `;
         },
         error: function (xhr) {
@@ -661,7 +661,7 @@ function updateSearchResultsTable(workouts, videoMap) {
     workouts.forEach(workout => {
         let videoFile = videoMap[workout.workoutId] || null;
         let videoButton = videoFile
-            ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 영상 열기</button>`
+            ? `<button class="btn btn-sm btn-success" onclick="openVideo('${videoFile}')">🎥 재생</button>`
             : `<button class="btn btn-sm btn-info" onclick="uploadVideoForWorkout(${workout.workoutId})">📂 삽입</button>`;
 
         let newRow = tbody.insertRow();
