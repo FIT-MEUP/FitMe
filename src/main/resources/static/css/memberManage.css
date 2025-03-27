@@ -252,7 +252,10 @@ th {
         grid-template-columns: 1fr; /* 작은 화면에서는 1열로 정렬 */
     }
 
-    .unread-count {
-        color: red;
+   
     }
-}
+
+
+a.unread-a > .unread-count {
+        color: red !important;
+ }
