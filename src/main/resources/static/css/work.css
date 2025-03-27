@@ -47,7 +47,7 @@ body {
 .btn.btn-primary.addbtn { width: 100%; }
 .btn.btn-primary.comments { margin-top: 10px; }
 .btn.btn-primary.search { margin-top: 10px; }
-.btn.btn-success { width: 100%; }
+
 .btn-primary:hover,
 .btn-info:hover,
 .btn-success:hover,
@@ -287,4 +287,12 @@ body {
 }
 .sidebar-calendar .menu-buttons .button:hover {
   background: rgba(200, 30, 50, 1);
+}
+
+.btn btn-sm btn-info {
+	width:12px !important; 
+}
+
+.btn btn-sm btn-success{
+	width:12px !important;
 }
