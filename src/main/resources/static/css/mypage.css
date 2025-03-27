@@ -1,124 +1,92 @@
-/* ✅ 전체 페이지 기본 스타일 */
+/* =========================================
+   [기본 레이아웃 및 색상]
+========================================= */
 body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #181818;
     color: white;
     margin: 0;
     padding: 0;
 }
 
-/* ✅ 컨테이너 */
 .container {
     max-width: 1000px;
     margin: 100px auto 50px auto;
-    padding: 20px;
-    background-color: #1f2937;
+    padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ✅ 상단 헤더 */
-.header {
+/* =========================================
+   [헤더/타이틀 영역]
+========================================= */
+.user-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background: rgba(40, 40, 40, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    justify-content: space-between; /* h2는 왼쪽, 버튼은 오른쪽 */
+    align-items: center; /* 수직 중앙정렬 */
+    width: 100%;
 }
 
-
-
-.header .edit-button {
-    background: #e63946;
+/* 수정 버튼 (기존 붉은색 → 파란색) */
+.edit-button {
+    background: #6366f1;   /* 파란색 */
     color: white;
     padding: 8px 14px;
     border-radius: 6px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
-
-.header .edit-button:hover {
-    background: #c53030;
+.edit-button:hover {
+    background: #4f46e5;   /* 호버 시 더 진한 파랑 */
 }
 
-/* ✅ 메인 콘텐츠 레이아웃 */
-.main-content {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-/* ✅ 사이드바 (캘린더, PT 이력 버튼) */
-.sidebar {
-    flex: 1;
-    background: rgba(30, 30, 30, 0.9);
-    padding: 16px;
+/* =========================================
+   [왼쪽 영역 - FullCalendar, 메뉴 버튼]
+========================================= */
+/* 달력 전체 컨테이너 */
+/* 변경 1) max-height 제거 → 스크롤 없앰 */
+#calendar {
+      /* 기존 max-height, overflow 제거 후 강제 override */
+    height: auto !important;
+    min-height: 600px;  /* 원하는 최소 높이 (예: 700px) */
+  /* 기존 설정들 유지 */
+    max-height: none !important;
+    overflow-y: hidden;
+    overflow: visible !important;
+    margin: 0 auto 20px auto;
+    background: #1f2937;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
+    padding: 15px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+
 }
 
-.date-display {
-    font-size: 20px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 10px;
-}
-
-.calendar-navigation {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.calendar-navigation button {
-    background: #4a5568;
+/* FullCalendar 버튼 색상 (파란색) */
+.fc .fc-button {
+    background: #6366f1;
     color: white;
+    border: none;
+    font-size: 0.9rem;
     padding: 6px 12px;
     border-radius: 6px;
-    transition: all 0.3s ease;
+    transition: background 0.2s ease;
+}
+.fc .fc-button:hover {
+    background: #4f46e5;
 }
 
-.calendar-navigation button:hover {
-    background: #2d3748;
+/* 변경 2) 요일 헤더(일월화수목금토) 흰 배경/검정 글씨 */
+.fc-daygrid .fc-col-header-cell {
+    background-color: #fff !important; /* 요일 헤더 배경: 흰색 */
+    color: #000 !important;           /* 요일 헤더 글씨: 검정 */
 }
 
-.calendar {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.calendar th,
-.calendar td {
-    padding: 8px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-}
-
-.calendar td:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-/* ✅ 선택된 날짜 강조 */
-.selected-date {
-    background: #facc15 !important;
-    color: black !important;
-    font-weight: bold;
-    border-radius: 6px;
-}
-
-/* ✅ PT 이력 & 신체정보 버튼 */
+/* PT 이력 & 신체정보 버튼 (기존 빨강 → 파란) */
 .menu-buttons {
     margin-top: 12px;
 }
-
 .menu-buttons .button {
     display: block;
-    background: rgba(230, 57, 70, 0.9);
+    background: #6366f1;  /* 파란색 */
     color: white;
     padding: 10px;
     border-radius: 6px;
@@ -127,97 +95,80 @@ body {
     text-transform: uppercase;
     font-weight: bold;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
-
 .menu-buttons .button:hover {
-    background: rgba(200, 30, 50, 1);
+    background: #4f46e5;
 }
 
-/* ✅ 사용자 정보 테이블 */
-.content {
-    flex: 2;
-    background: rgba(40, 40, 40, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+/* 달력 날짜 hover 효과 */
+.fc-daygrid-day:hover {
+    background-color: #374151;
+}
+.fc-toolbar-title {
+    text-align: center;
 }
 
-.content h2 {
-    font-size: 22px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 10px;
-}
-
+/* =========================================
+   [사용자 정보 테이블]
+========================================= */
 .user-info {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
 }
 
+/* 테이블 헤더 (기존 붉은색 → 파란색) */
 .user-info th {
-    background: rgba(230, 57, 70, 0.9);
+    background: #4f46e5; /* 진한 파랑 */
     color: white;
     padding: 10px;
     font-weight: bold;
 }
 
+/* 테이블 본문 */
 .user-info td {
     padding: 10px;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .user-info tr:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ 수정 버튼 */
+/* =========================================
+   [수정 모드 버튼 (저장/취소)]
+========================================= */
 #editButtons {
     text-align: center;
     margin-top: 12px;
 }
-
 #editButtons button {
-    background: #38b2ac;
+    background: #6366f1;  /* 파란색 */
     color: white;
     padding: 8px 14px;
     border-radius: 6px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
-
 #editButtons button:hover {
-    background: #2c7a7b;
+    background: #4f46e5;
 }
 
-#editYear {
-    color: black;
-}
-
-#editMonth {
-    color: black;
-}
-
-#editDay {
-    color: black;
-}
-
-/* ✅ 그래프 버튼 */
+/* =========================================
+   [그래프 버튼들]
+========================================= */
 .graphs {
     display: flex;
     justify-content: center;
-    /* 가운데 정렬 */
     gap: 16px;
-    /* 버튼 간격 추가 */
     margin-top: 16px;
 }
 
+/* 그래프 버튼 (기존 어두운 네이비 → 파란 버튼) */
 .graph {
     width: 160px;
-    /* 버튼 길이 조정 */
-    background: rgba(45, 55, 72, 0.9);
-    /* 어두운 네이비 색감 */
+    background: #6366f1;  /* 파란색 */
     padding: 12px;
     border-radius: 6px;
     text-align: center;
@@ -226,18 +177,19 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    /* 부드러운 테두리 추가 */
     color: white;
 }
-
 .graph:hover {
-    background: rgba(66, 82, 110, 1);
-    /* 기존보다 어두운 블루 */
+    background: #4f46e5;
     transform: scale(1.05);
-    /* 가벼운 확대 효과 */
 }
 
-/* ✅ 그래프 표시 영역 */
+.col-md-5 {
+	 min-height: 700px; /* 원하는 최소 높이 */
+	
+}
+
+/* 그래프 표시 영역 */
 #graph-container {
     margin-top: 20px;
     padding: 10px;
@@ -246,123 +198,66 @@ body {
     text-align: center;
 }
 
-/* ✅ 반응형 스타일 (태블릿 & 모바일 최적화) */
-/* ✅ 반응형 조정 (작은 화면에서 세로 정렬) */
+/* =========================================
+   [입력/셀렉트 박스 스타일]
+========================================= */
+input[type="text"],
+input[type="number"] {
+    color: black;
+    width: 65px;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 6px;
+    font-size: 14px;
+    border-radius: 6px;
+    text-align: center;
+}
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #6366f1;  /* 포커스도 파란색 */
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
+}
+
+select {
+  color: black !important;              /* select에 표시되는 기본 텍스트는 검정 */
+  background-color: white;   /* 배경 흰색 */
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  
+}
+
+select:focus {
+  outline: none;
+  border-color: #6366f1;     /* 포커스 시 파란 테두리 */
+  box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
+}
+
+/* select 박스 내부 option들의 텍스트/배경 설정 */
+select option {
+  color: black;        /* 옵션 텍스트는 검정 */
+  background-color: white;  /* 옵션 배경 흰색 */
+}
+
+/* =========================================
+   [반응형 - 작은 화면에서 세로 정렬]
+========================================= */
 @media (max-width: 768px) {
     .graphs {
         flex-direction: column;
         align-items: center;
-        /* 버튼 가운데 정렬 */
     }
-
     .graph {
         width: 100%;
-        /* 작은 화면에서는 전체 너비 */
     }
 }
-
-/* ✅ 입력란 텍스트 색상 조정 */
-input[type="text"],
-input[type="number"] {
-    color: black;
-    /* 글자색 검은색으로 변경 */
-    width: 80px;
-    /* ✅ 입력 필드 너비를 줄임 */
-    background-color: white;
-    /* 배경색 흰색 유지 */
-    border: 1px solid #ccc;
-    /* 테두리 추가 */
-    padding: 6px;
-    /* ✅ 패딩을 줄여서 크기 조정 */
-    font-size: 14px;
-    border-radius: 6px;
-    text-align: center;
-    /* ✅ 숫자 입력 시 가운데 정렬 */
+.workout-dot {
+  width: 7px;
+  height: 7px;
+  background: #facc15;  /* 원하는 색상으로 조정 */
+  border-radius: 50%;
+  margin: 2px auto 0 auto;
 }
 
-/* ✅ 포커스(클릭) 시 스타일 */
-input[type="text"]:focus,
-input[type="number"]:focus {
-    outline: none;
-    border-color: #e63946;
-    /* 빨간색 포커스 효과 */
-    box-shadow: 0 0 5px rgba(230, 57, 70, 0.4);
-}
-
-/* ✅ 드롭다운(셀렉트 박스) 텍스트 색상 조정 */
-select {
-    color: black;
-    /* 글자색 검은색 */
-    background-color: white;
-    /* 배경색 흰색 */
-    border: 1px solid #ccc;
-    /* 테두리 추가 */
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 6px;
-    appearance: none;
-    /* 기본 브라우저 스타일 제거 */
-}
-
-/* ✅ 드롭다운 화살표 커스텀 (크롬, 사파리 등 웹킷 브라우저용) */
-select::-webkit-scrollbar {
-    width: 8px;
-}
-
-select::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 4px;
-}
-
-select::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-}
-
-/* ✅ 포커스(클릭) 시 스타일 */
-select:focus {
-    outline: none;
-    border-color: #e63946;
-    /* 빨간색 포커스 효과 */
-    box-shadow: 0 0 5px rgba(230, 57, 70, 0.4);
-}
-
-select:focus,
-select:active {
-    color: black !important;
-    /* 포커스 시에도 검은색 */
-    background-color: white !important;
-}
-
-/* ✅ 드롭다운 옵션 텍스트 스타일 */
-select option {
-    color: black !important;
-    /* 옵션 텍스트 검은색 */
-    background-color: white !important;
-    /* 옵션 배경 흰색 */
-}
-
-/* ✅ 수정 모드에서 input 크기 유지 */
-.edit-mode input {
-    width: 100px;
-    /* 한 줄에 맞는 적절한 크기로 설정 */
-    padding: 6px;
-    font-size: 14px;
-}
-
-/* ✅ h2와 버튼을 같은 줄에 배치 */
-.user-header {
-    display: flex;
-    justify-content: space-between;
-    /* ✅ h2는 왼쪽, 버튼은 오른쪽 정렬 */
-    align-items: center;
-    /* ✅ 수직 정렬 */
-    width: 100%;
-
-}
-
-.userdropdown select,
-.userdropdown option {
-  text-align: center;
-  color: black;
-
-}
