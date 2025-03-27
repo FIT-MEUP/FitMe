@@ -614,7 +614,7 @@ function showPTInfo(response, userId) {
         </tr>
       </table>
       <div class="text-right w-full">
-        <button id="PTeditBtn" class="bg-blue-500 text-white px-4 rounded h-8" onclick="editPT(${response.changeAmount}, ${userId})">수정</button>
+        <button id="PTeditBtn" class="bg-red-500 text-white px-4 rounded h-8" onclick="editPT(${response.changeAmount}, ${userId})">수정</button>
       </div>
     `);
 }
@@ -636,10 +636,10 @@ function editPT(currentAmount, userId) {
 
     $PTeditBtn.replaceWith(`
       <section class="flex justify-center items-center w-full gap-2 mt-1 overflow-hidden">
-        <button id="PTsaveBtn" class="w-32 bg-green-500 text-white px-4 rounded h-8" onclick="savePT(${userId})">
+        <button id="PTsaveBtn" class="w-32 bg-red-500 text-white px-4 rounded h-8" onclick="savePT(${userId})">
           확인
         </button>
-        <button id="PTcancelBtn" class="w-32 bg-red-500 text-white px-4 rounded h-8" onclick="cancelEdit(${currentAmount})">
+        <button id="PTcancelBtn" class="w-32 bg-gray-500 text-white px-4 rounded h-8" onclick="cancelEdit(${currentAmount})">
           취소
         </button>
       </section>
@@ -674,7 +674,7 @@ function savePT(userId) {
                 $("#PTsaveBtn").replaceWith(
                     `
             <div class="text-right w-full">
-              <button id="PTeditBtn" class="bg-blue-500 text-white px-4 rounded h-8" onclick="editPT(${newPTAmount}, ${userId})">수정</button>
+              <button id="PTeditBtn" class="bg-red-500 text-white px-4 rounded h-8" onclick="editPT(${newPTAmount}, ${userId})">수정</button>
             </div>
             `
                 );
@@ -695,7 +695,7 @@ function cancelEdit(originalAmount) {
     $("#PTsaveBtn").replaceWith(
         `
       <div class="text-right w-full">
-      <button id="PTeditBtn" class="bg-blue-500 text-white px-4 rounded h-8" onclick="editPT(${originalAmount})">수정</button>
+      <button id="PTeditBtn" class="bg-red-500 text-white px-4 rounded h-8" onclick="editPT(${originalAmount})">수정</button>
       </div>
       `
     );
