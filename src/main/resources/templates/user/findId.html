@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
+
 body {
     background-color: black; /* 배경 블랙 처리 */
     display: flex;
@@ -19,7 +20,11 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden; /* 스크롤 방지 */
+    -ms-overflow-style: none;
 }
+    ::-webkit-scrollbar {
+      display: none;
+    }
 
 /* 🎥 비디오 컨테이너 */
 .video-container {
